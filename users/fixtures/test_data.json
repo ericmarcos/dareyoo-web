@@ -1,0 +1,99 @@
+[
+{
+    "pk": 1, 
+    "model": "users.dareyoouser", 
+    "fields": {
+        "username": "eric", 
+        "following": [], 
+        "first_name": "", 
+        "last_name": "", 
+        "date_of_birth": null, 
+        "is_active": true, 
+        "reference_user": null, 
+        "is_superuser": true, 
+        "is_staff": true, 
+        "last_login": "2013-05-26T21:48:33+00:00", 
+        "groups": [], 
+        "facebook_uid": "", 
+        "user_permissions": [], 
+        "password": "pbkdf2_sha256$10000$vs8ukPvOduxc$f52Nr2rxRMrVaHWIhhr+NJtVMMxS3PirjTBzI8FWNT4=", 
+        "email": "eric@dareyoo.net", 
+        "date_joined": "2013-05-08T16:20:48+00:00"
+    }
+},
+{
+    "pk": 2, 
+    "model": "users.dareyoouser", 
+    "fields": {
+        "username": "josep", 
+        "following": [
+            1
+        ], 
+        "first_name": "", 
+        "last_name": "", 
+        "date_of_birth": null, 
+        "is_active": true, 
+        "reference_user": null, 
+        "is_superuser": true, 
+        "is_staff": true, 
+        "last_login": "2013-05-26T21:48:33+00:00", 
+        "groups": [], 
+        "facebook_uid": "", 
+        "user_permissions": [], 
+        "password": "pbkdf2_sha256$10000$vs8ukPvOduxc$f52Nr2rxRMrVaHWIhhr+NJtVMMxS3PirjTBzI8FWNT4=", 
+        "email": "josep@dareyoo.net", 
+        "date_joined": "2013-05-08T16:20:48+00:00"
+    }
+},
+{
+    "pk": 3, 
+    "model": "users.dareyoouser", 
+    "fields": {
+        "username": "franzi", 
+        "following": [
+            2, 
+            1
+        ], 
+        "first_name": "", 
+        "last_name": "", 
+        "date_of_birth": null, 
+        "is_active": true, 
+        "reference_user": null, 
+        "is_superuser": true, 
+        "is_staff": true, 
+        "last_login": "2013-05-26T21:48:33+00:00", 
+        "groups": [], 
+        "facebook_uid": "", 
+        "user_permissions": [], 
+        "password": "pbkdf2_sha256$10000$vs8ukPvOduxc$f52Nr2rxRMrVaHWIhhr+NJtVMMxS3PirjTBzI8FWNT4=", 
+        "email": "franzi@dareyoo.net", 
+        "date_joined": "2013-05-08T16:20:48+00:00"
+    }
+},
+{
+    "pk": 4, 
+    "model": "users.dareyoouser", 
+    "fields": {
+        "username": "superman", 
+        "following": [
+            3, 
+            2, 
+            1
+        ], 
+        "first_name": "", 
+        "last_name": "", 
+        "date_of_birth": null, 
+        "is_active": true, 
+        "reference_user": null, 
+        "is_superuser": true, 
+        "is_staff": true, 
+        "last_login": "2013-05-26T21:48:33+00:00", 
+        "groups": [], 
+        "facebook_uid": "", 
+        "user_permissions": [], 
+        "password": "pbkdf2_sha256$10000$vs8ukPvOduxc$f52Nr2rxRMrVaHWIhhr+NJtVMMxS3PirjTBzI8FWNT4=", 
+        "email": "superman@dareyoo.net", 
+        "date_joined": "2013-05-08T16:20:48+00:00"
+    }
+}
+]

@@ -1,0 +1,43 @@
+[
+{
+    "pk": 1, 
+    "model": "users.dareyoouser", 
+    "fields": {
+        "username": null, 
+        "following": [], 
+        "first_name": null, 
+        "last_name": null, 
+        "date_of_birth": null, 
+        "is_active": true, 
+        "reference_user": null, 
+        "is_superuser": true, 
+        "is_staff": true, 
+        "last_login": "2013-05-08T16:20:56.445+00:00", 
+        "groups": [], 
+        "facebook_uid": null, 
+        "user_permissions": [], 
+        "password": "pbkdf2_sha256$10000$vs8ukPvOduxc$f52Nr2rxRMrVaHWIhhr+NJtVMMxS3PirjTBzI8FWNT4=", 
+        "email": "ericmarcos.p@gmail.com", 
+        "date_joined": "2013-05-08T16:20:48.316+00:00"
+    }
+},
+{
+    "pk": 1, 
+    "model": "bets.bet", 
+    "fields": {
+        "claim": null, 
+        "accepted_bid": null, 
+        "description": "This is a test Bet", 
+        "bet_state": "bidding", 
+        "tags": "sports tennis", 
+        "bidding_deadline": "2013-06-27T04:51:06+00:00", 
+        "created_at": "2013-05-26T21:51:36.416+00:00", 
+        "title": "TestBet1", 
+        "recipients": [], 
+        "amount": 60.0, 
+        "user": 1, 
+        "event_deadline": "2013-06-27T06:51:17+00:00", 
+        "public": true
+    }
+}
+]

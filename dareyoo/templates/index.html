@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block navbar %}
+{% endblock %}
+{% block content %}
+  <div id="request_invite_modal" class="modal hide fade">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h3>Requesting invite</h3>
+    </div>
+    <div class="modal-body">
+      <p id="request_invite_answer"></p>
+    </div>
+    <div class="modal-footer">
+      <a href="#" class="btn btn-primary" data-dismiss="modal">Ok</a>
+    </div>
+  </div>
+  <div id="maincontent">
+    <div class="container">
+      <div class="row">
+        <div id="logo-header" class="col-md-12 text-center">
+          <img class="" src="{{ STATIC_URL }}img/dareyoo_logo_vf.png" />
+        </div>
+      </div>
+      <div class="row">
+        <div id="invite-form" class="col-md-12 text-center">
+          <h3>Dareyoo is currently in private beta</h3>
+          <h5>Submit your email and we'll notify you when we go public:</h5>
+          <form>
+          <div class="input-append">
+            <input id="email_input" class="input-xlarge" id="invitation_email" type="email" placeholder="your email here">
+            <button id="submit_btn" class="btn btn-default" type="button">Get invite!</button>
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block javascript %}
+    <script type="text/javascript">
+      $(function(){
+        $("#submit_btn").click(function(){
+          console.log($("#email_input").val());
+          $.post("/invite_request/", {"email":$("#email_input").val()}, function(data){
+            if(data == "ok") {
+              $('#request_invite_answer').text('Thanks for your interest! We\'ll notify you as soon as we switch to public beta.');
+              $('#request_invite_modal').modal('show');
+            }
+            else
+            {
+              $('#request_invite_answer').text('Ooops, something went wrong: ' + data + '.');
+              $('#request_invite_modal').modal('show');
+            }
+          });
+        });
+      });
+    </script>
+{% endblock %}

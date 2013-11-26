@@ -9,3 +9,9 @@ boto
 django-tastypie
 requests
 django-celery
+collectfast
+django-custom-user
+django-oauth2-provider
+django-haystack
+selenium
+mock
