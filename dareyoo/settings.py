@@ -9,8 +9,11 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from django.utils.translation import ugettext_lazy as _
 import dj_database_url
+import djcelery
+from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -55,6 +58,7 @@ INSTALLED_APPS = (
     'dareyoo',
     'bets',
     'users',
+    'notifications',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -116,3 +120,68 @@ STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+
+### Coins ###
+
+INITIAL_COINS = 10
+MAX_FREE_COINS = 10
+FREE_COINS_INTERVAL = 60*60*2.4 # In seconds. 1 coin every 2.4 hours are 10 coins every 24h
+FREE_COINS_INTERVAL_AMOUNT = 1 # 1 coin in every interval
+MIN_FREE_REFILL_PERIOD = timedelta(days=7)
+FREE_REFILL_AMOUNT = 50
+
+######### CELERY SETUP ###########
+djcelery.setup_loader()
+
+BROKER_URL = 'django://'
+
+RANKING_PERIOD = crontab(hour=1, minute=30, day_of_week=1)
+
+CELERYBEAT_SCHEDULE = {
+    'add-free-coins': {
+        'task': 'users.tasks.free_coins',
+        'schedule': timedelta(seconds=FREE_COINS_INTERVAL)
+    },
+    'generate-ranking': {
+        'task': 'users.tasks.ranking',
+        'schedule': RANKING_PERIOD
+    },
+}
+
+CELERY_TIMEZONE = 'UTC'
+
+# Not using migrations for the following apps. (strange errors)
+SOUTH_MIGRATION_MODULES = {
+    'provider': 'ignore',
+    'oauth2': 'ignore',
+    'social_auth': 'ignore',
+}
+
+AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.facebook.FacebookBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+FACEBOOK_APP_ID = os.environ.get('FACEBOOK_APP_ID')
+FACEBOOK_API_SECRET = os.environ.get('FACEBOOK_API_SECRET')
+FACEBOOK_EXTENDED_PERMISSIONS = ['email']
+
+AUTH_USER_MODEL = 'users.DareyooUser'
+SOCIAL_AUTH_USER_MODEL = 'users.DareyooUser'
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_auth.backends.pipeline.social.social_auth_user',
+    'social_auth.backends.pipeline.associate.associate_by_email',
+    'social_auth.backends.pipeline.user.get_username',
+    'social_auth.backends.pipeline.user.create_user',
+    'social_auth.backends.pipeline.social.associate_user',
+    'social_auth.backends.pipeline.social.load_extra_data',
+    'social_auth.backends.pipeline.user.update_user_details'
+)
+
+### Haystack ###
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+    },
+}

@@ -11,7 +11,9 @@ requests
 django-celery
 collectfast
 django-custom-user
+django-social-auth
 django-oauth2-provider
 django-haystack
 selenium
 mock
+mimeparse
