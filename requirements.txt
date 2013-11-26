@@ -1,0 +1,11 @@
+django
+psycopg2
+south
+dj_database_url
+yolk
+gunicorn
+django-storages
+boto
+django-tastypie
+requests
+django-celery
