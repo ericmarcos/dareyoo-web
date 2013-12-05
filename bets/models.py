@@ -1,130 +1,154 @@
 from django.db import models
 from django.conf import settings
-from django.forms.models import model_to_dict
+from django_fsm.db.fields import FSMField, transition
 
 
-class ModelDiffMixin(object):
-    """
-    A model mixin that tracks model fields' values and provide some useful api
-    to know what fields have been changed.
-    http://stackoverflow.com/questions/1355150/django-when-saving-how-can-you-check-if-a-field-has-changed
-    """
+class Bet(models.Model):
+    TYPE_SIMPLE  = 1
+    TYPE_AUCTION = 2
+    TYPE_LOTTERY = 3
+    BET_TYPE_CHOICES = ((TYPE_SIMPLE, "simple"),
+                        (TYPE_AUCTION, "auction"),
+                        (TYPE_LOTTERY, "lottery"))
 
-    def __init__(self, *args, **kwargs):
-        super(ModelDiffMixin, self).__init__(*args, **kwargs)
-        self.__initial = self._dict
+    STATE_BIDDING     = 1
+    STATE_EVENT       = 2
+    STATE_RESOLVING   = 3
+    STATE_COMPLAINING = 4
+    STATE_ARBITRATING = 5
+    STATE_CLOSED      = 6
+    BET_STATE_CHOICES = ((STATE_BIDDING, "bidding"),
+                         (STATE_EVENT, "event"),
+                         (STATE_RESOLVING, "resolving"),
+                         (STATE_COMPLAINING, "complaining"),
+                         (STATE_ARBITRATING, "arbitrating"),
+                         (STATE_CLOSED, "closed"))
 
-    @property
-    def diff(self):
-        d1 = self.__initial
-        d2 = self._dict
-        diffs = [(k, (v, d2[k])) for k, v in d1.items() if v != d2[k]]
-        return dict(diffs)
+    CLAIM_WON  = 1
+    CLAIM_LOST = 2
+    CLAIM_NULL = 3
+    BET_CLAIM_CHOICES = ((CLAIM_WON, "won"),
+                         (CLAIM_LOST, "lost"),
+                         (CLAIM_NULL, "null"))
 
-    @property
-    def has_changed(self):
-        return bool(self.diff)
-
-    @property
-    def changed_fields(self):
-        return self.diff.keys()
-
-    def get_field_diff(self, field_name):
-        """
-        Returns a diff for field if it's changed and None otherwise.
-        """
-        return self.diff.get(field_name, None)
-
-    def save(self, *args, **kwargs):
-        """
-        Saves model and set initial state.
-        """
-        super(ModelDiffMixin, self).save(*args, **kwargs)
-        self.__initial = self._dict
-
-    @property
-    def _dict(self):
-        return model_to_dict(self, fields=[field.name for field in
-                             self._meta.fields])
-
-
-
-BET_STATE_CHOICES = (
-    ("bidding", "Bidding"),
-    ("event", "Event"),
-    ("resolving", "Resolving"),
-    ("complaining", "Complaining"),
-    ("arbitrating", "Arbitrating"),
-    ("closed", "Closed"),
-    )
-
-BET_CLAIM_CHOICES = (
-    ("undefined", "Undefined"),
-    ("won", "Won"),
-    ("lost", "Lost"),
-    ("null", "Null"),
-    )
-
-class BetManager(models.Manager):
-    def get_by_user(self, user, state=None):
-        if not state:
-            return super(BetManager, self).get_queryset().filter(user=user)
-        if state in [s[0] for s in BET_STATE_CHOICES]:
-            return super(BetManager, self).get_queryset().filter(user=user).filter(bet_state=state)
-        else:
-            raise Exception
-
-class Bet(models.Model, ModelDiffMixin):
-    objects = BetManager()
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='bets', blank=True, null=True)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='bets', blank=True, null=True)
     title = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     tags = models.CharField(max_length=255, blank=True, null=True)
     amount = models.FloatField(blank=True, null=True)
-    bet_state = models.CharField(max_length=63, blank=True, null=True, choices=BET_STATE_CHOICES)
+    referee_escrow = models.FloatField(blank=True, null=True)
+    bet_type = models.PositiveSmallIntegerField(blank=True, null=True, choices=BET_TYPE_CHOICES, default=TYPE_SIMPLE)
+    bet_state = FSMField(default='bidding')
+    odds = models.FloatField(blank=True, null=True, default=0.5)
     accepted_bid = models.ForeignKey("Bid", blank=True, null=True, related_name='accepted')
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True, editable=False)
     bidding_deadline = models.DateTimeField(blank=True, null=True)
     event_deadline = models.DateTimeField(blank=True, null=True)
     public = models.BooleanField(blank=True, default=True)
     recipients = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, null=True)
-    claim = models.CharField(max_length=63, blank=True, null=True, choices=BET_CLAIM_CHOICES)
+    claim = models.PositiveSmallIntegerField(blank=True, null=True, choices=BET_CLAIM_CHOICES, default=None)
+    claim_message = models.TextField(blank=True, null=True, default="")
+    points = models.PositiveIntegerField(blank=True, null=True, default=0)
+    log = models.TextField(blank=True, null=True, default="")
 
     class Meta:
         pass
 
+    def is_simple(self):
+        return self.bet_type == TYPE_SIMPLE
+
+    def is_auction(self):
+        return self.bet_type == TYPE_AUCTION
+
+    def is_lottery(self):
+        return self.bet_type == TYPE_LOTTERY
+
+    def has_bid(self):
+        return self.accepted_bid != None
+
+    def set_author(self, author):
+        author.lock_funds(self.amount + self.referee_escrow)
+        author.save()
+        self.author = author
+
+    @transition(source='bidding', target='event', save=True, conditions=[has_bid])
+    def event(self):
+        """
+        -Notify users
+        """
+        pass
+
+    @transition(source='event', target='resolving', save=True)
+    def resolving(self):
+        """
+        -Notify users
+        """
+        pass
+
+    @transition(source='resolving', target='complaining', save=True)
+    def complaining(self):
+        """
+        -Notify users
+        """
+        pass
+
+    @transition(source='complaining', target='arbitrating', save=True)
+    def arbitrating(self):
+        """
+        -Notify users
+        """
+        pass
+
+    @transition(source=('bidding'), target='closed', save=True)
+    def closed_desert(self):
+        '''
+        -Tornar calers
+        '''
+        pass
+
+    @transition(source=('complaining'), target='closed', save=True)
+    def closed_ok(self):
+        '''
+        -Tornar calers
+        -Sumar punts
+        '''
+        pass
+
+    @transition(source=('arbitrating'), target='closed', save=True)
+    def closed_conflict(self):
+        '''
+        -Tornar calers
+        -Sumar punts
+        -Gestionar arbitratge
+        '''
+        pass
+
+    def bidding_deadline(self):
+        if self.has_bid():
+            self.event()
+        else:
+            self.closed_desert()
+
     def __unicode__(self):
         return self.title
 
-    def save(self, *args, **kwargs):
-        if not self.id and self.user:   # Checking if bet user has enough coins to play
-            if self.user.coins_available - self.amount < 0:
-                raise Exception("Not enough money! (BET)")
-            self.user.coins_available -= self.amount
-            self.user.coins_at_stake += self.amount
-            self.user.save()
-        if 'accepted_bid' in self.changed_fields:
-            prev_bid, curr_bid = self.get_field_diff('accepted_bid')
-            if curr_bid and curr_bid.user:  # Checking if current bid user has enough coins
-                if curr_bid.user.coins_available - self.amount < 0:
-                    raise Exception("Not enough money! (BID)")
-                curr_bid.user.coins_available -= curr_bid.amount
-                curr_bid.user.coins_at_stake += curr_bid.amount
-                curr_bid.user.save()
-            if prev_bid and prev_bid.user:  # Restoring previous bid user coins
-                prev_bid.user.coins_available += prev_bid.amount
-                prev_bid.user.coins_at_stake -= prev_bid.amount
-                prev_bid.user.save()
-        super(Bet, self).save(*args, **kwargs)
-
 
 class Bid(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='bids', blank=True, null=True)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='bids', blank=True, null=True)
     bet = models.ForeignKey(Bet, related_name='bids', blank=True, null=True)
     title = models.CharField(max_length=255, blank=True, null=True)
     amount = models.FloatField(blank=True, null=True)
+    referee_escrow = models.FloatField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True, editable=False)
-    claim = models.CharField(max_length=63, blank=True, null=True, choices=BET_CLAIM_CHOICES)
+    claim = models.PositiveSmallIntegerField(max_length=63, blank=True, null=True, choices=Bet.BET_CLAIM_CHOICES)
+    claim_message = models.TextField(blank=True, null=True, default="")
+    points = models.PositiveIntegerField(blank=True, null=True, default=0)
+    participants = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, null=True)
+
+    def set_author(self, author):
+        author.lock_funds(self.amount)
+        author.save()
+        self.author = author
 
     def __unicode__(self):
         return self.title

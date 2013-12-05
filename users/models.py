@@ -25,7 +25,7 @@ class DareyooUser(AbstractEmailUser):
     facebook_uid = models.CharField(max_length=255, blank=True, null=True)
 
     coins_available = models.FloatField(blank=True, null=True, default=settings.INITIAL_COINS)
-    coins_at_stake = models.FloatField(blank=True, null=True, default=0)
+    coins_locked = models.FloatField(blank=True, null=True, default=0)
     points = models.FloatField(blank=True, null=True, default=0)
 
     def n_following(self):
@@ -33,6 +33,41 @@ class DareyooUser(AbstractEmailUser):
 
     def n_followers(self):
         return len(self.followers.all())
+
+    def is_vip(self):
+        pass
+
+    def has_funds(self, amount=None):
+        if amount:
+            return self.coins_available >= amount
+        else:
+            return self.coins_available > 0
+
+    def lock_funds(self, amount):
+        if self.has_founds(amount):
+            self.coins_available -= amount
+            self.coins_locked += amount
+        else:
+            raise Exception("Not enough funds!")
+    
+    def unlock_funds(self, amount, from_stake=True):
+        if self.coins_locked >= amount:
+            self.coins_available += amount
+            self.coins_locked -= amount
+        else:
+            raise Exception("Not enough money at stake!")
+
+    def charge(self, amount, locked=False):
+        if locked:
+            if self.coins_locked >= amount:
+                self.coins_locked -= amount
+            else:
+                raise Exception("Not enough funds!")
+        else:
+            if self.has_funds(amount):
+                self.coins_available -= amount
+            else:
+                raise Exception("Not enough funds!")
 
     def __unicode__(self):
         return "%s - %s" % (self.email, self.username)
