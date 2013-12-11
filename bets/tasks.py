@@ -1,66 +1,44 @@
 from datetime import datetime, timedelta
+from django.conf import settings
 from celery.task import task
 from bets.models import *
 
 @task
 def bidding_deadline(bet_id=None, **kwargs):
-    '''Task that is executed when a bet reaches
-    the bidding deadline, passing from the bidding
-    state to the event state'''
     b = Bet.objects.get(pk=bet_id)
-    if b.bet_state == 'bidding':
-        if not b.accepted_bid:
-            b.bet_state = 'closed'
-        else:
-            b.bet_state = 'event'
-            event_deadline.apply_asinc(b.id, eta=b.event_deadline)
-        b.save()
+    if b.has_bid():
+        b.event()
+        event_deadline.apply_async(args=[b.id], eta=b.event_deadline)
     else:
-        # This shouldn't be possible
-        pass
-    # TODO send notifications
+        self.closed_desert()
 
 @task
 def event_deadline(bet_id=None, **kwargs):
-    '''Task that is executed when a bet reaches
-    the event deadline, passing from the event
-    state to the resolving state'''
     b = Bet.objects.get(pk=bet_id)
-    if b.bet_state == 'event':
-        b.bet_state = 'resolving'
-        b.save()
-        resolving_deadline.apply_asinc(b.id, eta=b.event_deadline)
-    else:
-        # This shouldn't be possible
-        pass
-    # TODO send notifications
+    b.resolving()
+    resolving_deadline.apply_async(args=[b.id], countdown=settings.RESOLVING_COUNTDOWN)
 
 @task
 def resolving_deadline(bet_id=None, **kwargs):
-    '''Task that is executed when a bet reaches
-    the resolving deadline, passing from the resolving
-    state to the complaining or closed state'''
     b = Bet.objects.get(pk=bet_id)
-    if b.bet_state == 'resolving':
-        if b.claim == 'won' and b.accepted_bid.claim == 'won':
-            b.bet_state = 'complaining'
+    if b.bet_state == Bet.STATE_RESOLVING:
+        if not b.claim:
+            b.claim = Bet.CLAIM_LOST
+        b.complaining()
+        complaining_deadline.apply_async(args=[b.id], countdown=settings.COMPLAINING_COUNTDOWN)
+
+@task
+def complaining_deadline(bet_id=None, **kwargs):
+    b = Bet.objects.get(pk=bet_id)
+    if b.bet_state == Bet.STATE_COMPLAINING:
+        if not b.accepted_bid.claim:
+            b.close_ok()
         else:
-            if b.claim == 'won':
-                b.user.points += b.amount + b.accepted_bid.amount
-            elif b.accepted_bid.claim == 'won':
-                b.accepted_bid.user.points += b.amount + b.accepted_bid.amount
-            else:
-                b.user.coins_available += b.amount
-                b.accepted_bid.user.coins_available += b.accepted_bid.amount
-            b.user.coins_at_stake -= b.amount
-            b.accepted_bid.user.coins_at_stake -= b.accepted_bid.amount
-            b.bet_state = 'closed'
-            b.user.save()
-            b.accepted_bid.user.save()
-        b.save()
-    else:
-        # This shouldn't be possible
-        pass
-    # TODO send notifications
+            b.arbitrating()
+            arbitrating_deadline.apply_async(args=[b.id], countdown=settings.ARBITRATING_COUNTDOWN)
 
-
+@task
+def arbitrating_deadline(bet_id=None, **kwargs):
+    b = Bet.objects.get(pk=bet_id)
+    if b.bet_state == Bet.STATE_ARBITRATING:
+        b.closed_conflict()
