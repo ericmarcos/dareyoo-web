@@ -49,6 +49,7 @@ INSTALLED_APPS = (
     'gunicorn',
     'storages',
     'tastypie',
+    'rest_framework',
     'djcelery',
     'kombu.transport.django',
     'haystack',
@@ -129,6 +130,7 @@ FREE_COINS_INTERVAL = 60*60*2.4 # In seconds. 1 coin every 2.4 hours are 10 coin
 FREE_COINS_INTERVAL_AMOUNT = 1 # 1 coin in every interval
 MIN_FREE_REFILL_PERIOD = timedelta(days=7)
 FREE_REFILL_AMOUNT = 50
+FEES_RATIO = 0.02
 
 ######### CELERY SETUP ###########
 djcelery.setup_loader()
@@ -136,6 +138,9 @@ djcelery.setup_loader()
 BROKER_URL = 'django://'
 
 RANKING_PERIOD = crontab(hour=1, minute=30, day_of_week=1)
+RESOLVING_COUNTDOWN = 60*60*24
+COMPLAINING_COUNTDOWN = 60*60*24
+ARBITRATING_COUNTDOWN = 60*60*24
 
 CELERYBEAT_SCHEDULE = {
     'add-free-coins': {
@@ -184,4 +189,23 @@ HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
     },
+}
+
+
+#### REST framework ####
+REST_FRAMEWORK = {
+    # Use hyperlinked styles by default.
+    # Only used if the `serializer_class` attribute is not set on a view.
+    'DEFAULT_MODEL_SERIALIZER_CLASS': 'rest_framework.serializers.HyperlinkedModelSerializer',
+
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.OAuth2Authentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'PAGINATE_BY': 10
 }
