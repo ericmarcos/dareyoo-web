@@ -35,7 +35,7 @@
         "title": "TestBet1", 
         "recipients": [], 
         "amount": 60.0, 
-        "user": 1, 
+        "author": 1, 
         "event_deadline": "2013-06-27T06:51:17+00:00", 
         "public": true
     }
