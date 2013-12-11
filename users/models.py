@@ -50,7 +50,7 @@ class DareyooUser(AbstractEmailUser):
         else:
             raise Exception("Not enough funds!")
     
-    def unlock_funds(self, amount, from_stake=True):
+    def unlock_funds(self, amount):
         if self.coins_locked >= amount:
             self.coins_available += amount
             self.coins_locked -= amount
