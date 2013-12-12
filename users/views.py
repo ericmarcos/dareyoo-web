@@ -62,7 +62,7 @@ class DareyooUserViewSet(viewsets.ModelViewSet):
             return Response({'error': "User %s is already following user %s" % (user.id, follow_user_id)}, status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_201_CREATED)
 
-    @action()
+    @action(methods=['POST', 'DELETE'])
     def unfollow(self, request, *args, **kwargs):
         user = self.get_object()
         unfollow_user_id = request.DATA.get('user_id', None)

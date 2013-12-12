@@ -87,7 +87,7 @@ class UserResourceTest(APITestCase):
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
         data = {'user_id': 3}
-        resp = self.client.post(reverse('dareyoouser-unfollow', args=[1]), data)
+        resp = self.client.delete(reverse('dareyoouser-unfollow', args=[1]), data)
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
         self.client.credentials()
@@ -127,7 +127,7 @@ class UserResourceTest(APITestCase):
 
         # Unfollowing
         data = {'user_id': 1}
-        resp = self.client.post(reverse('dareyoouser-unfollow', args=[self.user.id]), data)
+        resp = self.client.delete(reverse('dareyoouser-unfollow', args=[self.user.id]), data)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
         # Checking that it actually removed a follower
@@ -136,7 +136,7 @@ class UserResourceTest(APITestCase):
 
         # Checking that unfollowing again doesn't cause any trouble
         data = {'user_id': 1}
-        resp = self.client.post(reverse('dareyoouser-unfollow', args=[self.user.id]), data)
+        resp = self.client.delete(reverse('dareyoouser-unfollow', args=[self.user.id]), data)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
         resp = self.client.get(reverse('dareyoouser-followers', args=[1]), format='json')
         self.assertEqual(len(resp.data), 3)
