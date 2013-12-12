@@ -9,14 +9,6 @@ from rest_framework import routers
 
 router = routers.DefaultRouter()
 router.register(r'users', DareyooUserViewSet)
-followers = DareyooUserViewSet.as_view({
-    'get': 'followers'
-})
-following = DareyooUserViewSet.as_view({
-    'get': 'following',
-    'post': 'follow',
-    'delete': 'unfollow'
-})
 
 from django.contrib import admin
 admin.autodiscover()
