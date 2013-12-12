@@ -1,12 +1,12 @@
 import datetime
+from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
-from provider.oauth2.models import AccessToken, Client
-from tastypie.test import ResourceTestCase
+from rest_framework.test import APITestCase
+from rest_framework import status
 from bets.models import Bet, Bid
-from bets.api import BetsAuthorization
 
 
-class BetResourceTest(ResourceTestCase):
+class BetResourceTest(APITestCase):
     # Use ``fixtures`` & ``urls`` as normal. See Django's ``TestCase``
     # documentation for the gory details.
     fixtures = ['test_data.json']
