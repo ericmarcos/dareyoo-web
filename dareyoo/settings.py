@@ -48,7 +48,6 @@ INSTALLED_APPS = (
     'south',
     'gunicorn',
     'storages',
-    'tastypie',
     'rest_framework',
     'djcelery',
     'kombu.transport.django',

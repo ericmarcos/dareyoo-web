@@ -22,7 +22,7 @@ class Migration(SchemaMigration):
             ('referee_escrow', self.gf('django.db.models.fields.FloatField')(default=0, null=True, blank=True)),
             ('bet_type', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=1, null=True, blank=True)),
             ('bet_state', self.gf('django_fsm.db.fields.fsmfield.FSMField')(default='bidding', max_length=50)),
-            ('odds', self.gf('django.db.models.fields.FloatField')(default=0.5, null=True, blank=True)),
+            ('odds', self.gf('django.db.models.fields.FloatField')(default=2, null=True, blank=True)),
             ('accepted_bid', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='accepted', null=True, to=orm['bets.Bid'])),
             ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, null=True, blank=True)),
             ('bidding_deadline', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
@@ -55,10 +55,10 @@ class Migration(SchemaMigration):
             ('bet', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='bids', null=True, to=orm['bets.Bet'])),
             ('title', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('amount', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
-            ('referee_escrow', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, null=True, blank=True)),
             ('claim', self.gf('django.db.models.fields.PositiveSmallIntegerField')(max_length=63, null=True, blank=True)),
             ('claim_message', self.gf('django.db.models.fields.TextField')(default='', null=True, blank=True)),
+            ('claim_author', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='lottery_claimer', null=True, to=orm['users.DareyooUser'])),
             ('points', self.gf('django.db.models.fields.PositiveIntegerField')(default=0, null=True, blank=True)),
         ))
         db.send_create_signal(u'bets', ['Bid'])
@@ -117,7 +117,7 @@ class Migration(SchemaMigration):
             'event_deadline': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'log': ('django.db.models.fields.TextField', [], {'default': "''", 'null': 'True', 'blank': 'True'}),
-            'odds': ('django.db.models.fields.FloatField', [], {'default': '0.5', 'null': 'True', 'blank': 'True'}),
+            'odds': ('django.db.models.fields.FloatField', [], {'default': '2', 'null': 'True', 'blank': 'True'}),
             'points': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
             'public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'recipients': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': u"orm['users.DareyooUser']", 'null': 'True', 'blank': 'True'}),
@@ -134,12 +134,12 @@ class Migration(SchemaMigration):
             'author': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'bids'", 'null': 'True', 'to': u"orm['users.DareyooUser']"}),
             'bet': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'bids'", 'null': 'True', 'to': u"orm['bets.Bet']"}),
             'claim': ('django.db.models.fields.PositiveSmallIntegerField', [], {'max_length': '63', 'null': 'True', 'blank': 'True'}),
+            'claim_author': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'lottery_claimer'", 'null': 'True', 'to': u"orm['users.DareyooUser']"}),
             'claim_message': ('django.db.models.fields.TextField', [], {'default': "''", 'null': 'True', 'blank': 'True'}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'participants': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': u"orm['users.DareyooUser']", 'null': 'True', 'blank': 'True'}),
             'points': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
-            'referee_escrow': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'})
         },
         u'contenttypes.contenttype': {

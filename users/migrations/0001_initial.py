@@ -6,9 +6,6 @@ from django.db import models
 
 
 class Migration(SchemaMigration):
-    needed_by = (
-        ('tastypie', '0001_initial'),
-    )
     
     def forwards(self, orm):
         # Adding model 'DareyooUser'

@@ -97,14 +97,14 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
-    def claim(self, request, *args, **kwargs):
+    def resolve(self, request, *args, **kwargs):
         bet = self.get_object()
         user = self.request.user
         claim = request.DATA.get('claim', None)
         claim_lottery_winner = request.DATA.get('claim_lottery_winner', None)
         claim_message = request.DATA.get('claim_message', "")
         try:
-            bet.claim(claim=claim, claim_lottery_winner=claim_lottery_winner, claim_message=claim_message)
+            bet.resolve(claim=claim, claim_lottery_winner=claim_lottery_winner, claim_message=claim_message)
             bet.complaining()
             serializer = BetSerializer(bet, context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
