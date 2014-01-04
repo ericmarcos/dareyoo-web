@@ -5,6 +5,9 @@ from django.db import models
 from django.conf import settings
 from custom_user.models import AbstractEmailUser
 
+class DareyooUserException(Exception):
+    pass
+
 REFILL_TYPE_CHOICES = (
     ("free", "Free"),
     ("paying", "Paying"),
@@ -44,30 +47,30 @@ class DareyooUser(AbstractEmailUser):
             return self.coins_available > 0
 
     def lock_funds(self, amount):
-        if self.has_founds(amount):
+        if self.has_funds(amount):
             self.coins_available -= amount
             self.coins_locked += amount
         else:
-            raise Exception("Not enough funds!")
+            raise DareyooUserException("Not enough funds!")
     
     def unlock_funds(self, amount):
         if self.coins_locked >= amount:
             self.coins_available += amount
             self.coins_locked -= amount
         else:
-            raise Exception("Not enough money at stake!")
+            raise DareyooUserException("Not enough money at stake!")
 
     def charge(self, amount, locked=False):
         if locked:
             if self.coins_locked >= amount:
                 self.coins_locked -= amount
             else:
-                raise Exception("Not enough funds!")
+                raise DareyooUserException("Not enough funds!")
         else:
             if self.has_funds(amount):
                 self.coins_available -= amount
             else:
-                raise Exception("Not enough funds!")
+                raise DareyooUserException("Not enough funds!")
 
     def __unicode__(self):
         return "%s - %s" % (self.email, self.username)

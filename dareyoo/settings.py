@@ -130,17 +130,20 @@ FREE_COINS_INTERVAL = 60*60*2.4 # In seconds. 1 coin every 2.4 hours are 10 coin
 FREE_COINS_INTERVAL_AMOUNT = 1 # 1 coin in every interval
 MIN_FREE_REFILL_PERIOD = timedelta(days=7)
 FREE_REFILL_AMOUNT = 50
-FEES_RATIO = 0.02
+WINNING_FEES_RATIO = 0.02
+REFEREE_FEES_RATIO = 0.02
+LOTTERY_REFEREE_FEES = 6
 
 ######### CELERY SETUP ###########
 djcelery.setup_loader()
 
 BROKER_URL = 'django://'
 
-RANKING_PERIOD = crontab(hour=1, minute=30, day_of_week=1)
+RANKING_PERIOD = crontab(hour=1, minute=30, day_of_week=1) # deprecated
 RESOLVING_COUNTDOWN = 60*60*24
 COMPLAINING_COUNTDOWN = 60*60*24
 ARBITRATING_COUNTDOWN = 60*60*24
+AUTO_QUEUE_DEADLINES = True #Set to False when testing to ignore celery (then calling tasks manually)
 
 CELERYBEAT_SCHEDULE = {
     'add-free-coins': {

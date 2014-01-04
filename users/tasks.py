@@ -9,6 +9,7 @@ def free_coins(**kwargs):
     '''Recurrent task that gives free free coins
     to all users under MAX_FREE_COINS'''
     users = DareyooUser.objects.all()
+    #TODO: should it be coins_available or coins_available - coins_locked?
     for user in users:
         if user.coins_available < settings.MAX_FREE_COINS - settings.FREE_COINS_INTERVAL_AMOUNT:
             user.coins_available += settings.FREE_COINS_INTERVAL_AMOUNT
