@@ -192,9 +192,9 @@ class TimelineList(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        qs = Bet.objects.filter(Q(recipients=user) | Q(author__in=[user.following.all()]), state='bidding')
-        order = self.request.DATA.get('order', 'created_at')
-        if not order in ('created_at', 'bidding_deadline'):
-            order = 'created_at'
+        qs = Bet.objects.filter(Q(recipients=user) | Q(author__in=list(user.following.all())), bet_state='bidding')
+        order = self.request.DATA.get('order', '-created_at')
+        if not order in ('-created_at', '-bidding_deadline'):
+            order = '-created_at'
         qs = qs.order_by(order)
         return qs
