@@ -1,0 +1,18 @@
+<ul class="nav nav-pills">
+    <li class="active"><a onclick="$(this).tab('show')" data-target="new-bet-step-1">1</a></li>
+    <li><a onclick="$(this).tab('show')" data-target="new-bet-step-2">2</a></li>
+    <li><a onclick="$(this).tab('show')" data-target="new-bet-step-3">3</a></li>
+</ul>
+<form ng-submit="postNewBet()">
+    <div id="name-group" class="form-group">
+        <label>Title</label>
+        <input type="text" name="title" class="form-control" placeholder="What's your bet?" ng-model="formData.title">
+        <span class="help-block"></span>
+    </div>
+    <button type="submit" class="btn btn-success btn-lg btn-block">
+        <span class="glyphicon glyphicon-flash"></span> Submit!
+    </button>
+</form>
+<pre>
+    [[ formData ]]
+</pre>

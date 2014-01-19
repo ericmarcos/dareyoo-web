@@ -59,6 +59,8 @@ INSTALLED_APPS = (
     'bets',
     'users',
     'notifications',
+    'gamification',
+    'alpha',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -143,16 +145,17 @@ RESOLVING_COUNTDOWN = 60*60*24
 COMPLAINING_COUNTDOWN = 60*60*24
 ARBITRATING_COUNTDOWN = 60*60*24
 AUTO_QUEUE_DEADLINES = True #Set to False when testing to ignore celery (then calling tasks manually)
+GENERATE_NOTIFICATIONS = True  #Set to False when testing to ignore notifications
 
 CELERYBEAT_SCHEDULE = {
     'add-free-coins': {
         'task': 'users.tasks.free_coins',
         'schedule': timedelta(seconds=FREE_COINS_INTERVAL)
     },
-    'generate-ranking': {
-        'task': 'users.tasks.ranking',
-        'schedule': RANKING_PERIOD
-    },
+    #'generate-ranking': {
+    #    'task': 'users.tasks.ranking',
+    #    'schedule': RANKING_PERIOD
+    #},
 }
 
 CELERY_TIMEZONE = 'UTC'

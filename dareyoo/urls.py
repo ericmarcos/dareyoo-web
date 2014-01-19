@@ -1,21 +1,20 @@
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from tastypie.api import Api
-from users.api import *
 from users.views import *
 from bets.views import *
-from bets.api import *
+from notifications.views import *
 from rest_framework import routers
 
 router = routers.DefaultRouter()
 router.register(r'users', DareyooUserViewSet)
 router.register(r'bets', BetViewSet)
 router.register(r'bids', BidViewSet)
+router.register(r'notifications', NotificationViewSet)
 
 bets_urls = patterns('',
-    url(r'^/bets/search$', SearchBetsList.as_view(), name='bets-search'),
-    url(r'^/timeline$', TimelineList.as_view(), name='user-detail'),
+    url(r'^bets/search$', SearchBetsList.as_view(), name='bets-search'),
+    url(r'^timeline$', TimelineList.as_view(), name='user-detail'),
 )
 
 from django.contrib import admin
@@ -28,6 +27,7 @@ v1_api.register(BetResource())
 v1_api.register(BidResource())
 '''
 urlpatterns = patterns('',
+    url(r'^alpha/', include('alpha.urls')),
     url(r'^api/v1/', include(bets_urls)),
     url(r'^api/v1/', include(router.urls)),
     #url(r'^api/v1/user/(?P<pk>[0-9]+)/followers/$', followers, name='followers'),
