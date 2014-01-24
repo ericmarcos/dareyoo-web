@@ -1,0 +1,17 @@
+<div class="row bet-row" ng-repeat="bet in bets">
+    <div class="col-md-12 bet-type-[[bet.bet_type]]">
+        <div class="bet-image pull-left">
+            <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-prn2/1117460_669867209_631967961_q.jpg" alt="[[bet.author.username]]" class="img-circle">
+        </div>
+        <div class="bet-text pull-left">
+            <p><span class="bet-username"><a ui-sref="profile({userId:bet.author.id})">[[bet.author.username]]</a></span><time relative datetime="[[bet.created_at]]"></time></p>
+            <p><span class="bet-title"><a ui-sref="main.bet({betId:bet.id})">[[bet.title]]</a></span></p>
+            <span class="bet-closing">Closing <time relative datetime="[[bet.bidding_deadline]]"></time></span>
+        </div>
+        <div class="bet-actions pull-right">
+            <p><span class="bet-amount">For [[bet.amount]] coins</span></p>
+            <p ng-show="[[bet.bet_type==1]]"><span class="bet-amount-against">against [[bet.amount*bet.odds - bet.amount]] coins</span></p>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+</div>

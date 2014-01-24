@@ -1,10 +1,14 @@
 {% extends "alpha-base.html" %}
 {% load i18n %}
-{% block title %}Welcome to _templateapp{% endblock %}
+{% block title %}Dareyoo (alpha){% endblock %}
 {% block css %}
 {{ block.super }}
     <style type="text/css">
-    body { margin-top: 80px; }
+    body { margin-top: 0px; }
+
+    /* Explanation of the following line: http://angular-ui.github.io/bootstrap/ */
+    .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
     .container {
       max-width: 1000px;
     }
@@ -29,50 +33,59 @@
     .sidebar-nav { margin-top: 20px; }
     </style>
 {% endblock %}
-{% block content %}
-    <div ng-app="dareyoo" class="container">
-      <div ui-view></div>
 
-      <!-- <div ng-app="dareyoo" ng-controller="TimelineCtrl">
-        <div class="row">
-          <div class="col-md-4">
-            <div class="row">
-              <div class="col-md-4">
-                <a href="#" class="user-profile-link">
-                <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-prn2/1117460_669867209_631967961_q.jpg" alt="{{request.user.username}}" class="img-circle profile-image">
-                <p>{{user.username}}<br><span class="view-profile">view my profile</span></p>
-                </a>
-                <img width="30" src="http://mattersofgrey.com/forum/uploads/userpics/842/n2S7WEALLV3J8.png" alt="VIP">
-                <img width="30" src="http://slackblog.files.wordpress.com/2010/04/adventurer.png%3Fw%3D64%26h%3D64" alt="TOP10">
-                <img width="30" src="http://qph.is.quoracdn.net/main-thumb-t-9970-50-YpqlEa4uAhTwe63T3VriOBo2nPOEgONC.jpeg" alt="TOP10">
-                <img width="30" src="http://www.nrlc-group.net/images/localbadge40.jpg" alt="TOP10">
-                <img width="30" src="https://www.uwosh.edu/stay_connected/images/collegeschoolspirit_big150x150.jpg/image_tile" alt="TOP10">
-              </div>
-              <div class="col-md-8">
-                <div class="coins-available">{{user.coins_available|floatformat}} COINS AVAILABLE</div>
-                <div class="coins-locked">({{user.coins_locked|floatformat}} COINS LOCKED)</div>
-                <div class="points">
-                  <span class="num-points">1.542</span><br><span class="text-points">POINTS THIS WEEK</span>
-                </div>
-              </div>
-            </div>
-            <div class="row sidebar-nav">
-              <div class="col-md-12">
-                <ul class="nav nav-pills nav-stacked">
-                  <li><a href="#">Create new bet</a></li>
-                  <li class="active"><a href="#/timeline">My timeline</a></li>
-                  <li><a href="#">My open bets (4)</a></li>
-                  <li><a href="#">Leaderboards</a></li>
-                </ul>
-              </div>
-            </div>
+{% block body %}<body ng-app="dareyoo">{% endblock %}
+
+{% block navbar %}
+
+<nav class="navbar navbar-inverse">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-app-navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Dareyoo (alpha)</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="main-app-navbar-collapse">
+        <ul class="nav navbar-nav navbar-left">
+          <li ng-class="{ active: $state.includes('main') }"><a href="#" ui-sref="main.timeline"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+          <li ng-class="{ active: $state.includes('profile') }"><a href="#" ui-sref="profile.bets({userId:user.id})"><span class="glyphicon glyphicon-user"></span> My profile</a></li>
+        </ul>
+        <div class="navbar-form navbar-left" role="search" ng-controller="SearchCtrl">
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Search" ng-model="q.query">
           </div>
-          <div class="col-md-8">
-            <div ng-view></div>
-          </div>
+          <button type="button" class="btn btn-default" ng-click="search()"><span class="glyphicon glyphicon-search"></span></button>
         </div>
-      </div> -->
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="badge"><span class="glyphicon glyphicon-inbox"></span>&nbsp;&nbsp;&nbsp;[[new_notifications]]&nbsp;&nbsp;&nbsp;<b class="caret"></b></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#"><span class="glyphicon glyphicon-envelope"></span> Franzi accepted your bet "I will win the chess tournament!"</a></li>
+              <li class="divider"></li>
+              <li><a href="#"><span class="glyphicon glyphicon-envelope"></span> Your bet "Blah blah blah" is available for resolving</a></li>
+              <li class="divider"></li>
+              <li><a href="#"><span class="glyphicon glyphicon-envelope"></span> Congratulations! You won danichicano's bet "Porra Barça - Madrid"</a></li>
+              <li class="divider"></li>
+              <li><a href="#">danichicano started following you</a></li>
+            </ul>
+          </li>
+          <li><a href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></a></li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </div>
+</nav>
+{% endblock %}
 
+{% block content %}
+    <div class="container">
+      <div ui-view></div>
     </div>
 {% endblock %}
 
@@ -80,6 +93,7 @@
 {{ block.super }}
 <!-- <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular-route.js"></script> -->
 <script src="{{ STATIC_URL }}alpha/js/angular-ui-router.min.js"></script>
+<script src="{{ STATIC_URL }}alpha/js/ui-bootstrap-tpls-0.9.0.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular-cookies.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.0/moment.min.js"></script>
 <script src="{{ STATIC_URL }}alpha/js/ng-time-relative.min.js"></script>

@@ -7,14 +7,16 @@ from notifications.views import *
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register(r'users', DareyooUserViewSet)
+router.register(r'users', DareyooUserBetViewSet)
 router.register(r'bets', BetViewSet)
 router.register(r'bids', BidViewSet)
 router.register(r'notifications', NotificationViewSet)
 
-bets_urls = patterns('',
-    url(r'^bets/search$', SearchBetsList.as_view(), name='bets-search'),
-    url(r'^timeline$', TimelineList.as_view(), name='user-detail'),
+extra_api_urls = patterns('',
+    url(r'^bets/search/$', SearchBetsList.as_view(), name='bets-search'),
+    url(r'^timeline/$', TimelineList.as_view(), name='timeline'),
+    url(r'^open-bets/$', OpenBetsList.as_view(), name='open-bets'),
+    url(r'^me/$', MeUserView.as_view(), name='me-user-detail'),
 )
 
 from django.contrib import admin
@@ -28,7 +30,7 @@ v1_api.register(BidResource())
 '''
 urlpatterns = patterns('',
     url(r'^alpha/', include('alpha.urls')),
-    url(r'^api/v1/', include(bets_urls)),
+    url(r'^api/v1/', include(extra_api_urls)),
     url(r'^api/v1/', include(router.urls)),
     #url(r'^api/v1/user/(?P<pk>[0-9]+)/followers/$', followers, name='followers'),
     #url(r'^api/v1/user/(?P<pk>[0-9]+)/following/$', following, name='following'),

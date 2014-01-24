@@ -144,8 +144,8 @@ RANKING_PERIOD = crontab(hour=1, minute=30, day_of_week=1) # deprecated
 RESOLVING_COUNTDOWN = 60*60*24
 COMPLAINING_COUNTDOWN = 60*60*24
 ARBITRATING_COUNTDOWN = 60*60*24
-AUTO_QUEUE_DEADLINES = True #Set to False when testing to ignore celery (then calling tasks manually)
-GENERATE_NOTIFICATIONS = True  #Set to False when testing to ignore notifications
+AUTO_QUEUE_DEADLINES = False #Set to False when testing to ignore celery (then calling tasks manually)
+GENERATE_NOTIFICATIONS = False  #Set to False when testing to ignore notifications
 
 CELERYBEAT_SCHEDULE = {
     'add-free-coins': {

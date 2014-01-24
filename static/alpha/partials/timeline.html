@@ -1,10 +1,6 @@
-<div class="row">
-  <ul class="nav nav-tabs">
-    <li class="active"><a href="#">Friends</a></li>
-    <li><a href="#">Global</a></li>
-    <li><a href="#">Arbitrate Conflicts</a></li>
-  </ul>
-</div>
+<p class="text-right">Order by 
+<button type="button" ng-class="{'btn': true, 'btn-xs': true, 'btn-primary': order_by=='-created_at', 'btn-default': order_by!='-created_at'}" ng-click="getTimeline('-created_at')">Recently created</button> 
+<button type="button" ng-class="{'btn': true, 'btn-xs': true, 'btn-primary': order_by=='bidding_deadline', 'btn-default': order_by!='bidding_deadline'}" ng-click="getTimeline('bidding_deadline')">Bidding deadline</button></p>
 <div ng-show="loaded" class="bets-list">
   <div ng-repeat="bet in bets" class="row bet-row">
     <div class="col-md-12 bet-type-[[bet.bet_type]]">
@@ -12,15 +8,15 @@
         <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-prn2/1117460_669867209_631967961_q.jpg" alt="[[bet.author.username]]" class="img-circle">
       </div>
       <div class="bet-text pull-left">
-        <p><span class="bet-username">[[bet.author.username]]</span><time relative datetime="[[bet.created_at]]"></time></p>
-        <p><span class="bet-title">[[bet.title]]</span></p>
+        <p><span class="bet-username"><a ui-sref="profile({userId:bet.author.id})">[[bet.author.username]]</a></span><time relative datetime="[[bet.created_at]]"></time></p>
+        <p><span class="bet-title"><a ui-sref="main.bet({betId:bet.id})">[[bet.title]]</a></span></p>
         <span class="bet-closing">Closing <time relative datetime="[[bet.bidding_deadline]]"></time></span>
       </div>
       <div class="bet-actions pull-right">
         <p><span class="bet-amount">For [[bet.amount]] coins</span></p>
         <p ng-show="[[bet.bet_type==1]]"><span class="bet-amount-against">against [[bet.amount*bet.odds - bet.amount]] coins</span></p>
-        <button type="button" class="btn btn-primary" ng-show="[[bet.bet_type==1]]">Accept</button>
-        <button type="button" class="btn btn-primary" ng-show="[[bet.bet_type==2]]">Post Bid</button>
+        <button type="button" class="btn btn-primary" ng-show="bet.bet_type==1">Accept</button>
+        <button type="button" class="btn btn-primary" ng-show="bet.bet_type==2">Post Bid</button>
       </div>
       <div class="clearfix"></div>
     </div>

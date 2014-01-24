@@ -2,9 +2,9 @@
   <div class="col-md-4">
     <div class="row">
       <div class="col-md-4">
-        <a ui-sref="profile" class="user-profile-link">
-        <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-prn2/1117460_669867209_631967961_q.jpg" alt="{{request.user.username}}" class="img-circle profile-image">
-        <p>{{user.username}}<br><span class="view-profile">view my profile</span></p>
+        <a ui-sref="profile({userId:user.id})" class="user-profile-link">
+        <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-prn2/1117460_669867209_631967961_q.jpg" alt="[[user.username]]" class="img-circle profile-image">
+        <p>[[user.username]]<br><span class="view-profile">view my profile</span></p>
         </a>
         <img width="30" src="http://mattersofgrey.com/forum/uploads/userpics/842/n2S7WEALLV3J8.png" alt="VIP">
         <img width="30" src="http://slackblog.files.wordpress.com/2010/04/adventurer.png%3Fw%3D64%26h%3D64" alt="TOP10">
@@ -13,19 +13,32 @@
         <img width="30" src="https://www.uwosh.edu/stay_connected/images/collegeschoolspirit_big150x150.jpg/image_tile" alt="TOP10">
       </div>
       <div class="col-md-8">
-        <div class="coins-available">{{user.coins_available|floatformat}} COINS AVAILABLE</div>
-        <div class="coins-locked">({{user.coins_locked|floatformat}} COINS LOCKED)</div>
+        <div class="coins-available">[[user.coins_available]] COINS AVAILABLE</div>
+        <div class="coins-locked">([[user.coins_locked]] COINS LOCKED)</div>
+        <div class=""><button type="button" class="btn btn-xs btn-primary">Get more coins</button></div>
         <div class="points">
-          <span class="num-points">1.542</span><br><span class="text-points">POINTS THIS WEEK</span>
+          <span class="num-points">[[user.points + 1200]]</span><br><span class="text-points">POINTS THIS WEEK</span>
         </div>
       </div>
     </div>
     <div class="row sidebar-nav">
       <div class="col-md-12">
         <ul class="nav nav-pills nav-stacked">
-          <li><a onclick="$(this).tab('show')" data-target="new-bet" ui-sref="main.new-bet">Create new bet</a></li>
-          <li class="active"><a onclick="$(this).tab('show')" data-target="timeline" ui-sref="main.timeline">My timeline</a></li>
-          <li><a onclick="$(this).tab('show')" data-target="open-bets" ui-sref="main.open-bets">My open bets (4)</a></li>
+          <li ng-class="{ active: $state.includes('main.new-bet') || $state.includes('main.new-bet-simple') || $state.includes('main.new-bet-auction') }"><a ui-sref="main.new-bet">
+            <span class="glyphicon glyphicon-plus"></span> Create new bet
+          </a></li>
+          <li ng-class="{ active: $state.includes('main.timeline-global') }"><a ui-sref="main.timeline-global">
+            <span class="glyphicon glyphicon-globe"></span> Global Timeline
+          </a></li>
+          <li ng-class="{ active: $state.includes('main.timeline') }"><a ui-sref="main.timeline">
+            <span class="glyphicon glyphicon-star"></span> My friends timeline
+          </a></li>
+          <li ng-class="{ active: $state.includes('main.timeline-conflicts') }"><a ui-sref="main.timeline-conflicts">
+            <span class="glyphicon glyphicon-fire"></span> Conflicts
+          </a></li>
+          <li ng-class="{ active: $state.includes('main.open-bets') }"><a ui-sref="main.open-bets">
+            <span class="glyphicon glyphicon-user"></span> My open bets <span class="badge">[[n_open_bets]]</span>
+          </a></li>
         </ul>
       </div>
     </div>

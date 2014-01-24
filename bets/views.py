@@ -4,8 +4,10 @@ from rest_framework import viewsets, permissions, renderers, status, mixins, gen
 from rest_framework.decorators import link, action
 from rest_framework.response import Response
 from haystack.query import SearchQuerySet
-from .models import *
 from users.models import DareyooUserException
+from users.views import DareyooUserViewSet
+from users.serializers import *
+from .models import *
 from .serializers import BetSerializer, BidSerializer
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
@@ -16,6 +18,10 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed to any request
         return request.method in permissions.SAFE_METHODS or obj.author == request.user
+
+
+def bets_filter(queryset, filters):
+    pass
 
 
 class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -53,7 +59,7 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
         obj.set_author(self.request.user)
         return super(BetViewSet, self).pre_save(obj)
 
-    @action(methods=['GET', 'POST'], renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
+    @action(permission_classes=[permissions.IsAuthenticated], methods=['GET', 'POST'], renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
     def bids(self, request, *args, **kwargs):
         bet = self.get_object()
         user = self.request.user
@@ -67,12 +73,26 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
                 bid = serializer.object
                 try:
                     bet.add_bid(bid, user)
+                    if bet.is_simple():
+                        bet.accept_bid(bid.id)
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 except (BetException, DareyooUserException) as e:
                     return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response({'detail': "Data not valid"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'detail': "Method not allowed"}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(permission_classes=[permissions.IsAuthenticated], renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
+    def accept_bet(self, request, *args, **kwargs):
+        bet = self.get_object()
+        user = self.request.user
+        try:
+            bet.accept_bet(user)
+            bet.save()
+            serializer = BetSerializer(bet, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except (BetException, DareyooUserException) as e:
+            return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['DELETE', 'POST'], renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
     def accept_bid(self, request, *args, **kwargs):
@@ -81,6 +101,8 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
         bid_id = request.DATA.get('bid_id', None)
         try:
             bet.accept_bid(bid_id)
+            bet.save()
+            serializer = BetSerializer(bet, context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except (BetException, DareyooUserException) as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -92,6 +114,8 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
         bid_id = request.DATA.get('bid_id', None)
         try:
             bet.remove_bid(bid_id)
+            bet.save()
+            serializer = BetSerializer(bet, context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except (BetException, DareyooUserException) as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -106,6 +130,7 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
         try:
             bet.resolve(claim=claim, claim_lottery_winner=claim_lottery_winner, claim_message=claim_message)
             bet.complaining()
+            bet.save()
             serializer = BetSerializer(bet, context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except (BetException, DareyooUserException) as e:
@@ -121,6 +146,7 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
         try:
             bet.arbitrate(user, claim=claim, claim_lottery_winner=claim_lottery_winner, claim_message=claim_message)
             bet.closed_conflict()
+            bet.save()
             serializer = BetSerializer(bet, context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except (BetException, DareyooUserException) as e:
@@ -128,7 +154,7 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
 
 class BidViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
-    API endpoint that allows bets to be viewed or created, not modified or destroyed.
+    API endpoint that allows bids to be viewed or created, not modified or destroyed.
     """
     model = Bid
     serializer_class = BidSerializer
@@ -180,7 +206,7 @@ class SearchBetsList(generics.ListAPIView):
             sqs = sqs.filter(Q(public=True) | Q(author=user) | Q(recipients=user))
         else:
             sqs = sqs.filter(public=True)
-        sqs = sqs.auto_query(self.request.DATA.get('q', ''))
+        sqs = sqs.auto_query(self.request.QUERY_PARAMS.get('q', ''))
         sqs = sqs.order_by('bidding_deadline')
         return sqs
 
@@ -192,9 +218,79 @@ class TimelineList(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        qs = Bet.objects.filter(Q(recipients=user) | Q(author__in=list(user.following.all())), bet_state='bidding')
-        order = self.request.DATA.get('order', '-created_at')
-        if not order in ('-created_at', '-bidding_deadline'):
+        bet_state = self.request.QUERY_PARAMS.get('state', 'bidding')
+        bet_type = self.request.QUERY_PARAMS.get('type', None)
+        all_bets = self.request.QUERY_PARAMS.get('global', None)
+        order = self.request.QUERY_PARAMS.get('order', '-created_at')
+        if all_bets:
+            qs = Bet.objects.filter(Q(recipients=user) | Q(author=user) | Q(public=True))
+        else:
+            qs = Bet.objects.filter(Q(recipients=user) | Q(author=user) | (Q(author__in=list(user.following.all())) & Q(public=True)))
+        if bet_state:
+            if bet_state in dict(Bet.BET_STATE_CHOICES).values():
+                qs = qs.filter(bet_state=bet_state)
+            else:
+                raise Exception('Invalid state')
+        elif not all_bets:
+            qs = qs.exclude(bet_state='closed')
+        if bet_type:
+            qs = qs.filter(bet_type=bet_type)
+        if not order in ('-created_at', 'bidding_deadline'):
             order = '-created_at'
         qs = qs.order_by(order)
         return qs
+
+
+class OpenBetsList(generics.ListAPIView):
+    model = Bet
+    serializer_class = BetSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = Bet.objects.filter(Q(author=user) | Q(recipients=user) | Q(bids__author=user) | Q(bids__participants=user)).exclude(bet_state='closed').order_by('-created_at')
+        return qs
+
+
+class DareyooUserBetViewSet(DareyooUserViewSet):
+    @link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
+    def bets(self, request, *args, **kwargs):
+        user = self.get_object()
+        all_bets = request.QUERY_PARAMS.get('all', False)
+        bet_state = request.QUERY_PARAMS.get('state', None)
+        bet_type = request.QUERY_PARAMS.get('type', None)
+        qs = Bet.objects.filter(author=user)
+        if bet_state:
+            if bet_state in dict(Bet.BET_STATE_CHOICES).values():
+                qs = qs.filter(bet_state=bet_state)
+            else:
+                return Response({'detail': 'Invalid state'}, status=status.HTTP_400_BAD_REQUEST)
+        elif not all_bets:
+            qs = qs.exclude(bet_state='closed')
+        if bet_type:
+            qs = qs.filter(bet_type=bet_type)
+        if not request.user.is_authenticated():
+            qs = qs.filter(public=True)
+        elif user != request.user:
+            qs = qs.filter(Q(public=True) | Q(recipients=request.user))
+        qs.order_by('-created_at')
+        serializer = BetSerializer(qs, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
+    def n_bets(self, request, *args, **kwargs):
+        user = self.get_object()
+        all_bets = request.QUERY_PARAMS.get('all', False)
+        bet_state = request.QUERY_PARAMS.get('state', None)
+        bet_type = request.QUERY_PARAMS.get('type', None)
+        qs = Bet.objects.filter(author=user)
+        if bet_state:
+            if bet_state in dict(Bet.BET_STATE_CHOICES).values():
+                qs = qs.filter(bet_state=bet_state)
+            else:
+                return Response({'detail': 'Invalid state'}, status=status.HTTP_400_BAD_REQUEST)
+        elif not all_bets:
+            qs = qs.exclude(bet_state='closed')
+        if bet_type:
+            qs = qs.filter(bet_type=bet_type)
+        return Response({'count': qs.count()}, status=status.HTTP_200_OK)

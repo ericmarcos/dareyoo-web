@@ -35,7 +35,7 @@ class BetFactory:
                 bidding_deadline=kwargs.get('bidding_deadline', timezone.now() + datetime.timedelta(minutes=10)),
                 event_deadline=kwargs.get('event_deadline', timezone.now() + datetime.timedelta(minutes=30)),
                 public=kwargs.get('public', True))
-        recipients = kwargs.get('recipients', [])
+        #recipients = kwargs.get('recipients', [])
         b.check_valid()
         b.referee_escrow = b.referee_fees()
         #b.set_author(kwargs.get('author'))
@@ -50,8 +50,8 @@ class BetFactory:
                 amount=kwargs.get('amount', 1),
                 bidding_deadline=kwargs.get('bidding_deadline', timezone.now() + datetime.timedelta(minutes=10)),
                 event_deadline=kwargs.get('event_deadline', timezone.now() + datetime.timedelta(minutes=30)),
-                public=kwargs.get('public', True),
-                recipients=kwargs.get('recipients', []))
+                public=kwargs.get('public', True))
+        #        recipients=kwargs.get('recipients', []))
         b.check_valid()
         #b.set_author(author)
         #b.save()
@@ -65,8 +65,8 @@ class BetFactory:
                 amount=kwargs.get('amount', 1),
                 bidding_deadline=kwargs.get('bidding_deadline', timezone.now() + datetime.timedelta(minutes=10)),
                 event_deadline=kwargs.get('event_deadline', timezone.now() + datetime.timedelta(minutes=30)),
-                public=kwargs.get('public', True),
-                recipients=kwargs.get('recipients', []))
+                public=kwargs.get('public', True))
+        #        recipients=kwargs.get('recipients', []))
         b.check_valid()
         b.referee_escrow = b.referee_fees()
         #b.set_author(author)
@@ -226,14 +226,15 @@ class Bet(models.Model):
             #TODO: think if we should limit the number of bids per user per bet.
             #I'm not doing it now because of the lottery use case: a singe user
             #(for example, the bet creator) can add many bids
-            bid.bet = bet
+            bid.bet = self
             bid.set_author(user)
             if self.is_simple():
                 bid.amount = self.pot() - self.amount
-                self.accept_bid(bid.id)
             elif self.is_lottery():
                 bid.amount = self.amount
             bid.save()
+            if self.is_simple():
+                self.accept_bid(bid.id)
         else:
             raise BetException("Can't add a bid to this bet because it's not on bidding sate (current state:%s)" % self.bet_state)
 
@@ -248,6 +249,16 @@ class Bet(models.Model):
         else:
             raise BetException("Can't remove a bid from this bet because it's not on bidding sate (current state:%s)" % self.bet_state)
 
+    def accept_bet(self, user):
+        if self.is_bidding():
+            if self.is_simple():
+                bid = Bid()
+                self.add_bid(bid, user)
+            else:
+                raise BetException("Can't accept this bet because it's not of 'simple' type.")
+        else:
+            raise BetException("Can't accept this bet because it's not on bidding sate (current state:%s)" % self.bet_state)
+
     def accept_bid(self, bid_id):
         if self.is_bidding():
             if self.is_lottery():
@@ -259,8 +270,8 @@ class Bet(models.Model):
                 self.referee_escrow = self.referee_fees()
                 self.author.lock_funds(self.referee_escrow)
                 self.author.save()
-            bid.author.lock_funds(bid.amount)
-            bid.author.save()
+            self.accepted_bid.author.lock_funds(self.accepted_bid.amount)
+            self.accepted_bid.author.save()
             self.event()
         else:
             raise BetException("Can't accept a bid from this bet because it's not on bidding sate (current state:%s)" % self.bet_state)
@@ -319,25 +330,25 @@ class Bet(models.Model):
             claim = self.referee_claim
             if claim == self.claim:
                 self.author.unlock_funds(self.referee_escrow)
-                self.accepted_bid.author.charge(self.accepted_bid.referee_escrow, locked=True)
+                self.accepted_bid.author.charge(self.referee_escrow, locked=True)
             elif claim == self.accepted_bid.claim:
                 self.author.charge(self.referee_escrow, locked=True)
-                self.accepted_bid.author.unlock_funds(self.accepted_bid.referee_escrow)
+                self.accepted_bid.author.unlock_funds(self.referee_escrow)
             else:
                 self.author.unlock_funds(self.referee_escrow / 2)
                 self.author.charge(self.referee_escrow / 2, locked=True)
-                self.accepted_bid.author.unlock_funds(self.accepted_bid.referee_escrow / 2)
-                self.accepted_bid.author.charge(self.accepted_bid.referee_escrow / 2, locked=True)
+                self.accepted_bid.author.unlock_funds(self.referee_escrow / 2)
+                self.accepted_bid.author.charge(self.referee_escrow / 2, locked=True)
             self.referee.coins_available += self.referee_escrow
             self.referee.save()
-        if claim == CLAIM_NULL:
+        if claim == Bet.CLAIM_NULL:
             self.author.unlock_funds(self.amount)
             self.accepted_bid.author.unlock_funds(self.accepted_bid.amount)
-        elif claim == CLAIM_WON:
+        elif claim == Bet.CLAIM_WON:
             self.author.unlock_funds(self.amount)
             self.author.coins_available += self.accepted_bid.amount - self.winning_fees()
             self.accepted_bid.author.charge(self.accepted_bid.amount, locked=True)
-        elif claim == CLAIM_LOST:
+        elif claim == Bet.CLAIM_LOST:
             self.author.charge(self.amount, locked=True)
             self.accepted_bid.author.unlock_funds(self.accepted_bid.amount)
             self.accepted_bid.author.coins_available += self.amount - self.winning_fees()
@@ -350,7 +361,7 @@ class Bet(models.Model):
         but I keep it in different functions as it might
         change in the future
         '''
-        close_simple(arbitrating)
+        self.close_simple(arbitrating)
 
     def close_lottery(self, arbitrating=False):
         claim = self.claim
@@ -372,7 +383,7 @@ class Bet(models.Model):
                 complainer.claim_author.charge(self.referee_escrow / 2, locked=True)
             self.referee.coins_available += self.referee_escrow
             self.referee.save()
-        if claim == CLAIM_NULL:
+        if claim == Bet.CLAIM_NULL:
             for bid in self.bids.all():
                 for p in bid.participants.all():
                     p.unlock_funds(bid.amount)
@@ -458,7 +469,7 @@ class Bid(models.Model):
             p.save()
 
     def complain(self, user, claim=None, claim_message=""):
-        if not self.is_participant(user):
+        if not self.bet.is_participant(user):
             raise BetException("Only a participant of a bet can complain about it")
         if user == self.bet.author:
             raise BetException("The author of the bet can't complain about it")

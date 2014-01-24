@@ -3,6 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core import validators
 from django.db import models
 from django.conf import settings
+from django.db import IntegrityError, transaction
 from custom_user.models import AbstractEmailUser
 
 class DareyooUserException(Exception):
@@ -32,10 +33,25 @@ class DareyooUser(AbstractEmailUser):
     points = models.FloatField(blank=True, null=True, default=0)
 
     def n_following(self):
-        return len(self.following.all())
+        return self.following.all().count()
 
     def n_followers(self):
-        return len(self.followers.all())
+        return self.followers.all().count()
+
+    def follow(self, user):
+        if self == user:
+            raise DareyooUserException("You can't follow yourself.")
+        try:
+            with transaction.atomic():
+                self.following.add(user)
+        except IntegrityError as ie:
+            raise DareyooUserException("User %s is already following user %s." % (self.username, user.username))
+
+    def unfollow(self, user):
+        self.following.remove(user)
+
+    def is_following(self, user_id):
+        return self.following.filter(id=user_id).exists()
 
     def is_vip(self):
         pass
