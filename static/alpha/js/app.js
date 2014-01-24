@@ -69,7 +69,7 @@ config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRou
         })
         .state('main.open-bets', {
           url: "/open-bets",
-          templateUrl: "/static/alpha/partials/timeline.html",
+          templateUrl: "/static/alpha/partials/timeline-by-state.html",
           controller: 'OpenBetsCtrl'
         })
         .state('profile', {
