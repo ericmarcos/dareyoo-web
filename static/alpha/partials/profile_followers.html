@@ -1,3 +1,7 @@
-<div class="row bet-row" ng-repeat="user in followers">
-    <p><a href="#" ui-sref="profile.followers({userId:user.id})">[[user.username]]</a></p>
+<div class="row bet-row" ng-repeat="follower in followers">
+    <a href="#" ui-sref="profile.followers({userId:follower.id})">
+    	<div class="col-md-2"><img src="/static/alpha/img/[[follower.id]].jpg" alt="[[follower.username]]" width="40" class="img-circle"></div>
+    	<div class="col-md-4">[[follower.username]]</div>
+    	<div class="col-md-2"></div>
+    </a>
 </div>
