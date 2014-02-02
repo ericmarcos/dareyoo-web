@@ -1,6 +1,6 @@
 <div class="row bet-row" ng-repeat="follower in following">
     <a href="#" ui-sref="profile.followers({userId:follower.id})">
-    	<div class="col-md-2"><img src="/static/alpha/img/[[follower.id]].jpg" alt="[[follower.username]]" class="img-circle"></div>
+    	<div class="col-md-2"><img src="/static/alpha/img/[[follower.id]].jpg" alt="[[follower.username]]" width="40" class="img-circle"></div>
     	<div class="col-md-4">[[follower.username]]</div>
     	<div class="col-md-2" ng-show="user.id==profile_user.id">
     		<button ng-show="user && profile_user.id==user.id" type="button" class="btn btn-primary" ng-click="unfollowUser(follower.id)">Unfollow</button>

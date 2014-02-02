@@ -249,7 +249,7 @@ class OpenBetsList(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         qs = Bet.objects.filter(Q(author=user) | Q(recipients=user) | Q(bids__author=user) | Q(bids__participants=user)).exclude(bet_state='closed').order_by('-created_at')
-        return qs
+        return qs.distinct()
 
 
 class DareyooUserBetViewSet(DareyooUserViewSet):

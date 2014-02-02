@@ -240,12 +240,12 @@ class Bet(models.Model):
 
     def remove_bid(self, bid_id):
         if self.is_bidding():
-            bid = Bid.objects.get(bid_id)
+            bid = Bid.objects.get(id=bid_id)
             if bid_id in [b.id for b in self.bids.all()]:
                 if self.is_lottery():
                     for p in bid.participants.all():
                         p.unlock_funds(bid.amount)
-                bid.remove()
+                bid.delete()
         else:
             raise BetException("Can't remove a bid from this bet because it's not on bidding sate (current state:%s)" % self.bet_state)
 
