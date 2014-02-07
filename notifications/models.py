@@ -167,3 +167,6 @@ class Notification(models.Model):
 
     def __unicode__(self):
         return "%s - %s [%s]" % (self.date, self.position, self.user)
+
+
+import notifications.signals

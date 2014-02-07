@@ -1,4 +1,4 @@
-from django.core import settings
+from django.conf import settings
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django_fsm.signals import pre_transition, post_transition
@@ -12,7 +12,7 @@ TODO: listen to "follow" actions from users
 
 
 @receiver(post_save, sender=Bet)
-def bet_auto_queue_bidding_deadline_task(sender, **kwargs):
+def bet_recipients_notifications(sender, **kwargs):
     if kwargs.get('created', False) and settings.GENERATE_NOTIFICATIONS:
         bet = kwargs.get('instance')
         for r in bet.recipients.all():
@@ -20,7 +20,7 @@ def bet_auto_queue_bidding_deadline_task(sender, **kwargs):
             n.save()
 
 @receiver(post_transition, sender=Bet)
-def bet_auto_queue_deadlines_tasks(sender, **kwargs):
+def bet_change_state_notifications(sender, **kwargs):
     if settings.GENERATE_NOTIFICATIONS:
         bet = kwargs.get('instance')
         transition = kwargs.get('name')
@@ -48,11 +48,11 @@ def bet_auto_queue_deadlines_tasks(sender, **kwargs):
                         n.save()
 
         if transition == 'arbitrating':
-            arbitrating_deadline.apply_async(args=[b.id], countdown=settings.ARBITRATING_COUNTDOWN)
+            pass
 
         if transition == 'closed_ok':
-            arbitrating_deadline.apply_async(args=[b.id], countdown=settings.ARBITRATING_COUNTDOWN)
+            pass
 
         if transition == 'closed_desert':
-            arbitrating_deadline.apply_async(args=[b.id], countdown=settings.ARBITRATING_COUNTDOWN)
+            pass
             

@@ -119,7 +119,6 @@ class Bet(models.Model):
     claim = models.PositiveSmallIntegerField(blank=True, null=True, choices=BET_CLAIM_CHOICES, default=None)
     claim_lottery_winner = models.ForeignKey("Bid", blank=True, null=True, related_name='winning_bet')
     claim_message = models.TextField(blank=True, null=True, default="")
-    points = models.PositiveIntegerField(blank=True, null=True, default=0)
     referee = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='arbitrated_bets', blank=True, null=True, default=None)
     referee_claim = models.PositiveSmallIntegerField(blank=True, null=True, choices=BET_CLAIM_CHOICES, default=None)
     referee_lottery_winner = models.ForeignKey("Bid", blank=True, null=True, related_name='referee_winning_bet')
@@ -199,6 +198,35 @@ class Bet(models.Model):
         if self.is_lottery():
             pot = sum([bid.amount * len(bid.participants.all()) for bid in self.bids.all()])
         return pot
+
+    def winners(self):
+        if self.is_closed():
+            claim = self.referee_claim or self.claim
+            if self.is_lottery():
+                if claim != Bet.CLAIM_NULL:
+                    bid = self.referee_lottery_winner or self.claim_lottery_winner
+                    return list(bid.participants.all()) if bid else None
+            else:
+                if claim == Bet.CLAIM_NULL:
+                    return None
+                elif claim == Bet.CLAIM_WON:
+                    return (self.author,)
+                else:
+                    return (self.accepted_bid.author,)
+
+    def losers(self):
+        if self.is_closed():
+            if self.is_lottery():
+                bid = self.referee_lottery_winner or self.claim_lottery_winner
+                return [user for b in self.bids.all() for user in b.participants.all() if b != bid]
+            else:
+                claim = self.referee_claim or self.claim_author
+                if claim == Bet.CLAIM_NULL:
+                    return None
+                elif claim == Bet.CLAIM_LOST:
+                    return (self.author,)
+                else:
+                    return (self.accepted_bid.author,)
 
     def winning_fees(self):
         return math.ceil(self.pot()*settings.WINNING_FEES_RATIO)
@@ -490,3 +518,6 @@ class Bid(models.Model):
 
     class Meta:
         pass
+
+
+import bets.signals

@@ -4,6 +4,17 @@
 /* Controllers */
 
 angular.module('dareyoo.controllers', []).
+  controller('RankingCtrl', ['$scope', '$http', '$location', '$filter', function($scope, $http, $location, $filter) {
+    $scope.ranking = [];
+    $scope.getRanking = function(order) {
+      $http.get("/api/v1/ranking/").success(function(response) {
+        if(response.results) $scope.ranking = response.results;
+        else $scope.ranking = response;
+      });
+    }
+
+    $scope.getRanking();
+  }]).
   controller('TimelineCtrl', ['$scope', '$http', '$location', '$filter', function($scope, $http, $location, $filter) {
     $scope.bets = [];
     $scope.more_bets_link = "";

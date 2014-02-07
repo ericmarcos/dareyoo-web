@@ -92,6 +92,11 @@ config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRou
           templateUrl: "/static/alpha/partials/profile_bets.html",
           controller: 'ProfileBetsCtrl'
         })
+        .state('rankings', {
+          url: "/rankings",
+          templateUrl: "/static/alpha/partials/rankings.html",
+          controller: 'RankingCtrl'
+        })
 }]).
 run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', function run($http, $cookies, $rootScope, $state, $stateParams) {
     // For CSRF token compatibility with Django

@@ -30,7 +30,6 @@ class DareyooUser(AbstractEmailUser):
 
     coins_available = models.FloatField(blank=True, null=True, default=settings.INITIAL_COINS)
     coins_locked = models.FloatField(blank=True, null=True, default=0)
-    points = models.FloatField(blank=True, null=True, default=0)
 
     def n_following(self):
         return self.following.all().count()

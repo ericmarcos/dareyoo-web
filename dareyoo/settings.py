@@ -13,7 +13,7 @@ from datetime import timedelta
 from django.utils.translation import ugettext_lazy as _
 import dj_database_url
 import djcelery
-from celery.schedules import crontab
+#from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = '#l)5==o7sfqc0oib4bz++nx02)taxpgc#pw+l8m3*26^wryk!*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', True)
+DEBUG = bool(int(os.environ.get('DEBUG', True)))
 
 TEMPLATE_DEBUG = DEBUG
 
@@ -127,7 +127,7 @@ AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
 
 INITIAL_COINS = 10
 MAX_FREE_COINS = 10
-FREE_COINS_INTERVAL = 60*60*2.4 # In seconds. 1 coin every 2.4 hours are 10 coins every 24h
+FREE_COINS_INTERVAL = 30 or 60*60*2.4 # In seconds. 1 coin every 2.4 hours are 10 coins every 24h
 FREE_COINS_INTERVAL_AMOUNT = 1 # 1 coin in every interval
 MIN_FREE_REFILL_PERIOD = timedelta(days=7)
 FREE_REFILL_AMOUNT = 50
@@ -140,16 +140,16 @@ djcelery.setup_loader()
 
 BROKER_URL = 'django://'
 
-RANKING_PERIOD = crontab(hour=1, minute=30, day_of_week=1) # deprecated
+#RANKING_PERIOD = crontab(hour=1, minute=30, day_of_week=1) # deprecated
 RESOLVING_COUNTDOWN = 60*60*24
 COMPLAINING_COUNTDOWN = 60*60*24
 ARBITRATING_COUNTDOWN = 60*60*24
-AUTO_QUEUE_DEADLINES = False #Set to False when testing to ignore celery (then calling tasks manually)
-GENERATE_NOTIFICATIONS = False  #Set to False when testing to ignore notifications
+AUTO_QUEUE_DEADLINES = True or bool(int(os.environ.get('AUTO_QUEUE_DEADLINES'))) #Set to False when testing to ignore celery (then calling tasks manually)
+GENERATE_NOTIFICATIONS = bool(int(os.environ.get('GENERATE_NOTIFICATIONS')))  #Set to False when testing to ignore notifications
 
 CELERYBEAT_SCHEDULE = {
     'add-free-coins': {
-        'task': 'users.tasks.free_coins',
+        'task': 'free_coins',
         'schedule': timedelta(seconds=FREE_COINS_INTERVAL)
     },
     #'generate-ranking': {

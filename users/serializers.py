@@ -8,8 +8,8 @@ class DareyooUserFullSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = DareyooUser
-        fields = ('url', 'id', 'username', 'first_name', 'last_name', 'coins_available', 'coins_locked', 'points', 'n_following', 'n_followers')
-        read_only_fields = ('coins_available', 'coins_locked', 'points',)
+        fields = ('url', 'id', 'username', 'first_name', 'last_name', 'coins_available', 'coins_locked', 'n_following', 'n_followers')
+        read_only_fields = ('coins_available', 'coins_locked',)
 
 class DareyooUserSerializer(serializers.HyperlinkedModelSerializer):
     n_following = serializers.Field(source='n_following')

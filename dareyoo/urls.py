@@ -4,10 +4,11 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from users.views import *
 from bets.views import *
 from notifications.views import *
+from gamification.views import *
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register(r'users', DareyooUserBetViewSet)
+router.register(r'users', DareyooUserBetPointsViewSet)
 router.register(r'bets', BetViewSet)
 router.register(r'bids', BidViewSet)
 router.register(r'notifications', NotificationViewSet)
@@ -16,7 +17,8 @@ extra_api_urls = patterns('',
     url(r'^bets/search/$', SearchBetsList.as_view(), name='bets-search'),
     url(r'^timeline/$', TimelineList.as_view(), name='timeline'),
     url(r'^open-bets/$', OpenBetsList.as_view(), name='open-bets'),
-    url(r'^me/$', MeUserView.as_view(), name='me-user-detail'),
+    url(r'^me/$', MeUserPointsView.as_view(), name='me-user-detail'),
+    url(r'^ranking/$', WeekRankingList.as_view(), name='ranking'),
 )
 
 from django.contrib import admin

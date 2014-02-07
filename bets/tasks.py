@@ -1,23 +1,24 @@
+from __future__ import absolute_import
 from datetime import datetime, timedelta
 from django.conf import settings
-from celery.task import task
+from celery import shared_task
 from bets.models import *
 
-@task
+@shared_task(name='bidding_deadline')
 def bidding_deadline(bet_id=None, **kwargs):
     b = Bet.objects.get(pk=bet_id)
     if b.has_bid():
         if not b.is_event():
             b.event()
     else:
-        self.closed_desert()
+        b.closed_desert()
 
-@task
+@shared_task(name='event_deadline')
 def event_deadline(bet_id=None, **kwargs):
     b = Bet.objects.get(pk=bet_id)
     b.resolving()
 
-@task
+@shared_task(name='resolving_deadline')
 def resolving_deadline(bet_id=None, **kwargs):
     b = Bet.objects.get(pk=bet_id)
     if b.is_resolving():
@@ -25,7 +26,7 @@ def resolving_deadline(bet_id=None, **kwargs):
             b.claim = Bet.CLAIM_LOST
         b.complaining()
 
-@task
+@shared_task(name='complaining_deadline')
 def complaining_deadline(bet_id=None, **kwargs):
     b = Bet.objects.get(pk=bet_id)
     if b.is_complaining():
@@ -34,7 +35,7 @@ def complaining_deadline(bet_id=None, **kwargs):
         else:
             b.arbitrating()
 
-@task
+@shared_task(name='arbitrating_deadline')
 def arbitrating_deadline(bet_id=None, **kwargs):
     b = Bet.objects.get(pk=bet_id)
     if b.is_arbitrating():

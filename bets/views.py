@@ -184,10 +184,14 @@ class BidViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
         user = self.request.user
         claim = request.DATA.get('claim', None)
         claim_message = request.DATA.get('claim_message', "")
+        print claim, bid.bet.claim
         try:
-            bid.complain(user, claim=claim, claim_message=claim_message)
-            bid.save()
-            bid.bet.arbitrating()
+            if claim == bid.bet.claim and not bid.bet.is_lottery():
+                bid.bet.closed_ok()
+            else:
+                bid.complain(user, claim=claim, claim_message=claim_message)
+                bid.save()
+                bid.bet.arbitrating()
             serializer = BidSerializer(bid, context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except (BetException, DareyooUserException) as e:
