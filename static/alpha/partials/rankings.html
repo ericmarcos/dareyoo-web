@@ -6,9 +6,8 @@
             <tr ng-repeat="row in ranking">
                 <td>[[$index + 1]]</td>
                 <td>
-                    <a haref="#" ui-sref="profile.bets({userId:row.user.id})">
-                    <img src="/static/alpha/img/[[row.user.id]].jpg" alt="[[row.user.username]]" width="40" alt="[[row.user.username]]" class="img-circle"> 
-                    [[row.user.username]]</a>
+                    <dy-user-pic user="row.user" size="micro"></dy-user-pic>
+                    <dy-user-name user="row.user"></dy-user-name>
                 </td>
                 <td>[[row.points]]</td>
             </tr>

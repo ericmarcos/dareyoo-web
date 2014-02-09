@@ -1,28 +1,23 @@
 {% extends "alpha-base.html" %}
 {% block content %}
-<div id="login">
-    <form class="form-horizontal" name="LoginForm" action="{% url 'alpha-login' %}" method="post">
+<div id="login" class="container text-center" style="max-width:300px; margin-top:200px">
+    <h1>Dareyoo (alpha)</h1>
+    <form role="form" name="LoginForm" action="{% url 'alpha-login' %}" method="post">
     {% csrf_token %}
     {% if next %}
         <input type="hidden" name="next" value="{{ next }}" />
         {% endif %}
-        <div class="control-group">
-            <label class="control-label" for="username">Username</label>
-            <div class="controls">
-                <input type="text" id="username" name="username"  placeholder="Username">
-            </div>
+        <div id="name-group" class="form-group">
+            <input type="text" id="username" name="username" class="form-control" placeholder="email">
+            <span class="help-block"></span>
+
+            <input type="password" id="password" name="password" placeholder="password" class="form-control">
+            <span class="help-block"></span>
         </div>
-        <div class="control-group">
-            <label class="control-label" for="password">Password</label>
-            <div class="controls">
-                <input type="password" name="password" id="password" placeholder="Password">
-            </div>
-        </div>
-        <div class="control-group">
-            <div class="controls">
-                <button type="submit" class="btn">Login</button>
-            </div>
-        </div>
+        {% for error in errors %}
+        <div class="alert alert-danger">{{error}}</div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Login</button>
     </form>
 </div>
 {% endblock %}

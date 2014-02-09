@@ -55,7 +55,7 @@
       <div class="collapse navbar-collapse" id="main-app-navbar-collapse">
         <ul class="nav navbar-nav navbar-left">
           <li ng-class="{ active: $state.includes('main') }"><a href="#" ui-sref="main.timeline"><span class="glyphicon glyphicon-home"></span> Home</a></li>
-          <li ng-class="{ active: $state.includes('profile') }"><a href="#" ui-sref="profile.bets({userId:user.id})"><span class="glyphicon glyphicon-user"></span> My profile</a></li>
+          <li ng-class="{ active: $state.includes('profile') }" ng-if="user"><a href="#" ui-sref="profile.bets({userId:user.id})"><span class="glyphicon glyphicon-user"></span> My profile</a></li>
           <li ng-class="{ active: $state.includes('rankings') }"><a href="#" ui-sref="rankings"><span class="glyphicon glyphicon-list"></span> Rankings</a></li>
         </ul>
         <div class="navbar-form navbar-left" role="search" ng-controller="SearchCtrl">
@@ -65,7 +65,7 @@
           <button type="button" class="btn btn-default" ng-click="search()"><span class="glyphicon glyphicon-search"></span></button>
         </div>
         <ul class="nav navbar-nav navbar-right">
-          <li class="dropdown">
+          <li class="dropdown" ng-if="user">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="badge"><span class="glyphicon glyphicon-inbox"></span>&nbsp;&nbsp;&nbsp;[[new_notifications]]&nbsp;&nbsp;&nbsp;<b class="caret"></b></span></a>
             <ul class="dropdown-menu">
               <li><a href="#"><span class="glyphicon glyphicon-envelope"></span> Franzi accepted your bet "I will win the chess tournament!"</a></li>
@@ -77,7 +77,8 @@
               <li><a href="#">danichicano started following you</a></li>
             </ul>
           </li>
-          <li><a href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></a></li>
+          <li ng-if="user"><a href="{% url "alpha-logout" %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></a></li>
+          <li ng-if="!user"><a href="{% url "alpha-login" %}">Login <span class="glyphicon glyphicon-log-in"></span></a></a></li>
         </ul>
       </div><!-- /.navbar-collapse -->
     </div>
@@ -101,4 +102,5 @@
 <script src="{{ STATIC_URL }}alpha/js/app.js"></script>
 <script src="{{ STATIC_URL }}alpha/js/services.js"></script>
 <script src="{{ STATIC_URL }}alpha/js/controllers.js"></script>
+<script src="{{ STATIC_URL }}alpha/js/directives.js"></script>
 {% endblock %}

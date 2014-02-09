@@ -16,32 +16,26 @@
 </div><!-- /.modal -->
 <div ng-show="loaded">
     <div class="row bet-row">
-        <div class="col-md-12 bet-type-[[bet.bet_type]]">
-            <div class="bet-image pull-left">
-                <img src="/static/alpha/img/[[bet.author.id]].jpg" width="50" alt="[[bet.author.username]]" class="img-circle">
-            </div>
-            <div class="bet-text pull-left">
-                <p><span class="bet-username"><a ui-sref="profile({userId:bet.author.id})">[[bet.author.username]]</a></span><time relative datetime="[[bet.created_at]]"></time></p>
-                <p><span class="bet-title"><a ui-sref="main.bet({betId:bet.id})">[[bet.title]]</a></span></p>
-                <span class="bet-closing">Closing <time relative datetime="[[bet.bidding_deadline]]"></time></span>
-            </div>
-            <div class="bet-actions pull-right">
-                <p><span class="bet-amount">For [[bet.amount]] coins</span></p>
-                <p ng-show="[[bet.bet_type==1]]"><span class="bet-amount-against">against [[bet.amount*bet.odds - bet.amount]] coins</span></p>
-            </div>
-            <div class="clearfix"></div>
-        </div>
+        <dy-bet-list-item bet="bet"></dy-bet-list-item>
     </div>
-    <div ng-show="bet.bet_state=='bidding'">
-        <h4 ng-show="bet.bet_type==1">This bet is in bidding state, it can be accepted until <time relative datetime="[[bet.bidding_deadline]]"></time></h4>
-        <h4 ng-show="bet.bet_type==2">This bet is in bidding state, bids can be posted until <time relative datetime="[[bet.bidding_deadline]]"></time></h4>
-        <div ng-show="bet.author.id!=user.id">
-            <div class="row" ng-show="bet.bet_type==1">
+    <h4 ng-if="bet.accepted_bid">Playing against</h4>
+    <table class="table table-striped" ng-if="bet.accepted_bid">
+        <tr>
+            <td><dy-user-pic user="bet.accepted_bid.author"></dy-user-pic> <dy-user-name user="bet.accepted_bid.author"></dy-user-name></td>
+            <td>[[bet.accepted_bid.title]]</td>
+            <td>for [[bet.accepted_bid.amount]] coins</td>
+        </tr>
+    </table>
+    <div ng-if="bet.bet_state=='bidding'">
+        <h4 ng-if="bet.bet_type==1">This bet is in bidding state, it can be accepted until <time relative datetime="[[bet.bidding_deadline]]"></time></h4>
+        <h4 ng-if="bet.bet_type==2">This bet is in bidding state, bids can be posted until <time relative datetime="[[bet.bidding_deadline]]"></time></h4>
+        <div ng-if="bet.author.id!=user.id">
+            <div class="row" ng-if="bet.bet_type==1">
                 <div class="col-md-12">
                     <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="acceptBet()">Accept</button>
                 </div>
             </div>
-            <div class="row" ng-show="bet.bet_type==2">
+            <div class="row" ng-if="bet.bet_type==2">
                 <div class="col-md-12">
                     <div class="row">
                         <label class="col-sm-2">Bid</label>
@@ -58,12 +52,12 @@
             </div>
         </div>
     </div>
-    <div class="row" ng-show="bet.bet_state=='event'">
+    <div class="row" ng-if="bet.bet_state=='event'">
         <h4>This bet is in event state, you'll be able to resolve it <time relative datetime="[[bet.event_deadline]]"></time></h4>
     </div>
-    <div class="row" ng-show="bet.bet_state=='resolving'">
-        <h4 ng-show="bet.author.id!=user.id">This bet is in resolving state, the author has 24 hours to resolve it.</h4>
-        <div ng-show="bet.author.id==user.id">
+    <div class="row" ng-if="bet.bet_state=='resolving'">
+        <h4 ng-if="bet.author.id!=user.id">This bet is in resolving state, the author has 24 hours to resolve it.</h4>
+        <div ng-if="bet.author.id==user.id">
             <h4>This bet is in resolving state, you have less than 24 hours to resolve it.</h4>
             <h3>Who has won this bet?</h3>
             <span class="col-md-4">
@@ -77,13 +71,13 @@
             </span>
         </div>
     </div>
-    <div class="row" ng-show="bet.bet_state=='complaining'">
-        <h3 ng-show="bet.claim==1">[[bet.author.username]] claims he won this bet!</h3>
-        <h3 ng-show="bet.claim==2">[[bet.author.username]] claims <span ng-show="user.id==bet.accepted_bid.author.id">you</span><span ng-show="user.id!=bet.accepted_bid.author.id">[[bet.accepted_bid.author.username]]</span> won this bet!</h3>
-        <h3 ng-show="bet.claim==3">[[bet.author.username]] claims that this bet is null (nobody won).</h3>
+    <div class="row" ng-if="bet.bet_state=='complaining'">
+        <h3 ng-if="bet.claim==1">[[bet.author.username]] claims he won this bet!</h3>
+        <h3 ng-if="bet.claim==2">[[bet.author.username]] claims <span ng-if="user.id==bet.accepted_bid.author.id">you</span><span ng-if="user.id!=bet.accepted_bid.author.id">[[bet.accepted_bid.author.username]]</span> won this bet!</h3>
+        <h3 ng-if="bet.claim==3">[[bet.author.username]] claims that this bet is null (nobody won).</h3>
         <p>[[bet.claim_message]]</p>
-        <h4 ng-show="bet.accepted_bid.author.id!=user.id">This bet is in complaining state, the opponent has 24 hours to complain.</h4>
-        <div ng-show="bet.accepted_bid.author.id==user.id">
+        <h4 ng-if="bet.accepted_bid.author.id!=user.id">This bet is in complaining state, the opponent has 24 hours to complain.</h4>
+        <div ng-if="bet.accepted_bid.author.id==user.id">
             <h4>This bet is in complaining state, you have up to 24 hours to complain.</h4>
             <h3>Who has won this bet?</h3>
             <span class="col-md-4">
@@ -97,18 +91,18 @@
             </span>
         </div>
     </div>
-    <div class="row" ng-show="bet.bet_state=='arbitrating'">
+    <div class="row" ng-if="bet.bet_state=='arbitrating'">
         <h4>This bet is under conflict!</h4>
-        <h3 ng-show="bet.claim==1">[[bet.author.username]] claims he won this bet!</h3>
-        <h3 ng-show="bet.claim==2">[[bet.author.username]] claims <span ng-show="user.id==bet.accepted_bid.author.id">you</span><span ng-show="user.id!=bet.accepted_bid.author.id">[[bet.accepted_bid.author.username]]</span> won this bet!</h3>
-        <h3 ng-show="bet.claim==3">[[bet.author.username]] claims that this bet is null (nobody won).</h3>
+        <h3 ng-if="bet.claim==1">[[bet.author.username]] claims he won this bet!</h3>
+        <h3 ng-if="bet.claim==2">[[bet.author.username]] claims <span ng-if="user.id==bet.accepted_bid.author.id">you</span><span ng-if="user.id!=bet.accepted_bid.author.id">[[bet.accepted_bid.author.username]]</span> won this bet!</h3>
+        <h3 ng-if="bet.claim==3">[[bet.author.username]] claims that this bet is null (nobody won).</h3>
         <p>[[bet.claim_message]]</p>
-        <h3 ng-show="bet.accepted_bid.claim==1">[[bet.accepted_bid.author.username]] claims <span ng-show="user.id==bet.author.id">you</span><span ng-show="user.id!=bet.author.id">[[bet.author.username]]</span> won this bet!</h3>
-        <h3 ng-show="bet.accepted_bid.claim==2">[[bet.accepted_bid.author.username]] claims he won this bet!</h3>
-        <h3 ng-show="bet.accepted_bid.claim==3">[[bet.accepted_bid.author.username]] claims that this bet is null (nobody won).</h3>
+        <h3 ng-if="bet.accepted_bid.claim==1">[[bet.accepted_bid.author.username]] claims <span ng-if="user.id==bet.author.id">you</span><span ng-if="user.id!=bet.author.id">[[bet.author.username]]</span> won this bet!</h3>
+        <h3 ng-if="bet.accepted_bid.claim==2">[[bet.accepted_bid.author.username]] claims he won this bet!</h3>
+        <h3 ng-if="bet.accepted_bid.claim==3">[[bet.accepted_bid.author.username]] claims that this bet is null (nobody won).</h3>
         <p>[[bet.accepted_bid.claim_message]]</p>
-        <div ng-show="bet.accepted_bid.author.id!=user.id && bet.author.id!=user.id">
-            <h4>Arbitrate this bet and you'll get [[bet.referee_escrow]] coins and 20 points!.</h4>
+        <div ng-if="bet.accepted_bid.author.id!=user.id && bet.author.id!=user.id">
+            <h4>Arbitrate this bet and you'll get [[bet.referee_escrow]] coins and some extra points!.</h4>
             <h3>Who has won this bet?</h3>
             <span class="col-md-4">
                 <button type="button" class="btn btn-primary btn-block" ng-click="arbitrateBet(1, '')">[[bet.author.username]]</button>
@@ -121,30 +115,39 @@
             </span>
         </div>
     </div>
-    <div class="row" ng-repeat="bid in bet.bids">
-        <div class="col-md-1">
-            <img src="/static/alpha/img/[[bid.author.id]].jpg" width="40" alt="[[bet.author.username]]" class="img-circle">
-        </div>
-        <div class="col-md-2">
-            <p>[[bid.author.username]]</p>
-        </div>
-        <div class="col-md-3">
-            <p>[[bid.title]]</p>
-        </div>
-        <div class="col-md-2">
-            <p>for [[bid.amount]] coins</p>
-        </div>
-        <div class="col-md-1">
-            <p ng-show="bid.id == bet.accepted_bid.id">ACCEPTED</p>
-        </div>
-        <div class="col-md-2">
-            <button id="[[bid.id]]" type="button" ng-show="user.id == bet.author.id && bet.bet_state=='bidding'" class="btn btn-primary btn-block" ng-click="acceptBid(bid.id)">Accept Bid</button>
-        </div>
-        <div class="col-md-1">
-            <button id="[[bid.id]]" type="button" ng-show="user.id == bet.author.id && bet.bet_state=='bidding'" class="close" aria-hidden="true" ng-click="removeBid(bid.id)">&times;</button>
+    <div class="row" ng-if="bet.bet_state=='closed'">
+        <div class="alert alert-info">This bet is closed. <dy-user-name user="bid.author" in-alert="true"></dy-user-name> won this bet.</div>
+        <h4>This bet is closed</h4>
+        <h3 ng-if="bet.claim==1">[[bet.author.username]] claims he won this bet!</h3>
+        <h3 ng-if="bet.claim==2">[[bet.author.username]] claims <span ng-if="user.id==bet.accepted_bid.author.id">you</span><span ng-if="user.id!=bet.accepted_bid.author.id">[[bet.accepted_bid.author.username]]</span> won this bet!</h3>
+        <h3 ng-if="bet.claim==3">[[bet.author.username]] claims that this bet is null (nobody won).</h3>
+        <p>[[bet.claim_message]]</p>
+        <h3 ng-if="bet.accepted_bid.claim==1">[[bet.accepted_bid.author.username]] claims <span ng-if="user.id==bet.author.id">you</span><span ng-if="user.id!=bet.author.id">[[bet.author.username]]</span> won this bet!</h3>
+        <h3 ng-if="bet.accepted_bid.claim==2">[[bet.accepted_bid.author.username]] claims he won this bet!</h3>
+        <h3 ng-if="bet.accepted_bid.claim==3">[[bet.accepted_bid.author.username]] claims that this bet is null (nobody won).</h3>
+        <p>[[bet.accepted_bid.claim_message]]</p>
+        <div ng-if="bet.accepted_bid.author.id!=user.id && bet.author.id!=user.id">
+            <h4>Arbitrate this bet and you'll get [[bet.referee_escrow]] coins and some extra points!.</h4>
+            <h3>Who has won this bet?</h3>
+            <span class="col-md-4">
+                <button type="button" class="btn btn-primary btn-block" ng-click="arbitrateBet(1, '')">[[bet.author.username]]</button>
+            </span>
+            <span class="col-md-4">
+                <button type="button" class="btn btn-primary btn-block" ng-click="arbitrateBet(3, '')">Nobody</button>
+            </span>
+            <span class="col-md-4">
+                <button type="button" class="btn btn-primary btn-block" ng-click="arbitrateBet(2, '')">[[bet.accepted_bid.author.username]]</button>
+            </span>
         </div>
     </div>
+    <table class="table table-striped" style="margin-top:30px;">
+        <tr ng-repeat="bid in bet.bids" ng-if="bid.id != bet.accepted_bid.id">
+            <td><dy-user-pic user="bid.author" size="micro"></dy-user-pic> <dy-user-name user="bid.author"></dy-user-name></td>
+            <td>[[bid.title]]</td>
+            <td>for [[bid.amount]] coins</td>
+            <td><span ng-if="bid.id == bet.accepted_bid.id" class="label label-success">ACCEPTED</span></td>
+            <td><button id="[[bid.id]]" type="button" ng-if="user.id == bet.author.id && bet.bet_state=='bidding'" class="btn btn-primary btn-block" ng-click="acceptBid(bid.id)">Accept Bid</button></td>
+            <td><button id="[[bid.id]]" type="button" ng-if="user.id == bet.author.id && bet.bet_state=='bidding'" class="close" aria-hidden="true" ng-click="removeBid(bid.id)">&times;</button></td>
+        </tr>
+    </table>
 </div>
-<pre>
-[[bet]]
-</pre>

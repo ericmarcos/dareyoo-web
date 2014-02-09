@@ -2,10 +2,8 @@
   <div class="col-md-4" ng-show="user">
     <div class="row">
       <div class="col-md-4">
-        <a ui-sref="profile({userId:user.id})" class="user-profile-link">
-        <img src="/static/alpha/img/[[user.id]].jpg" alt="[[user.username]]" width="50" class="img-circle profile-image">
-        <p>[[user.username]]<br><span class="view-profile">view my profile</span></p>
-        </a>
+        <div><dy-user-pic user="user" size="small"></dy-user-pic>
+        <dy-user-name user="user"></dy-user-name></div>
         <img width="30" src="http://mattersofgrey.com/forum/uploads/userpics/842/n2S7WEALLV3J8.png" alt="VIP">
         <img width="30" src="http://slackblog.files.wordpress.com/2010/04/adventurer.png%3Fw%3D64%26h%3D64" alt="TOP10">
         <img width="30" src="http://qph.is.quoracdn.net/main-thumb-t-9970-50-YpqlEa4uAhTwe63T3VriOBo2nPOEgONC.jpeg" alt="TOP10">

@@ -6,7 +6,8 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
-    url(r'^$', 'alpha.views.login', name='alpha-login'),
-    url(r'^app$', 'alpha.views.app', name='alpha-home'),
+urlpatterns = patterns('alpha.views',
+    url(r'^$', 'login_view', name='alpha-login'),
+    url(r'^logout$', 'logout_view', name='alpha-logout'),
+    url(r'^app$', 'app', name='alpha-home'),
 )

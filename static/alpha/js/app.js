@@ -8,7 +8,8 @@ var dareyooApp = angular.module('dareyoo', [
   'ui.bootstrap',
   'timeRelative',
   'dareyoo.services',
-  'dareyoo.controllers'
+  'dareyoo.controllers',
+  'dareyoo.directives'
 ]).
 config(['$interpolateProvider', function($interpolateProvider) {
   $interpolateProvider.startSymbol('[[');

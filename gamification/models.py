@@ -36,7 +36,7 @@ class UserPointsQuerySet(TimeRangeQuerySet, TagQuerySet):
     def sum(self):
         '''This method is useful when is used from a related user
         ie: user.points.week().sum() '''
-        return self.aggregate(total_points=Sum('points')).get('total_points', 0)
+        return self.aggregate(total_points=Sum('points')).get('total_points', 0) or 0
 
 
 class UserPointsManager(models.Manager):

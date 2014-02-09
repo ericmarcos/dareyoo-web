@@ -1,0 +1,17 @@
+<div class="col-md-12 bet-type-[[bet.bet_type]]" ng-click="betClick()">
+    <div class="bet-image pull-left">
+        <dy-user-pic user="bet.author"></dy-user-pic>
+    </div>
+    <div class="bet-text pull-left">
+        <p><dy-user-name user="bet.author"></dy-user-name> <time relative datetime="[[bet.created_at]]"></time></p>
+        <p><span class="bet-title"><a ui-sref="main.bet({betId:bet.id})">[[bet.title]]</a></span></p>
+        <span class="bet-closing">Closing <time relative datetime="[[bet.bidding_deadline]]"></time></span>
+    </div>
+    <div class="bet-actions pull-right">
+        <p><span class="bet-amount">For [[bet.amount]] coins</span></p>
+        <p ng-show="[[bet.bet_type==1]]"><span class="bet-amount-against">against [[bet.amount*bet.odds - bet.amount]] coins</span></p>
+        <!-- <button type="button" class="btn btn-primary" ng-show="bet.bet_type==1">Accept</button> -->
+        <!-- <button type="button" class="btn btn-primary" ng-show="bet.bet_type==2">Post Bid</button> -->
+    </div>
+    <div class="clearfix"></div>
+</div>

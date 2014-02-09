@@ -1,7 +1,8 @@
-<div class="row bet-row" ng-repeat="follower in followers">
-    <a href="#" ui-sref="profile.followers({userId:follower.id})">
-    	<div class="col-md-2"><img src="/static/alpha/img/[[follower.id]].jpg" alt="[[follower.username]]" width="40" class="img-circle"></div>
-    	<div class="col-md-4">[[follower.username]]</div>
-    	<div class="col-md-2"></div>
-    </a>
-</div>
+<h3 ng-if="profile_user.id==user.id">People following you</h3>
+<h3 ng-if="profile_user.id!=user.id">People following [[profile_user.username]]</h3>
+<table class="table table-striped" style="margin-top:30px;">
+    <tr ng-repeat="follower in followers">
+        <td><dy-user-pic user="follower" size="micro"></dy-user-pic></td>
+        <td><dy-user-name user="follower"></dy-user-name></td>
+    </tr>
+</table>
