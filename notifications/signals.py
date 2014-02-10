@@ -2,13 +2,17 @@ from django.conf import settings
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django_fsm.signals import pre_transition, post_transition
+from users.models import DareyooUser
+from users.signals import new_follower
 from bets.models import Bet
 from .models import *
 
-'''
-Listening to bet state changes to create notifications.
-TODO: listen to "follow" actions from users
-'''
+
+@receiver(new_follower, sender=DareyooUser)
+def user_follow_notification(sender, user, follower, **kwargs):
+    if settings.GENERATE_NOTIFICATIONS:
+        n = NotificationFactory.new_follower(user, follower)
+        n.save()
 
 
 @receiver(post_save, sender=Bet)

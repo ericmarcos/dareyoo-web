@@ -237,6 +237,19 @@ angular.module('dareyoo.controllers', []).
     $scope.getBet($stateParams.betId);
   }])
   .controller('NewBetCtrl', ['$scope', '$http', function($scope, $http) {
+    $scope.popover = function(element, text) {
+      $(element)
+          .popover({
+           content: text
+          })
+          .blur(function () {
+              $(this).popover('hide');
+          });
+    };
+
+    $scope.popover("input#title", "eg: Messi will score a hat-trick tonight.");
+    $scope.popover("textarea#description", "eg: If the game is cancelled I will declare this bet null");
+
     $scope.newBetFormData = { bet_type: 1,
                         amount: 10,
                         against: 10,

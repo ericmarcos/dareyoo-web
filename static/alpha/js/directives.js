@@ -39,4 +39,22 @@ angular.module('dareyoo.directives', [])
       },
       templateUrl: '/static/alpha/partials/directives/dy-user-name.html'
     };
+  })
+  .directive('dyBiddingDeadline', function() {
+    return {
+      restrict: 'E',
+      scope: {
+        limit: '='
+      },
+      templateUrl: '/static/alpha/partials/directives/dy-bidding-deadline.html'
+    };
+  })
+  .directive('dyEventDeadline', function() {
+    return {
+      restrict: 'E',
+      scope: {
+        limit: '='
+      },
+      templateUrl: '/static/alpha/partials/directives/dy-event-deadline.html'
+    };
   });

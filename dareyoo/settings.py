@@ -127,7 +127,7 @@ AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
 
 INITIAL_COINS = 10
 MAX_FREE_COINS = 10
-FREE_COINS_INTERVAL = 30 or 60*60*2.4 # In seconds. 1 coin every 2.4 hours are 10 coins every 24h
+FREE_COINS_INTERVAL = 60*60*2.4 # In seconds. 1 coin every 2.4 hours are 10 coins every 24h
 FREE_COINS_INTERVAL_AMOUNT = 1 # 1 coin in every interval
 MIN_FREE_REFILL_PERIOD = timedelta(days=7)
 FREE_REFILL_AMOUNT = 50
@@ -144,7 +144,7 @@ BROKER_URL = 'django://'
 RESOLVING_COUNTDOWN = 60*60*24
 COMPLAINING_COUNTDOWN = 60*60*24
 ARBITRATING_COUNTDOWN = 60*60*24
-AUTO_QUEUE_DEADLINES = True or bool(int(os.environ.get('AUTO_QUEUE_DEADLINES'))) #Set to False when testing to ignore celery (then calling tasks manually)
+AUTO_QUEUE_DEADLINES = bool(int(os.environ.get('AUTO_QUEUE_DEADLINES'))) #Set to False when testing to ignore celery (then calling tasks manually)
 GENERATE_NOTIFICATIONS = bool(int(os.environ.get('GENERATE_NOTIFICATIONS')))  #Set to False when testing to ignore notifications
 
 CELERYBEAT_SCHEDULE = {

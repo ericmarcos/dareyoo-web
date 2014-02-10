@@ -5,6 +5,7 @@ from django.db import models
 from django.conf import settings
 from django.db import IntegrityError, transaction
 from custom_user.models import AbstractEmailUser
+from .signals import new_follower
 
 class DareyooUserException(Exception):
     pass
@@ -43,6 +44,7 @@ class DareyooUser(AbstractEmailUser):
         try:
             with transaction.atomic():
                 self.following.add(user)
+                new_follower.send(sender=self.__class__, user=user, follower=self)
         except IntegrityError as ie:
             raise DareyooUserException("User %s is already following user %s." % (self.username, user.username))
 

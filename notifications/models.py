@@ -6,16 +6,16 @@ from bets.models import Bet
 class NotificationFactory:
 
     @staticmethod
-    def new_follower(recipient, user, *args, **kwargs):
+    def new_follower(recipient, follower):
         n = Notification()
         n.recipient = recipient
         n.notification_type = Notification.TYPE_NEW_FOLLOWER
-        n.subject = "%s started following you." % user
-        n.user = user
+        n.subject = "%s started following you." % follower
+        n.user = follower
         return n
 
     @staticmethod
-    def bet_received(recipient, bet, *args, **kwargs):
+    def bet_received(recipient, bet):
         n = Notification()
         n.recipient = recipient
         n.notification_type = Notification.TYPE_BET_RECEIVED
@@ -68,13 +68,13 @@ class NotificationFactory:
             n.recipient = bet.accepted_bid.author
             if bet.claim == Bet.CLAIM_WON:
                 n.notification_type = Notification.TYPE_BET_RESOLVING_FINISHED_AUTHOR_WON
-                n.subject = "Ouch! You lost %s's bet \"%s\". You have 24h to complain." % (bet.author.username, bet.title)
+                n.subject = "%s claims you lost his bet \"%s\". You have 24h to complain." % (bet.author.username, bet.title)
             elif bet.claim == Bet.CLAIM_LOST:
                 n.notification_type = Notification.TYPE_BET_RESOLVING_FINISHED_AUTHOR_LOST
-                n.subject = "Yay! You won %s's bet \"%s\". If you want, you have 24h to complain." % (bet.author.username, bet.title)
+                n.subject = "%s says you won his bet \"%s\". If you want, you have 24h to complain." % (bet.author.username, bet.title)
             elif bet.claim == Bet.CLAIM_NULL:
                 n.notification_type = Notification.TYPE_BET_RESOLVING_FINISHED_NULL
-                n.subject = "%s's bet \"%s\" was declared null. You have 24h to complain." % (bet.author.username, bet.title)
+                n.subject = "%s claims his bet \"%s\" is null. You have 24h to complain." % (bet.author.username, bet.title)
             if bet.claim_message:
                 n.subject = bet.claim_message
         elif bet.is_lottery():
@@ -82,7 +82,7 @@ class NotificationFactory:
             if bet.claim == Bet.CLAIM_NULL:
                 n.notification_type = Notification.TYPE_BET_RESOLVING_FINISHED_NULL
                 n.subject = "%s's lottery \"%s\" was declared null. You have 24h to complain." % (bet.author.username, bet.title)
-            elif recipient in [bet.claim_lottery_winner.participants.all()]:
+            elif recipient in bet.claim_lottery_winner.participants.all():
                 n.notification_type = Notification.TYPE_BET_RESOLVING_FINISHED_AUTHOR_LOST
                 n.subject = "Yay! You won %s's lottery \"%s\"." % (bet.author.username, bet.title)
             else:
@@ -94,7 +94,7 @@ class NotificationFactory:
     @staticmethod
     def bet_complaining_finished(bet, recipient=None):
         n = Notification()
-        n.notification_type = Notification.TYPE_BET_COMPLAINING_FINISHED_CONFLICT
+        n.notification_type = Notification.TYPE_BET_COMPLAINING_FINISHED
         n.recipient = recipient
         if bet.author == recipient:
             n.subject = "Your bet \"%s\" was closed without complains." % bet.title
@@ -105,6 +105,22 @@ class NotificationFactory:
 
     @staticmethod
     def bet_complaining_finished_conflict(bet, recipient=None):
+        '''
+        Assuming there's a complain
+        '''
+        n = Notification()
+        n.notification_type = Notification.TYPE_BET_COMPLAINING_FINISHED_CONFLICT
+        if bet.is_simple() or bet.is_auction():
+            n.recipient = bet.author
+            n.subject = "%s complained your resolution on \"%s\". Another user will arbitrate this conflict." % (bet.accepted_bid.author, bet.title)
+        elif bet.is_lottery():
+            n.recipient = recipient
+            n.subject = "%s's lottery \"%s\" is under conflict and it will be arbitrated by another user." % (bet.author, bet.title)
+        n.bet = bet
+        return n
+
+    @staticmethod
+    def bet_arbitrated(bet, recipient=None):
         '''
         Assuming there's a complain
         '''

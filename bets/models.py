@@ -181,7 +181,7 @@ class Bet(models.Model):
             else:
                 return user == self.author
         elif self.is_lottery():
-            return user.id in [u.id for b in [self.bids.all()] for u in [[b.participants.all()]]]
+            return user.id in [u.id for b in self.bids.all() for u in b.participants.all()]
 
     def pot(self):
         '''

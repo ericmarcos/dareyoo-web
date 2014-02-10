@@ -1,17 +1,22 @@
-<div class="col-md-12 bet-type-[[bet.bet_type]]" ng-click="betClick()">
-    <div class="bet-image pull-left">
-        <dy-user-pic user="bet.author"></dy-user-pic>
+<div class="col-md-12">
+    <div class="pull-left text-center" style="height:100%; width:100px; padding-top:10px">
+        <div style="margin-bottom:8px"><dy-user-pic user="bet.author"></dy-user-pic></div>
+        <dy-user-name user="bet.author"></dy-user-name>
     </div>
     <div class="bet-text pull-left">
-        <p><dy-user-name user="bet.author"></dy-user-name> <time relative datetime="[[bet.created_at]]"></time></p>
+        <p>
+            <span ng-if="bet.bet_type==1"><strong>Basic</strong></span>
+            <span ng-if="bet.bet_type==2"><strong>Auction</strong></span>
+            <span ng-if="bet.bet_type==3"><strong>Lottery</strong></span>
+            <!-- <time relative datetime="[[bet.created_at]]"></time> -->
+        </p>
         <p><span class="bet-title"><a ui-sref="main.bet({betId:bet.id})">[[bet.title]]</a></span></p>
-        <span class="bet-closing">Closing <time relative datetime="[[bet.bidding_deadline]]"></time></span>
-    </div>
-    <div class="bet-actions pull-right">
-        <p><span class="bet-amount">For [[bet.amount]] coins</span></p>
-        <p ng-show="[[bet.bet_type==1]]"><span class="bet-amount-against">against [[bet.amount*bet.odds - bet.amount]] coins</span></p>
-        <!-- <button type="button" class="btn btn-primary" ng-show="bet.bet_type==1">Accept</button> -->
-        <!-- <button type="button" class="btn btn-primary" ng-show="bet.bet_type==2">Post Bid</button> -->
+        <p ng-if="bet.bet_type==1">For [[bet.amount]] coins against [[bet.amount*bet.odds - bet.amount]]</p>
+        <p ng-if="bet.bet_type!=1">For [[bet.amount]] coins</p>
+        <span class="bet-closing">
+            <dy-bidding-deadline limit="bet.bidding_deadline"></dy-bidding-deadline>
+            <dy-event-deadline limit="bet.event_deadline" style="margin-left:20px;"></dy-event-deadline>
+        </span>
     </div>
     <div class="clearfix"></div>
 </div>
