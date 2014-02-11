@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = '#l)5==o7sfqc0oib4bz++nx02)taxpgc#pw+l8m3*26^wryk!*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(int(os.environ.get('DEBUG', True)))
+DEBUG = bool(int(os.environ.get('DEBUG', 1)))
 
 TEMPLATE_DEBUG = DEBUG
 
@@ -144,8 +144,8 @@ BROKER_URL = 'django://'
 RESOLVING_COUNTDOWN = 60*60*24
 COMPLAINING_COUNTDOWN = 60*60*24
 ARBITRATING_COUNTDOWN = 60*60*24
-AUTO_QUEUE_DEADLINES = bool(int(os.environ.get('AUTO_QUEUE_DEADLINES'))) #Set to False when testing to ignore celery (then calling tasks manually)
-GENERATE_NOTIFICATIONS = bool(int(os.environ.get('GENERATE_NOTIFICATIONS')))  #Set to False when testing to ignore notifications
+AUTO_QUEUE_DEADLINES = bool(int(os.environ.get('AUTO_QUEUE_DEADLINES', 1))) #Set to False when testing to ignore celery (then calling tasks manually)
+GENERATE_NOTIFICATIONS = bool(int(os.environ.get('GENERATE_NOTIFICATIONS', 1)))  #Set to False when testing to ignore notifications
 
 CELERYBEAT_SCHEDULE = {
     'add-free-coins': {
