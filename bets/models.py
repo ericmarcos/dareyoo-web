@@ -5,10 +5,15 @@ from django.utils import timezone
 from django.db import models
 from django.conf import settings
 from django_fsm.db.fields import FSMField, transition
+from rest_framework.exceptions import APIException
 
 
-class BetException(Exception):
-    pass
+class BetException(APIException):
+    status_code = 400
+
+    @property
+    def detail(self):
+        return str(self)
 
 class BetFactory:
 
@@ -212,7 +217,7 @@ class Bet(models.Model):
                 elif claim == Bet.CLAIM_WON:
                     return (self.author,)
                 else:
-                    return (self.accepted_bid.author,)
+                    return (self.accepted_bid.author,) if self.accepted_bid else None
 
     def losers(self):
         if self.is_closed():

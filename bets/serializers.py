@@ -17,6 +17,7 @@ class BetSerializer(serializers.HyperlinkedModelSerializer):
     #type = serializers.Field(source='get_type_name')
     bids = BidSerializer(many=True, read_only=True)
     accepted_bid = BidSerializer(read_only=True)
+    winners = DareyooUserShortSerializer(read_only=True, source="winners", many=True)
 
     def __init__(self, *args, **kwargs):
         super(BetSerializer, self).__init__(*args, **kwargs)
@@ -33,7 +34,7 @@ class BetSerializer(serializers.HyperlinkedModelSerializer):
         model = Bet
         fields = ('author', 'title','description','amount','referee_escrow','bet_type','bet_state','odds','created_at',
                     'id', 'bidding_deadline','event_deadline','public','recipients','claim','claim_lottery_winner','claim_message',
-                    'referee','referee_claim','referee_lottery_winner','url', 'bids', 'accepted_bid')
+                    'referee','referee_claim','referee_lottery_winner','url', 'bids', 'accepted_bid', 'winners')
 
     def restore_object(self, attrs, instance=None):
         """

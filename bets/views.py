@@ -20,10 +20,6 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
         return request.method in permissions.SAFE_METHODS or obj.author == request.user
 
 
-def bets_filter(queryset, filters):
-    pass
-
-
 class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     API endpoint that allows bets to be viewed or created, not modified or destroyed.

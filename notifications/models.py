@@ -10,7 +10,7 @@ class NotificationFactory:
         n = Notification()
         n.recipient = recipient
         n.notification_type = Notification.TYPE_NEW_FOLLOWER
-        n.subject = "%s started following you." % follower
+        n.subject = "%s started following you." % follower.username
         n.user = follower
         return n
 
@@ -28,7 +28,7 @@ class NotificationFactory:
         n = Notification()
         n.recipient = bet.author
         n.notification_type = Notification.TYPE_BET_ACCEPTED
-        n.subject = "%s accepted your bet \"%s\"" % (bet.accepted_bid.author, bet.title)
+        n.subject = "%s accepted your bet \"%s\"" % (bet.accepted_bid.author.username, bet.title)
         n.bet = bet
         n.user = bet.accepted_bid.author
         return n
@@ -38,7 +38,7 @@ class NotificationFactory:
         n = Notification()
         n.recipient = bid.bet.author
         n.notification_type = Notification.TYPE_BID_POSTED
-        n.subject = "%s posted a bid on your bet \"%s\"" % (bid.author, bid.bet.title)
+        n.subject = "%s posted a bid on your bet \"%s\"" % (bid.author.username, bid.bet.title)
         n.bet = bid.bet
         n.user = bid.author
         return n
@@ -112,10 +112,10 @@ class NotificationFactory:
         n.notification_type = Notification.TYPE_BET_COMPLAINING_FINISHED_CONFLICT
         if bet.is_simple() or bet.is_auction():
             n.recipient = bet.author
-            n.subject = "%s complained your resolution on \"%s\". Another user will arbitrate this conflict." % (bet.accepted_bid.author, bet.title)
+            n.subject = "%s complained your resolution on \"%s\". Another user will arbitrate this conflict." % (bet.accepted_bid.author.username, bet.title)
         elif bet.is_lottery():
             n.recipient = recipient
-            n.subject = "%s's lottery \"%s\" is under conflict and it will be arbitrated by another user." % (bet.author, bet.title)
+            n.subject = "%s's lottery \"%s\" is under conflict and it will be arbitrated by another user." % (bet.author.username, bet.title)
         n.bet = bet
         return n
 
@@ -128,10 +128,10 @@ class NotificationFactory:
         n.notification_type = Notification.TYPE_BET_COMPLAINING_FINISHED_CONFLICT
         if bet.is_simple() or bet.is_auction():
             n.recipient = bet.author
-            n.subject = "%s complained your resolution on \"%s\". Another user will arbitrate this conflict." % (bet.accepted_bid.author, bet.title)
+            n.subject = "%s complained your resolution on \"%s\". Another user will arbitrate this conflict." % (bet.accepted_bid.author.username, bet.title)
         elif bet.is_lottery():
             n.recipient = recipient
-            n.subject = "%s's lottery \"%s\" is under conflict and it will be arbitrated by another user." % (bet.author, bet.title)
+            n.subject = "%s's lottery \"%s\" is under conflict and it will be arbitrated by another user." % (bet.author.username, bet.title)
         n.bet = bet
         return n
 

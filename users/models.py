@@ -5,10 +5,15 @@ from django.db import models
 from django.conf import settings
 from django.db import IntegrityError, transaction
 from custom_user.models import AbstractEmailUser
+from rest_framework.exceptions import APIException
 from .signals import new_follower
 
-class DareyooUserException(Exception):
-    pass
+class DareyooUserException(APIException):
+    status_code = 400
+
+    @property
+    def detail(self):
+        return str(self)
 
 REFILL_TYPE_CHOICES = (
     ("free", "Free"),

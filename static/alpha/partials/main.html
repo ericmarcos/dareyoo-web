@@ -15,14 +15,16 @@
         <div class="coins-locked">([[user.coins_locked]] COINS LOCKED)</div>
         <div class=""><button type="button" class="btn btn-xs btn-primary">Get more coins</button></div>
         <div class="points">
-          <span class="num-points">[[user.week_total_points]]</span><br><span class="text-points">POINTS THIS WEEK (ranks #[[user.week_total_position]])</span>
+          <span class="num-points">[[user.week_total_points]]</span><br>
+          <span class="text-points">POINTS THIS WEEK</span><br/>
+          <span ng-if="user.week_total_points > 0" class="text-points">(ranks #[[user.week_total_position]])</span>
         </div>
       </div>
     </div>
     <div class="row sidebar-nav">
       <div class="col-md-12">
         <ul class="nav nav-pills nav-stacked">
-          <li ng-class="{ active: $state.includes('main.new-bet') || $state.includes('main.new-bet-simple') || $state.includes('main.new-bet-auction') }"><a ui-sref="main.new-bet">
+          <li ng-class="{ active: newBetView() }"><a ui-sref="main.new-bet">
             <span class="glyphicon glyphicon-plus"></span> Create new bet
           </a></li>
           <li ng-class="{ active: $state.includes('main.timeline-global') }"><a ui-sref="main.timeline-global">
@@ -41,7 +43,7 @@
       </div>
     </div>
   </div>
-  <div ng-class="{'col-md-8': true, 'col-md-offset-2': !user}">
+  <div ng-class="{'col-md-8': !newBetView(), 'col-md-6': newBetView(), 'col-md-offset-2': !user}">
     <div ui-view></div>
   </div>
 </div>

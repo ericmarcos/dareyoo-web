@@ -99,7 +99,7 @@ config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRou
           controller: 'RankingCtrl'
         })
 }]).
-run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', function run($http, $cookies, $rootScope, $state, $stateParams) {
+run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', function run($http, $cookies, $rootScope, $state, $stateParams, $timeout) {
     // For CSRF token compatibility with Django
     $http.defaults.headers.post['X-CSRFToken'] = $cookies['csrftoken'];
 
@@ -114,10 +114,47 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', function run($
     $rootScope.notifications = [];
     $rootScope.q = {'query': ""};
 
-    $http.get("/api/v1/me/").success(function(response) {
-        $rootScope.user = response;
-        $rootScope.new_notifications = 3;
-        $rootScope.notifications = [1, 2, 3];
-    });
+    $rootScope.getMe = function() {
+      $http.get("/api/v1/me/").success(function(response) {
+          $rootScope.user = response;
+      });
+      $timeout($rootScope.getMe, 5000);
+    };
+
+    $rootScope.getNotifications = function() {
+      $http.get("/api/v1/notifications/").success(function(response) {
+        var not = [];
+        if(response.results) not = response.results;
+        else not = response;
+        if(not.length > 0) {
+          $rootScope.notifications = not;
+          $rootScope.new_notifications = not.filter(function(elem) {return elem && elem.is_new;}).length;
+        }
+      });
+      $timeout($rootScope.getNotifications, 5000);
+    };
+
+    $rootScope.notificationsClick = function() {
+      $rootScope.new_notifications = 0;
+      for (var i = $rootScope.notifications.length - 1; i >= 0; i--)
+        $rootScope.notificationViewed($rootScope.notifications[i]);
+    };
+
+    $rootScope.notificationViewed = function(note) {
+      if(note.is_new) {
+        note.is_new = false;
+        $http.post('/api/v1/notifications/' + note.id + '/mark_as_viewed/');
+      }
+    };
+
+    $rootScope.notificationClick = function(note) {
+      if(!note.readed) {
+        note.readed = true;
+        $http.post('/api/v1/notifications/' + note.id + '/mark_as_readed/');
+      }
+    }
+
+    $rootScope.getMe();
+    $rootScope.getNotifications();
 }]).
 constant('moment', moment);

@@ -12,6 +12,7 @@
     .container {
       max-width: 1000px;
     }
+    .new-bet-tips{width:300px;max-width:300px;}
     .bet-list { border: 1px solid black; }
     .bet-row { border-bottom: 1px solid #CCC; margin: 2px; padding:5px; }
     .bet-image { padding: 10px; }
@@ -28,6 +29,10 @@
     .num-points { font-size: 4em; }
     .text-points { color: #999; padding-top: 10px; }
     .sidebar-nav { margin-top: 20px; }
+    .new_notifications_num { padding: 5px; text-align: center; }
+    /*.dropdown-menu>li.unread>a{ background-color: #EEBBFF; }
+    .dropdown-menu>li.unread>a:hover{ background-color: #DD99FF; }
+    .dropdown-menu>li>a:hover{ background-color: #DDDDDD; }*/
     </style>
 {% endblock %}
 
@@ -63,15 +68,12 @@
         </div>
         <ul class="nav navbar-nav navbar-right">
           <li class="dropdown" ng-if="user">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="badge"><span class="glyphicon glyphicon-inbox"></span>&nbsp;&nbsp;&nbsp;[[new_notifications]]&nbsp;&nbsp;&nbsp;<b class="caret"></b></span></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" ng-click="notificationsClick()"><span class="badge"><span class="glyphicon glyphicon-inbox"></span><span class="new_notifications_num">[[new_notifications > 0? new_notifications : ""]]</span><b class="caret"></b></span></a>
             <ul class="dropdown-menu">
-              <li><a href="#"><span class="glyphicon glyphicon-envelope"></span> Franzi accepted your bet "I will win the chess tournament!"</a></li>
-              <li class="divider"></li>
-              <li><a href="#"><span class="glyphicon glyphicon-envelope"></span> Your bet "Blah blah blah" is available for resolving</a></li>
-              <li class="divider"></li>
-              <li><a href="#"><span class="glyphicon glyphicon-envelope"></span> Congratulations! You won danichicano's bet "Porra Barça - Madrid"</a></li>
-              <li class="divider"></li>
-              <li><a href="#">danichicano started following you</a></li>
+              <li ng-repeat="note in notifications" ng-class="{'unread': !note.readed}">
+                <a ng-if="note.bet" href="#" ui-sref="main.bet({betId:note.bet})" ng-click="notificationClick(note)"><span ng-if="!note.readed" class="glyphicon glyphicon-envelope"></span> [[note.subject]]</a>
+                <a ng-if="!note.bet" href="#" ui-sref="profile.bets({userId:note.user})" ng-click="notificationClick(note)"><span ng-if="!note.readed" class="glyphicon glyphicon-envelope"></span> [[note.subject]]</a>
+              </li>
             </ul>
           </li>
           <li ng-if="user"><a href="{% url "alpha-logout" %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></a></li>
