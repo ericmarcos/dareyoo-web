@@ -18,7 +18,7 @@ class TimeRangeQuerySet(QuerySet):
         return self.filter(created_at__range=(monday, sunday))
 
     def month(self, prev_months=0):
-        first = timezone.now().replace(day=0, hour=0, minute=0, second=0, microsecond=0)
+        first = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         first = first + timedelta(month=-prev_months)
         last = first + timedelta(months=1)
         return self.filter(created_at__range=(first, last))
