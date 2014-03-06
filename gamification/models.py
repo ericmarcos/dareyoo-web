@@ -1,6 +1,7 @@
 import math
 import warnings
 from datetime import timedelta
+from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 from django.db import models
 from django.db.models.query import QuerySet
@@ -19,8 +20,8 @@ class TimeRangeQuerySet(QuerySet):
 
     def month(self, prev_months=0):
         first = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        first = first + timedelta(months=-prev_months)
-        last = first + timedelta(months=1)
+        first = first + relativedelta(months=-prev_months)
+        last = first + relativedelta(months=1)
         return self.filter(created_at__range=(first, last))
 
 
