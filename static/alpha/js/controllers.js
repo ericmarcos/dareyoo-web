@@ -202,8 +202,8 @@ angular.module('dareyoo.controllers', []).
         $scope.getBet($stateParams.betId);
       }).error($scope.betAPIError);
     };
-    $scope.postBid = function() {
-      $http.post("/api/v1/bets/" + $scope.bet.id + "/bids/", {title: $scope.bidTitle, amount: $scope.bidAmount}).success(function(response) {
+    $scope.postBid = function(title, amount) {
+      $http.post("/api/v1/bets/" + $scope.bet.id + "/bids/", {title: title, amount: amount}).success(function(response) {
         $scope.getBet($stateParams.betId);
       }).error($scope.betAPIError);
     };

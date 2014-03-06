@@ -139,6 +139,12 @@ class Bet(models.Model):
             raise BetException("Can't create a bet in the past")
         if self.bidding_deadline > self.event_deadline - datetime.timedelta(minutes=10):
             raise BetException("The event deadline must be later than the bidding deadline plus 10 minutes")
+        if self.amount <= 0:
+            raise BetException("The amount must be at least 1")
+        if int(self.amount) != self.amount:
+            raise BetException("The amount must be an integer value")
+        if self.odds <= 1 and self.is_simple():
+            raise BetException("The odds must be greater than 1")
 
     def is_simple(self):
         return self.bet_type == Bet.TYPE_SIMPLE
@@ -187,6 +193,15 @@ class Bet(models.Model):
                 return user == self.author
         elif self.is_lottery():
             return user.id in [u.id for b in self.bids.all() for u in b.participants.all()]
+
+    def participants(self):
+        if self.is_simple() or self.is_auction():
+            if self.accepted_bid:
+                return set([self.author, self.accepted_bid.author])
+            else:
+                return set([self.author])
+        elif self.is_lottery():
+            return set(u.id for b in self.bids.all() for u in b.participants.all())
 
     def pot(self):
         '''
@@ -265,6 +280,7 @@ class Bet(models.Model):
                 bid.amount = self.pot() - self.amount
             elif self.is_lottery():
                 bid.amount = self.amount
+            bid.check_valid()
             bid.save()
             if self.is_simple():
                 self.accept_bid(bid.id)
@@ -453,27 +469,15 @@ class Bet(models.Model):
 
     @transition(field=bet_state, source='bidding', target='closed', save=True)
     def closed_desert(self):
-        '''
-        -Tornar calers
-        '''
         self.author.unlock_funds(self.amount + self.referee_escrow)
         self.author.save()
 
     @transition(field=bet_state, source='complaining', target='closed', save=True)
     def closed_ok(self):
-        '''
-        -Tornar calers
-        -Sumar punts
-        '''
         self.close()
 
     @transition(field=bet_state, source='arbitrating', target='closed', save=True)
     def closed_conflict(self):
-        '''
-        -Tornar calers
-        -Sumar punts
-        -Gestionar arbitratge
-        '''
         self.close(arbitrating=True)
 
     def __unicode__(self):
@@ -491,6 +495,12 @@ class Bid(models.Model):
     claim_author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='lottery_claimer', blank=True, null=True)
     points = models.PositiveIntegerField(blank=True, null=True, default=0)
     participants = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, null=True)
+
+    def check_valid(self):
+        if self.amount <= 0:
+            raise BetException("The amount must be at least 1")
+        if int(self.amount) != self.amount:
+            raise BetException("The amount must be an integer value")
 
     def set_author(self, author):
         self.author = author

@@ -69,8 +69,6 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
                 bid = serializer.object
                 try:
                     bet.add_bid(bid, user)
-                    if bet.is_simple():
-                        bet.accept_bid(bid.id)
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 except (BetException, DareyooUserException) as e:
                     return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
