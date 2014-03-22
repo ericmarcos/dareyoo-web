@@ -25,7 +25,7 @@ class IsRecipientReadOnly(permissions.BasePermission):
         return request.method in permissions.SAFE_METHODS and obj.recipient == request.user
 
 
-class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
+class NotificationViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     API endpoint that allows notifications to be viewed.
     """
@@ -36,7 +36,7 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         if self.request.user.is_authenticated():
             user = self.request.user
-            return Notification.objects.filter(recipient=user).order_by('date')
+            return Notification.objects.filter(Q(is_new=True) | Q(readed=False), recipient=user).order_by('date')
         else:
             return []
 

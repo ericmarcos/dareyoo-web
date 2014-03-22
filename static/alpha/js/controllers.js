@@ -139,9 +139,9 @@ angular.module('dareyoo.controllers', []).
         });
       }
     };
-    $rootScope.$watch('user', function() {
+    /*$rootScope.$watch('user', function() {
       $scope.loadUser();
-    });
+    });*/
     $scope.$on('follow_unfollow', function(e) {  
       $scope.loadUser();
     });
@@ -202,8 +202,8 @@ angular.module('dareyoo.controllers', []).
         $scope.getBet($stateParams.betId);
       }).error($scope.betAPIError);
     };
-    $scope.postBid = function() {
-      $http.post("/api/v1/bets/" + $scope.bet.id + "/bids/", {title: $scope.bidTitle, amount: $scope.bidAmount}).success(function(response) {
+    $scope.postBid = function(title, amount) {
+      $http.post("/api/v1/bets/" + $scope.bet.id + "/bids/", {title: title, amount: amount}).success(function(response) {
         $scope.getBet($stateParams.betId);
       }).error($scope.betAPIError);
     };
@@ -238,10 +238,20 @@ angular.module('dareyoo.controllers', []).
   }])
   .controller('NewBetCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.popover = function(element, text) {
+      var showPopover = function () {
+          $(element).popover('show');
+      }
+      , hidePopover = function () {
+          $(element).popover('hide');
+      };
       $(element)
           .popover({
-           content: text
+           content: text,
+           html: true,
+           trigger: 'manual',
+           template: '<div class="popover new-bet-tips"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content">Jajajajaj<p></p></div></div></div>',
           })
+          .focus(showPopover)
           .blur(function () {
               $(this).popover('hide');
           });
@@ -316,13 +326,17 @@ angular.module('dareyoo.controllers', []).
         //$scope.loaded = true;
       })
       .error(function(response, status, headers, config) {
-        $('#new-bet-fail-message').text(response);
+        $('#new-bet-fail-message').text(JSON.stringify(response));
         $('#new-bet-fail-modal').modal('show');
       });
     };
   }])
   .controller('MainCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.n_open_bets = 0;
+    $scope.newBetView = function() {
+      return $scope.$state.includes('main.new-bet') || $scope.$state.includes('main.new-bet-simple') ||
+      $scope.$state.includes('main.new-bet-auction') || $scope.$state.includes('main.new-bet-lottery');
+    }
     $scope.getNOpenBets = function(order) {
       $scope.order_by = order || $scope.order_by;
       $http.get("/api/v1/open-bets/").success(function(response) {
@@ -330,5 +344,6 @@ angular.module('dareyoo.controllers', []).
         else $scope.n_open_bets = response.length;
       });
     };
+    
     $scope.getNOpenBets();
   }]);

@@ -14,8 +14,8 @@
         <p ng-if="bet.bet_type==1">For [[bet.amount]] coins against [[bet.amount*bet.odds - bet.amount]]</p>
         <p ng-if="bet.bet_type!=1">For [[bet.amount]] coins</p>
         <span class="bet-closing">
-            <dy-bidding-deadline limit="bet.bidding_deadline"></dy-bidding-deadline>
-            <dy-event-deadline limit="bet.event_deadline" style="margin-left:20px;"></dy-event-deadline>
+            <dy-bidding-deadline ng-if="bet.bet_state=='bidding'" style="margin-right:20px;" limit="bet.bidding_deadline"></dy-bidding-deadline>
+            <dy-event-deadline ng-if="bet.bet_state=='bidding' || bet.bet_state=='event'" limit="bet.event_deadline"></dy-event-deadline>
         </span>
     </div>
     <div class="clearfix"></div>

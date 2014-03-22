@@ -1,14 +1,28 @@
 import re
+import hashlib
+
+try:
+    from urllib.parse import urljoin, urlencode
+except ImportError:
+    from urlparse import urljoin
+    from urllib import urlencode
+
 from django.utils.translation import ugettext_lazy as _
 from django.core import validators
 from django.db import models
 from django.conf import settings
 from django.db import IntegrityError, transaction
 from custom_user.models import AbstractEmailUser
+from avatar.util import get_primary_avatar, force_bytes
+from rest_framework.exceptions import APIException
 from .signals import new_follower
 
-class DareyooUserException(Exception):
-    pass
+class DareyooUserException(APIException):
+    status_code = 400
+
+    @property
+    def detail(self):
+        return str(self)
 
 REFILL_TYPE_CHOICES = (
     ("free", "Free"),
@@ -88,6 +102,23 @@ class DareyooUser(AbstractEmailUser):
                 self.coins_available -= amount
             else:
                 raise DareyooUserException("Not enough funds!")
+
+    def avatar(self, size=settings.AVATAR_DEFAULT_SIZE):
+        avatar = get_primary_avatar(self, size=size)
+        if avatar:
+            return avatar.avatar_url(size)
+
+        if self.facebook_uid:
+            return "http://graph.facebook.com/%s/picture" % self.facebook_uid
+        
+        default_avatar = urljoin(settings.STATIC_URL, "alpha/img/profile_%s.png" % (self.id or 1 % 10))
+
+        if settings.AVATAR_GRAVATAR_BACKUP:
+            params = {'s': str(size), 'd': default_avatar}
+            path = "%s/?%s" % (hashlib.md5(force_bytes(self.email)).hexdigest(), urlencode(params))
+            return urljoin(settings.AVATAR_GRAVATAR_BASE_URL, path)
+
+        return default_avatar
 
     def __unicode__(self):
         return "%s - %s" % (self.email, self.username)

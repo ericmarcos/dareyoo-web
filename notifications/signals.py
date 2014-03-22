@@ -1,10 +1,10 @@
 from django.conf import settings
 from django.dispatch import receiver
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_delete
 from django_fsm.signals import pre_transition, post_transition
 from users.models import DareyooUser
 from users.signals import new_follower
-from bets.models import Bet
+from bets.models import Bet, Bid
 from .models import *
 
 
@@ -22,6 +22,20 @@ def bet_recipients_notifications(sender, **kwargs):
         for r in bet.recipients.all():
             n = NotificationFactory.bet_received(r, bet)
             n.save()
+
+@receiver(post_save, sender=Bid)
+def bid_posted_notification(sender, **kwargs):
+    if kwargs.get('created', False) and settings.GENERATE_NOTIFICATIONS:
+        bid = kwargs.get('instance')
+        n = NotificationFactory.bid_posted(bid)
+        n.save()
+
+@receiver(pre_delete, sender=Bid)
+def bid_deleted_notification(sender, **kwargs):
+    if kwargs.get('created', False) and settings.GENERATE_NOTIFICATIONS:
+        bid = kwargs.get('instance')
+        n = NotificationFactory.bid_deleted(bid)
+        n.save()
 
 @receiver(post_transition, sender=Bet)
 def bet_change_state_notifications(sender, **kwargs):
@@ -52,10 +66,28 @@ def bet_change_state_notifications(sender, **kwargs):
                         n.save()
 
         if transition == 'arbitrating':
-            pass
+            if bet.is_simple() or bet.is_auction():
+                n = NotificationFactory.bet_complaining_finished_conflict(bet)
+                n.save()
+            elif bet.is_lottery():
+                for p in bet.participants():
+                    n = NotificationFactory.bet_complaining_finished_conflict(bet, p)
+                    n.save()
 
         if transition == 'closed_ok':
-            pass
+            for p in bet.participants():
+                n = NotificationFactory.bet_complaining_finished(bet, p)
+                n.save()
+
+        if transition == 'closed_conflict':
+            if bet.is_simple() or bet.is_auction():
+                n = NotificationFactory.bet_arbitrated(bet, bet.author)
+                n.save()
+                n = NotificationFactory.bet_arbitrated(bet, bet.accepted_bid.author)
+                n.save()
+            elif bet.is_lottery():
+                # TODO
+                pass
 
         if transition == 'closed_desert':
             pass

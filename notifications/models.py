@@ -10,7 +10,7 @@ class NotificationFactory:
         n = Notification()
         n.recipient = recipient
         n.notification_type = Notification.TYPE_NEW_FOLLOWER
-        n.subject = "%s started following you." % follower
+        n.subject = "%s started following you." % follower.username
         n.user = follower
         return n
 
@@ -28,7 +28,7 @@ class NotificationFactory:
         n = Notification()
         n.recipient = bet.author
         n.notification_type = Notification.TYPE_BET_ACCEPTED
-        n.subject = "%s accepted your bet \"%s\"" % (bet.accepted_bid.author, bet.title)
+        n.subject = "%s accepted your bet \"%s\"" % (bet.accepted_bid.author.username, bet.title)
         n.bet = bet
         n.user = bet.accepted_bid.author
         return n
@@ -38,9 +38,19 @@ class NotificationFactory:
         n = Notification()
         n.recipient = bid.bet.author
         n.notification_type = Notification.TYPE_BID_POSTED
-        n.subject = "%s posted a bid on your bet \"%s\"" % (bid.author, bid.bet.title)
+        n.subject = "%s posted a bid on your bet \"%s\"" % (bid.author.username, bid.bet.title)
         n.bet = bid.bet
         n.user = bid.author
+        return n
+
+    @staticmethod
+    def bid_deleted(bid):
+        n = Notification()
+        n.recipient = bid.author
+        n.notification_type = Notification.TYPE_BID_DELETED
+        n.subject = "%s removed your bid \"%s\"" % (bid.bet.author.username, bid.title)
+        n.bet = bid.bet
+        n.user = bid.bet.author
         return n
 
     @staticmethod
@@ -75,8 +85,8 @@ class NotificationFactory:
             elif bet.claim == Bet.CLAIM_NULL:
                 n.notification_type = Notification.TYPE_BET_RESOLVING_FINISHED_NULL
                 n.subject = "%s claims his bet \"%s\" is null. You have 24h to complain." % (bet.author.username, bet.title)
-            if bet.claim_message:
-                n.subject = bet.claim_message
+            #if bet.claim_message:
+            #    n.subject = bet.claim_message
         elif bet.is_lottery():
             n.recipient = recipient
             if bet.claim == Bet.CLAIM_NULL:
@@ -112,26 +122,44 @@ class NotificationFactory:
         n.notification_type = Notification.TYPE_BET_COMPLAINING_FINISHED_CONFLICT
         if bet.is_simple() or bet.is_auction():
             n.recipient = bet.author
-            n.subject = "%s complained your resolution on \"%s\". Another user will arbitrate this conflict." % (bet.accepted_bid.author, bet.title)
+            n.subject = "%s complained your resolution on \"%s\". Another user will arbitrate this conflict." % (bet.accepted_bid.author.username, bet.title)
         elif bet.is_lottery():
             n.recipient = recipient
-            n.subject = "%s's lottery \"%s\" is under conflict and it will be arbitrated by another user." % (bet.author, bet.title)
+            if bet.author == recipient:
+                n.subject = "Your lottery \"%s\" is under conflict and it will be arbitrated by another user." % bet.title
+            else:
+                n.subject = "%s's lottery \"%s\" is under conflict and it will be arbitrated by another user." % (bet.author.username, bet.title)
         n.bet = bet
         return n
 
     @staticmethod
     def bet_arbitrated(bet, recipient=None):
         '''
-        Assuming there's a complain
+        Assuming there's a referee
         '''
         n = Notification()
         n.notification_type = Notification.TYPE_BET_COMPLAINING_FINISHED_CONFLICT
         if bet.is_simple() or bet.is_auction():
-            n.recipient = bet.author
-            n.subject = "%s complained your resolution on \"%s\". Another user will arbitrate this conflict." % (bet.accepted_bid.author, bet.title)
-        elif bet.is_lottery():
             n.recipient = recipient
-            n.subject = "%s's lottery \"%s\" is under conflict and it will be arbitrated by another user." % (bet.author, bet.title)
+            if recipient == bet.author:
+                winner = dict(enumerate(bet.winners())).get(0)
+                if winner == recipient:
+                    n.subject = "%s arbitrated your bet \"%s\" and decided you won." % (bet.referee.username, bet.title)
+                elif winner == None:
+                    n.subject = "%s arbitrated your bet \"%s\" and decided that the bet is null." % (bet.referee.username, bet.title)
+                else:
+                    n.subject = "%s arbitrated your bet \"%s\" and decided you lost." % (bet.referee.username, bet.title)
+            elif recipient == bet.accepted_bid.author:
+                winner = dict(enumerate(bet.winners())).get(0)
+                if winner == recipient:
+                    n.subject = "%s arbitrated %s's bet \"%s\" and decided you won." % (bet.referee.username, bet.author.username, bet.title)
+                elif winner == None:
+                    n.subject = "%s arbitrated %s's bet \"%s\" and decided that the bet is null." % (bet.referee.username, bet.author.username, bet.title)
+                else:
+                    n.subject = "%s arbitrated %s's bet \"%s\" and decided you lost." % (bet.referee.username, bet.author.username, bet.title)
+        elif bet.is_lottery():
+            # TODO
+            pass
         n.bet = bet
         return n
 
@@ -142,6 +170,7 @@ class Notification(models.Model):
     TYPE_BET_RECEIVED                           = 2
     TYPE_BET_ACCEPTED                           = 3
     TYPE_BID_POSTED                             = 4
+    TYPE_BID_DELETED                            = 44
     TYPE_BID_ACCEPTED                           = 5
     TYPE_BET_BIDDING_FINISHED                   = 6
     TYPE_BET_EVENT_FINISHED                     = 7

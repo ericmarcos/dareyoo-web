@@ -11,7 +11,8 @@ angular.module('dareyoo.directives', [])
       scope: {
         bet: '='
       },
-      templateUrl: '/static/alpha/partials/directives/dy-bet-list-item.html'
+      //templateUrl: '/static/alpha/partials/directives/dy-bet-list-item.html'
+      templateUrl: '//s3-eu-west-1.amazonaws.com/dareyoo/alpha/partials/directives/dy-bet-list-item.html'
     };
   })
   .directive('dyUserPic', function() {
@@ -20,7 +21,8 @@ angular.module('dareyoo.directives', [])
       scope: {
         user: '=',
       },
-      templateUrl: '/static/alpha/partials/directives/dy-user-pic.html',
+      //templateUrl: '/static/alpha/partials/directives/dy-user-pic.html',
+      templateUrl: '//s3-eu-west-1.amazonaws.com/dareyoo/alpha/partials/directives/dy-user-pic.html',
       link: function(scope, element, attrs) {
         var size = 'small';
         if(['micro', 'small', 'big'].indexOf(attrs.size) != -1) size = attrs.size;
@@ -37,7 +39,8 @@ angular.module('dareyoo.directives', [])
         user: '=',
         inAlert: '='
       },
-      templateUrl: '/static/alpha/partials/directives/dy-user-name.html'
+      //templateUrl: '/static/alpha/partials/directives/dy-user-name.html'
+      templateUrl: '//s3-eu-west-1.amazonaws.com/dareyoo/alpha/partials/directives/dy-user-name.html'
     };
   })
   .directive('dyBiddingDeadline', function() {
@@ -46,7 +49,8 @@ angular.module('dareyoo.directives', [])
       scope: {
         limit: '='
       },
-      templateUrl: '/static/alpha/partials/directives/dy-bidding-deadline.html'
+      //templateUrl: '/static/alpha/partials/directives/dy-bidding-deadline.html'
+      templateUrl: '//s3-eu-west-1.amazonaws.com/dareyoo/alpha/partials/directives/dy-bidding-deadline.html'
     };
   })
   .directive('dyEventDeadline', function() {
@@ -55,6 +59,7 @@ angular.module('dareyoo.directives', [])
       scope: {
         limit: '='
       },
-      templateUrl: '/static/alpha/partials/directives/dy-event-deadline.html'
+      //templateUrl: '/static/alpha/partials/directives/dy-event-deadline.html'
+      templateUrl: '//s3-eu-west-1.amazonaws.com/dareyoo/alpha/partials/directives/dy-event-deadline.html'
     };
   });

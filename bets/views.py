@@ -20,10 +20,6 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
         return request.method in permissions.SAFE_METHODS or obj.author == request.user
 
 
-def bets_filter(queryset, filters):
-    pass
-
-
 class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     API endpoint that allows bets to be viewed or created, not modified or destroyed.
@@ -73,8 +69,6 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
                 bid = serializer.object
                 try:
                     bet.add_bid(bid, user)
-                    if bet.is_simple():
-                        bet.accept_bid(bid.id)
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 except (BetException, DareyooUserException) as e:
                     return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
