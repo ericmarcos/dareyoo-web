@@ -1,18 +1,31 @@
 var gulp = require('gulp');
 var less = require('gulp-less');
 var path = require('path');
+var rename = require("gulp-rename");
 
 var paths = {
-  scripts: '.static/beta/js/**/*.js',
-  less: './static/beta/less/*.less'
+  scripts: ['.static/beta/js/*.js'],
+  less: './static/beta/less/dareyoo.less',
+  less_libs: ['./static/beta/less', './static/beta/lib/bootstrap/less']
 };
 
+gulp.task('scripts', function() {
+  // Minify and copy all JavaScript (except vendor scripts)
+  return gulp.src(paths.scripts)
+    .pipe(uglify())
+    .pipe(concat('dareyoo.min.js'))
+    .pipe(size())
+    .pipe(gulp.dest('./static/beta/js'));
+});
+
 gulp.task('less', function () {
-  gulp.src(paths.less)
-    .pipe(less({
-      paths: [ path.join(__dirname, 'less', 'includes') ]
-    }))
-    .pipe(gulp.dest('./static/beta/css'));
+  return gulp.src(paths.less)
+        .pipe(less({
+            compress: true,
+            paths: paths.less_libs
+        }))
+        .pipe(rename('dareyoo.min.css'))
+        .pipe(gulp.dest('./static/beta/css'));
 });
 
 // Rerun the task when a file changes
