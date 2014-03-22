@@ -55,12 +55,14 @@ INSTALLED_APPS = (
     'provider',
     'provider.oauth2',
     'custom_user',
+    'avatar',
     'dareyoo',
     'bets',
     'users',
     'notifications',
     'gamification',
-    'alpha',
+    #'alpha',
+    'beta',
 )
 
 MIDDLEWARE_CLASSES = (

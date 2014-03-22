@@ -1,0 +1,23 @@
+{% extends "beta-base.html" %}
+{% block content %}
+<div id="login" class="container text-center" style="max-width:300px; margin-top:200px">
+    <h1>Dareyoo (beta)</h1>
+    <form role="form" name="LoginForm" action="{% url 'beta-login' %}" method="post">
+    {% csrf_token %}
+    {% if next %}
+        <input type="hidden" name="next" value="{{ next }}" />
+        {% endif %}
+        <div id="name-group" class="form-group">
+            <input type="text" id="username" name="username" class="form-control" placeholder="email">
+            <span class="help-block"></span>
+
+            <input type="password" id="password" name="password" placeholder="password" class="form-control">
+            <span class="help-block"></span>
+        </div>
+        {% for error in errors %}
+        <div class="alert alert-danger">{{error}}</div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,254 @@
+{% extends "beta-base.html" %}
+
+{% block css %}
+{{ block.super }}
+<style type="text/css">
+    body{
+    margin: 0;
+    min-width: 980px;
+    padding: 0;
+}
+
+p{
+    margin: 0 0 20px 0; 
+}
+
+p, ul{
+    font-family:"Proxima Nova Light", 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-size-adjust:0.488;
+    font-weight:200;
+    font-style:normal;
+}
+
+img{
+    border: 0;
+}
+
+h1, #pixels{
+    font-family:"Museo 900", Verdana, serif;
+    font-size-adjust:0.40;
+    font-weight:700;
+    font-style:normal;
+}
+
+h2{
+    font-family:"Beau Sans Pro Book", Verdana, sans-serif;
+    font-size-adjust:0.531;
+    font-weight:500;
+    font-style:normal;
+}
+
+#header h1, #pixels{
+    color: #48941A;
+}
+
+.float-left{
+    float: left;    
+    margin: 0 0 0 20px;
+}
+
+.float-right{
+    float: right;
+    margin: 0 20px 0 0;
+}
+
+.center{
+    font-size: 2.5em;
+    padding: 80px 0 0 0;
+    text-align: center;
+}
+
+#nav{
+    list-style: none;
+    position: fixed;
+    right: 20px;
+}
+
+#nav li{
+    margin: 0 0 15px 0; 
+}
+
+#header, #intro, #second{
+    width: 100%;
+}
+
+#intro{
+    background:url(static/img/firstBG.jpg) 50% 0 no-repeat fixed;
+    color: white;
+    height: 600px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+#second{
+    background: url(static/img/secondBG.jpg) 50% 0 no-repeat fixed;
+    color: white;
+    height: 1300px;
+    margin: 0 auto;
+    overflow: hidden;
+    padding: 0;
+}
+
+#second .bg{
+    background: url(static/img/trainers.png) 50% 0 no-repeat fixed;
+    height: 1300px;
+    margin: 0 auto;
+    padding: 0;
+    position: absolute;
+    width: 900px;
+    z-index: 200;
+}
+
+#third{
+    background: url(static/img/thirdBG.jpg) 50% 0 no-repeat fixed;
+    color: white;
+    height: 650px;
+    padding: 100px 0 0 0;   
+}
+
+#fifth{
+    background: #ccc;
+    height: 400px;
+    margin: 0 auto;
+    padding: 40px 0 0 0;
+}
+
+.story{
+    margin: 0 auto;
+    min-width: 980px;
+    overflow: auto;
+    width: 980px;
+}
+
+.story .float-left, .story .float-right{
+    padding: 100px 0 0 0;
+    position: relative;
+    width: 350px;   
+}
+
+#nav-top {
+    border-radius: 0px;
+    border: none;
+    background-image: -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        color-stop(0, #FFFFFF),
+        color-stop(1, #D1D1D1)
+    );
+    background-image: -o-linear-gradient(bottom, #FFFFFF 0%, #D1D1D1 100%);
+    background-image: -moz-linear-gradient(bottom, #FFFFFF 0%, #D1D1D1 100%);
+    background-image: -webkit-linear-gradient(bottom, #FFFFFF 0%, #D1D1D1 100%);
+    background-image: -ms-linear-gradient(bottom, #FFFFFF 0%, #D1D1D1 100%);
+    background-image: linear-gradient(to bottom, #FFFFFF 0%, #D1D1D1 100%);
+    margin-bottom: 0px;
+}
+
+.navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.active>a:hover, .navbar-inverse .navbar-nav>.active>a:focus {
+    
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-inverse" id="nav-top">
+<!-- Brand and toggle get grouped for better mobile display -->
+  <div class="container">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-app-navbar-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="#">Dareyoo (beta)</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="main-app-navbar-collapse">
+    <ul class="nav navbar-nav navbar-left">
+      <li class="active"><a href="#">WHAT IS IT</a></li>
+      <li class=""><a href="#">ABOUT US</a></li>
+      <li class=""><a href="#">CONTACT</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="{% url "beta-login" %}">Register</a></li>
+      <li><a href="{% url "beta-login" %}">Login</a></li>
+    </ul>
+  </div><!-- /.navbar-collapse -->
+  </div>
+</nav>
+
+<div id="intro">
+    <div class="story">
+        <div class="float-left">
+        <h2>Apostar sólo no es apostar</h2>
+        <p>This section has a background that moves slightly slower than the user scrolls. This is achieved by changing the top position of the background for every pixel the page is scrolled.</p>
+        </div>
+    </div> <!--.story-->
+</div> <!--#intro-->
+
+<div id="second">
+    <div class="story"><div class="bg"></div>
+        <div class="float-right">
+            <h2>Multiple Backgrounds</h2>
+            <p>The multiple backgrounds applied to this section are moved in a similar way to the first section -- every time the user scrolls down the page by a pixel, the positions of the backgrounds are changed.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean nibh erat, sagittis sit amet congue at, aliquam eu libero. Integer molestie, turpis vel ultrices facilisis, nisi mauris sollicitudin mauris, volutpat elementum enim urna eget odio. Donec egestas aliquet facilisis. Nunc eu nunc eget neque ornare fringilla. Nam vel sodales lectus. Nulla in pellentesque eros. Donec ultricies, enim vitae varius cursus, risus mauris iaculis neque, euismod sollicitudin metus erat vitae sapien. Sed pulvinar.</p>
+        </div>
+    </div> <!--.story-->
+    
+</div> <!--#second-->
+
+<div id="third">
+    <div class="story">
+        <div class="float-left">
+            <h2>What Happens When JavaScript is Disabled?</h2>
+            <p>The user gets a slap! Actually, all that jQuery does is moves the backgrounds relative to the position of the scrollbar. Without it, the backgrounds simply stay put and the user would never know they are missing out on the awesome! CSS2 does a good enough job to still make the effect look cool.</p>
+        </div>
+    </div> <!--.story-->
+</div> <!--#third-->
+
+<div id="login" class="container text-center" style="max-width:300px; margin-top:200px">
+    <h1>Dareyoo (alpha)</h1>
+    <form role="form" name="LoginForm" action="{% url 'alpha-login' %}" method="post">
+    {% csrf_token %}
+    {% if next %}
+        <input type="hidden" name="next" value="{{ next }}" />
+        {% endif %}
+        <div id="name-group" class="form-group">
+            <input type="text" id="username" name="username" class="form-control" placeholder="email">
+            <span class="help-block"></span>
+
+            <input type="password" id="password" name="password" placeholder="password" class="form-control">
+            <span class="help-block"></span>
+        </div>
+        {% for error in errors %}
+        <div class="alert alert-danger">{{error}}</div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}lib/jquery/jquery.parallax-1.1.3.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}lib/jquery/jquery.localscroll-1.2.7-min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}lib/jquery/jquery.scrollTo-1.4.2-min.js"></script>
+<script type="text/javascript">
+$(function(){
+    $('#nav').localScroll(800);
+    
+    //.parallax(xPosition, speedFactor, outerHeight) options:
+    //xPosition - Horizontal position of the element
+    //inertia - speed to move relative to vertical scroll. Example: 0.1 is one tenth the speed of scrolling, 2 is twice the speed of scrolling
+    //outerHeight (true/false) - Whether or not jQuery should use it's outerHeight option to determine when a section is in the viewport
+    $('#intro').parallax("50%", 0.1);
+    $('#second').parallax("50%", 0.1);
+    $('.bg').parallax("50%", 0.4);
+    $('#third').parallax("50%", 0.3);
+
+});
+</script>
+{% endblock %}
