@@ -33,3 +33,4 @@ six==1.4.1
 wsgiref==0.1.2
 yolk==0.4.3
 djangorestframework==2.3.10
+django-avatar==2.0
