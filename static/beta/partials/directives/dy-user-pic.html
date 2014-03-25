@@ -1,0 +1,4 @@
+<a href="#" ui-sref="profile.bets({userId:user.id})">
+    <img ng-if="user.avatar" ng-src="[[user.avatar]]" alt="[[user.username]]" width="[[img_width]]" height="[[img_height]]" alt="[[user.username]]" class="img-circle">
+    <img ng-if="!user.avatar" ng-src="//s3-eu-west-1.amazonaws.com/dareyoo/alpha/img/profile_[[user.id%10]].png" alt="[[user.username]]" width="[[img_width]]" height="[[img_height]]" alt="[[user.username]]" class="img-circle">
+</a>

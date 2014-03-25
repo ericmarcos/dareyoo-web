@@ -1,0 +1,49 @@
+<div class="row">
+  <div class="col-md-4" ng-show="user">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="center-text"><dy-user-pic user="user" size="small"></dy-user-pic><br/>
+        <dy-user-name user="user"></dy-user-name></div>
+        <img width="30" src="http://mattersofgrey.com/forum/uploads/userpics/842/n2S7WEALLV3J8.png" alt="VIP">
+        <img width="30" src="http://slackblog.files.wordpress.com/2010/04/adventurer.png%3Fw%3D64%26h%3D64" alt="TOP10">
+        <img width="30" src="http://qph.is.quoracdn.net/main-thumb-t-9970-50-YpqlEa4uAhTwe63T3VriOBo2nPOEgONC.jpeg" alt="TOP10">
+        <img width="30" src="http://www.nrlc-group.net/images/localbadge40.jpg" alt="TOP10">
+        <img width="30" src="https://www.uwosh.edu/stay_connected/images/collegeschoolspirit_big150x150.jpg/image_tile" alt="TOP10">
+      </div>
+      <div class="col-md-8">
+        <div class="coins-available">[[user.coins_available]] COINS AVAILABLE</div>
+        <div class="coins-locked">([[user.coins_locked]] COINS LOCKED)</div>
+        <div class=""><button type="button" class="btn btn-xs btn-primary">Get more coins</button></div>
+        <div class="points">
+          <span class="num-points">[[user.week_total_points]]</span><br>
+          <span class="text-points">POINTS THIS WEEK</span><br/>
+          <span ng-if="user.week_total_points > 0" class="text-points">(ranks #[[user.week_total_position]])</span>
+        </div>
+      </div>
+    </div>
+    <div class="row sidebar-nav">
+      <div class="col-md-12">
+        <ul class="nav nav-pills nav-stacked">
+          <li ng-class="{ active: newBetView() }"><a ui-sref="main.new-bet">
+            <span class="glyphicon glyphicon-plus"></span> Create new bet
+          </a></li>
+          <li ng-class="{ active: $state.includes('main.timeline-global') }"><a ui-sref="main.timeline-global">
+            <span class="glyphicon glyphicon-globe"></span> Global Timeline
+          </a></li>
+          <li ng-class="{ active: $state.includes('main.timeline') }"><a ui-sref="main.timeline">
+            <span class="glyphicon glyphicon-star"></span> My friends timeline
+          </a></li>
+          <li ng-class="{ active: $state.includes('main.timeline-conflicts') }"><a ui-sref="main.timeline-conflicts">
+            <span class="glyphicon glyphicon-fire"></span> Conflicts
+          </a></li>
+          <li ng-class="{ active: $state.includes('main.open-bets') }"><a ui-sref="main.open-bets">
+            <span class="glyphicon glyphicon-user"></span> My open bets <span class="badge">[[n_open_bets]]</span>
+          </a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div ng-class="{'col-md-8': !newBetView(), 'col-md-6': newBetView(), 'col-md-offset-2': !user}">
+    <div ui-view></div>
+  </div>
+</div>

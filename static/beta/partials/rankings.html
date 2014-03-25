@@ -1,0 +1,16 @@
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <h2>Week leaders</h2>
+        <table class="table table-striped">
+            <tr><th>#</th><th>Player</th><th>Points</th></tr>
+            <tr ng-repeat="row in ranking">
+                <td>[[$index + 1]]</td>
+                <td>
+                    <dy-user-pic user="row.user" size="micro"></dy-user-pic>
+                    <dy-user-name user="row.user"></dy-user-name>
+                </td>
+                <td>[[row.points]]</td>
+            </tr>
+        </table>
+    </div>
+</div>
