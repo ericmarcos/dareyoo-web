@@ -36,4 +36,4 @@ nosetests.xml
 .pydevproject
 
 node_modules
-celerybeat-schedule
+celerybeat-schedule*
