@@ -18,6 +18,7 @@ var isPre = args.pre;
 var paths = {
   html: ['./static/beta/partials/**'],
   scripts: ['./static/beta/js/*.js'],
+  scripts_libs: ['./static/beta/js/*.js'],
   less: './static/beta/less/dareyoo.less',
   less_libs: ['./static/beta/less', './static/beta/lib/bootstrap/less']
 };
