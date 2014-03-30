@@ -5,24 +5,24 @@
 
 
 angular.module('dareyoo.directives', [])
-  .directive('dyBetListItem', function() {
+  .directive('dyBetListItem', ['config', function(config) {
     return {
       restrict: 'E',
       scope: {
         bet: '='
       },
       //templateUrl: '/static/alpha/partials/directives/dy-bet-list-item.html'
-      templateUrl: '//s3-eu-west-1.amazonaws.com/dareyoo/alpha/partials/directives/dy-bet-list-item.html'
+      templateUrl: config.static_url + 'beta/build/partials/directives/dy-bet-list-item.html'
     };
-  })
-  .directive('dyUserPic', function() {
+  }])
+  .directive('dyUserPic', ['config', function(config) {
     return {
       restrict: 'E',
       scope: {
         user: '=',
       },
       //templateUrl: '/static/alpha/partials/directives/dy-user-pic.html',
-      templateUrl: '//s3-eu-west-1.amazonaws.com/dareyoo/alpha/partials/directives/dy-user-pic.html',
+      templateUrl: config.static_url + 'beta/build/partials/directives/dy-user-pic.html',
       link: function(scope, element, attrs) {
         var size = 'small';
         if(['micro', 'small', 'big'].indexOf(attrs.size) != -1) size = attrs.size;
@@ -31,8 +31,8 @@ angular.module('dareyoo.directives', [])
         if(size == 'big') { scope.img_width = scope.img_height = 60; }
       }
     };
-  })
-  .directive('dyUserName', function() {
+  }])
+  .directive('dyUserName', ['config', function(config) {
     return {
       restrict: 'E',
       scope: {
@@ -40,26 +40,26 @@ angular.module('dareyoo.directives', [])
         inAlert: '='
       },
       //templateUrl: '/static/alpha/partials/directives/dy-user-name.html'
-      templateUrl: '//s3-eu-west-1.amazonaws.com/dareyoo/alpha/partials/directives/dy-user-name.html'
+      templateUrl: config.static_url + 'beta/build/partials/directives/dy-user-name.html'
     };
-  })
-  .directive('dyBiddingDeadline', function() {
+  }])
+  .directive('dyBiddingDeadline', ['config', function(config) {
     return {
       restrict: 'E',
       scope: {
         limit: '='
       },
       //templateUrl: '/static/alpha/partials/directives/dy-bidding-deadline.html'
-      templateUrl: '//s3-eu-west-1.amazonaws.com/dareyoo/alpha/partials/directives/dy-bidding-deadline.html'
+      templateUrl: config.static_url + 'beta/build/partials/directives/dy-bidding-deadline.html'
     };
-  })
-  .directive('dyEventDeadline', function() {
+  }])
+  .directive('dyEventDeadline', ['config', function(config) {
     return {
       restrict: 'E',
       scope: {
         limit: '='
       },
       //templateUrl: '/static/alpha/partials/directives/dy-event-deadline.html'
-      templateUrl: '//s3-eu-west-1.amazonaws.com/dareyoo/alpha/partials/directives/dy-event-deadline.html'
+      templateUrl: config.static_url + 'beta/build/partials/directives/dy-event-deadline.html'
     };
-  });
+  }]);

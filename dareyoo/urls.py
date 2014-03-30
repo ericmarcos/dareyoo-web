@@ -32,7 +32,7 @@ v1_api.register(BidResource())
 '''
 urlpatterns = patterns('',
     url(r'^', include('beta.urls')),
-    url(r'^alpha/', include('alpha.urls')),
+    #url(r'^alpha/', include('alpha.urls')),
     url(r'^api/v1/', include(extra_api_urls)),
     url(r'^api/v1/', include(router.urls)),
     #url(r'^api/v1/user/(?P<pk>[0-9]+)/followers/$', followers, name='followers'),

@@ -14,10 +14,7 @@
   {% endblock %}
   <title>{% block title %}Dareyoo (beta){% endblock %}</title>
   {% block css %}
-  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
-  <!-- Custom CSS here -->
-  <!-- <link rel="stylesheet" href="{{ STATIC_URL }}css/custom.css"> -->
-
+  <link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/dareyoo.all.min.css">
   {% endblock %}
 {% endblock %}
 </head>
@@ -28,7 +25,7 @@
   {% endblock %}
   {% block content %}{% endblock %}
   {% block footer %}{% endblock %}
-  {% block js %}
+  {% block analytics %}
   <script type="text/javascript">
   /*
     var _gaq = _gaq || [];
@@ -44,15 +41,14 @@
     })();
   */
   </script>
-  <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+  {% endblock %}
+  {% block js %}
+  <script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
   <!-- Checks if jQuery is loaded. If not, we load it from our server -->
-  <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}lib/jquery/jquery-1.10.2.min.js"><'+'/script>')</script>
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+  <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}beta/build/js/jquery.min.js"><'+'/script>')</script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
   <!-- Checks if Twitter Bootstrap is loaded. If not, we load it from our server -->
-  <script>(typeof $().modal == 'function') || (document.write('<script src="{{ STATIC_URL }}lib/bootstrap/3.0.0/js/bootstrap.min.js"><'+'/script>') && document.write('<link rel="stylesheet" href="{{ STATIC_URL }}lib/bootstrap/css/bootstrap.min.css" >'))</script>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular.min.js"></script>
-  <!-- Checks if jQuery is loaded. If not, we load it from our server -->
-  <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}lib/angularjs/1.2.7/angular.min.js"><'+'/script>')</script>
+  <script>(typeof $().modal == 'function') || (document.write('<script src="{{ STATIC_URL }}beta/build/js/bootstrap.min.js"><'+'/script>'))</script>
   {% endblock %}
 </body>
 </html>

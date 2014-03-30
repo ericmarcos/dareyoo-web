@@ -211,7 +211,7 @@ h2{
 
 <div id="login" class="container text-center" style="max-width:300px; margin-top:200px">
     <h1>Dareyoo (alpha)</h1>
-    <form role="form" name="LoginForm" action="{% url 'alpha-login' %}" method="post">
+    <form role="form" name="LoginForm" action="{% url 'beta-login' %}" method="post">
     {% csrf_token %}
     {% if next %}
         <input type="hidden" name="next" value="{{ next }}" />

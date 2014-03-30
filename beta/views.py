@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 
 def login_view(request):
     if request.user.is_authenticated():
+        print request.user
         return HttpResponseRedirect(reverse('beta-home'))
     else:
         params = {'errors':[]}

@@ -50,7 +50,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="#">Dareyoo (alpha)</a>
+        <a class="navbar-brand" href="#">Dareyoo (beta)</a>
       </div>
 
       <!-- Collect the nav links, forms, and other content for toggling -->
@@ -60,7 +60,7 @@
           <li ng-class="{ active: $state.includes('profile') }" ng-if="user"><a href="#" ui-sref="profile.bets({userId:user.id})"><span class="glyphicon glyphicon-user"></span> My profile</a></li>
           <li ng-class="{ active: $state.includes('rankings') }"><a href="#" ui-sref="rankings"><span class="glyphicon glyphicon-list"></span> Rankings</a></li>
         </ul>
-        <div class="navbar-form navbar-left" role="search" ng-controller="SearchCtrl">
+        <div class="navbar-form navbar-left" role="search" ng-controllerkk="SearchCtrl">
           <div class="form-group">
             <input type="text" class="form-control" placeholder="Search" ng-model="q.query">
           </div>
@@ -77,8 +77,8 @@
               </li>
             </ul>
           </li>
-          <li ng-if="user"><a href="{% url "alpha-logout" %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
-          <li ng-if="!user"><a href="{% url "alpha-login" %}">Login <span class="glyphicon glyphicon-log-in"></span></a></li>
+          <li ng-if="user"><a href="{% url "beta-logout" %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+          <li ng-if="!user"><a href="{% url "beta-login" %}">Login <span class="glyphicon glyphicon-log-in"></span></a></li>
         </ul>
       </div><!-- /.navbar-collapse -->
     </div>
@@ -130,15 +130,9 @@
 {% endblock %}
 
 {% block js %}
-{{ block.super }}
-<!-- <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular-route.js"></script> -->
-<script src="{{ STATIC_URL }}alpha/js/angular-ui-router.min.js"></script>
-<script src="{{ STATIC_URL }}alpha/js/ui-bootstrap-tpls-0.9.0.min.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular-cookies.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.0/moment.min.js"></script>
-<script src="{{ STATIC_URL }}alpha/js/ng-time-relative.min.js"></script>
-<script src="{{ STATIC_URL }}alpha/js/app.js"></script>
-<script src="{{ STATIC_URL }}alpha/js/services.js"></script>
-<script src="{{ STATIC_URL }}alpha/js/controllers.js"></script>
-<script src="{{ STATIC_URL }}alpha/js/directives.js"></script>
+<script src="{{ STATIC_URL }}beta/build/js/dareyoo.all.min.js"></script>
+<script type="text/javascript">
+  angular.module('dareyoo').
+  constant('config', {static_url: {{ STATIC_URL }} });
+</script>
 {% endblock %}
