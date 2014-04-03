@@ -86,8 +86,9 @@ def bet_change_state_notifications(sender, **kwargs):
                 n = NotificationFactory.bet_arbitrated(bet, bet.accepted_bid.author)
                 n.save()
             elif bet.is_lottery():
-                # TODO
-                pass
+                for p in bet.participants():
+                    n = NotificationFactory.bet_arbitrated(bet, p)
+                    n.save()
 
         if transition == 'closed_desert':
             pass

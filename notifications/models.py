@@ -139,8 +139,8 @@ class NotificationFactory:
         '''
         n = Notification()
         n.notification_type = Notification.TYPE_BET_COMPLAINING_FINISHED_CONFLICT
+        n.recipient = recipient
         if bet.is_simple() or bet.is_auction():
-            n.recipient = recipient
             if recipient == bet.author:
                 winner = dict(enumerate(bet.winners())).get(0)
                 if winner == recipient:
@@ -158,8 +158,10 @@ class NotificationFactory:
                 else:
                     n.subject = "%s arbitrated %s's bet \"%s\" and decided you lost." % (bet.referee.username, bet.author.username, bet.title)
         elif bet.is_lottery():
-            # TODO
-            pass
+            if recipient in bet.winners():
+                n.subject = "%s arbitrated the lottery \"%s\" and decided you're one of the winners." % (bet.referee.username, bet.title)
+            else:
+                n.subject = "%s arbitrated the lottery \"%s\" and decided you didn't win." % (bet.referee.username, bet.title)
         n.bet = bet
         return n
 

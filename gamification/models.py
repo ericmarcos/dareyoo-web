@@ -96,7 +96,13 @@ class UserPointsFactory:
     def fromBet(bet):
         if bet.winners():
             if bet.is_lottery():
-                pass
+                for bid in bet.bids.all():
+                    for p in bid.participants.all():
+                        u = UserPoints()
+                        u.bet = bet
+                        u.user = p
+                        u.calculatePointsFromBet(bid)
+                        u.save()
             else:
                 u = UserPoints()
                 u.bet = bet
@@ -107,11 +113,11 @@ class UserPointsFactory:
                 u.user = bet.accepted_bid.author
                 u.calculatePointsFromBet()
                 u.save()
-                if bet.referee:
-                    u.id = None
-                    u.user = bet.referee
-                    u.calculatePointsFromBet()
-                    u.save()
+            if bet.referee:
+                u.id = None
+                u.user = bet.referee
+                u.calculatePointsFromBet()
+                u.save()
 
 
 class UserPoints(models.Model):
@@ -123,12 +129,25 @@ class UserPoints(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True, editable=False)
 
 
-    def calculatePointsFromBet(self):
+    def calculatePointsFromBet(self, bid=None):
         winners = self.bet.winners() if self.bet else None
         ref = self.bet.referee if self.bet else None
         if ref:
             if self.bet.is_lottery():
-                pass
+                if ref == self.user:
+                    self.points = 10*self.bet.pot()
+                elif self.user == bid.claim_author:
+                    if self.bet.referee_lottery_winner == bid or (self.bet.referee_claim == Bet.CLAIM_NULL and bid.claim == Bet.CLAIM_NULL):
+                        pass
+                    else:
+                        self.points = -10*self.bet.pot()
+                elif self.user == self.bet.author:
+                    if self.bet.referee_lottery_winner == self.bet.claim_lottery_winner or (self.bet.referee_claim == Bet.CLAIM_NULL and self.bet.claim == Bet.CLAIM_NULL):
+                        pass
+                    else
+                        self.points = -10*self.bet.pot()
+                else:
+                    self.points = self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.user in winners)
             else:
                 points = self.pointsFromAmount(self.bet.amount, self.bet.accepted_bid.amount, self.bet.author == winners[0])
                 if winners[0] == self.user:
@@ -139,7 +158,7 @@ class UserPoints(models.Model):
                     self.points = -10*self.bet.pot()
         elif winners:
             if self.bet.is_lottery():
-                pass
+                self.points = self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.user in winners)
             else:
                 points = self.pointsFromAmount(self.bet.amount, self.bet.accepted_bid.amount, self.bet.author == winners[0])
                 if winners[0] == self.user:
@@ -149,16 +168,25 @@ class UserPoints(models.Model):
 
 
 
+    winner_factor = 4
+    loser_factor = 1
+
     def pointsFromAmount(self, q0, q1, p):
         '''p=0 (False) means q0 is the winner. p=1 (True) means q1 is the winner'''
-        winner_factor = 4
-        loser_factor = 1
         pot = q0 + q1
         risc0 = (pot*0.5/q0)**0.2
         risc1 = (pot*0.5/q1)**0.2
-        if not p:
-            return (math.floor(pot*risc0*winner_factor), math.floor(pot*risc1*loser_factor))
         if p:
-            return (math.floor(pot*risc1*winner_factor), math.floor(pot*risc0*loser_factor))
+            return (math.floor(pot*risc1*self.winner_factor), math.floor(pot*risc0*self.loser_factor))
+        else:
+            return (math.floor(pot*risc0*self.winner_factor), math.floor(pot*risc1*self.loser_factor))
+
+    def pointsFromAmountLottery(self, pot, ni, n, p):
+        risc = 1 - ni / n
+        if p:
+            return math.floor(pot*risc*self.winner_factor)
+        else:
+            return math.floor(pot*risc*self.loser_factor)
+
 
 import gamification.signals

@@ -10,5 +10,5 @@ urlpatterns = patterns('beta.views',
     url(r'^$', 'landing_view', name='beta-landing'),
     url(r'^login$', 'login_view', name='beta-login'),
     url(r'^logout$', 'logout_view', name='beta-logout'),
-    url(r'^app$', 'app', name='beta-home'),
+    url(r'^app', 'app', name='beta-home'),
 )

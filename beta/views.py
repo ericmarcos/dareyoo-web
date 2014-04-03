@@ -7,7 +7,6 @@ from django.contrib.auth import authenticate, login, logout
 
 def login_view(request):
     if request.user.is_authenticated():
-        print request.user
         return HttpResponseRedirect(reverse('beta-home'))
     else:
         params = {'errors':[]}
@@ -15,10 +14,9 @@ def login_view(request):
             username = request.POST.get('username', '')
             password = request.POST.get('password', '')
             user = authenticate(username=username, password=password)
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    return HttpResponseRedirect(reverse('beta-home'))
+            if user and user.is_active:
+                login(request, user)
+                return HttpResponseRedirect(reverse('beta-home'))
             params['errors'].append('Invalid username or password')
         return render_to_response('beta-landing.html', context_instance=RequestContext(request, params))
 

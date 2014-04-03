@@ -127,7 +127,10 @@ class Bet(models.Model):
     referee = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='arbitrated_bets', blank=True, null=True, default=None)
     referee_claim = models.PositiveSmallIntegerField(blank=True, null=True, choices=BET_CLAIM_CHOICES, default=None)
     referee_lottery_winner = models.ForeignKey("Bid", blank=True, null=True, related_name='referee_winning_bet')
+    referee_message = models.TextField(blank=True, null=True, default="")
     log = models.TextField(blank=True, null=True, default="")
+
+    _pot = 0
 
     class Meta:
         pass
@@ -201,13 +204,15 @@ class Bet(models.Model):
             else:
                 return set([self.author])
         elif self.is_lottery():
-            return set(u.id for b in self.bids.all() for u in b.participants.all())
+            return set(u for b in self.bids.all() for u in b.participants.all())
 
     def pot(self):
         '''
         This is very expensive because it performs many queries
         to the database. Pot should be precalculated.
         '''
+        if self._pot:
+            return self._pot
         if self.is_simple():
             pot = math.ceil(self.amount*self.odds)
         if self.is_auction():
@@ -270,10 +275,14 @@ class Bet(models.Model):
             raise BetException("Author can't be None")
 
     def add_bid(self, bid, user):
+        auction_bid_limit = 3
         if self.is_bidding():
             #TODO: think if we should limit the number of bids per user per bet.
             #I'm not doing it now because of the lottery use case: a singe user
             #(for example, the bet creator) can add many bids
+            # UPDATE: currently set at 3 bids per user
+            if self.is_auction() and len([bid.author for bid in self.bids.all() if bid.author == user]) >= auction_bid_limit:
+                raise BetException("Can't post more than %s bids per bet per user" % auction_bid_limit)
             bid.bet = self
             bid.set_author(user)
             if self.is_simple():
@@ -348,7 +357,7 @@ class Bet(models.Model):
         if self.is_participant(user):
             raise BetException("A bet can't be arbitrated by one of its participants")
         if self.is_arbitrating():
-            self.claim_message = claim_message
+            self.referee_message = claim_message
             self.referee = user
             if self.is_simple() or self.is_auction():
                 if claim in dict(Bet.BET_CLAIM_CHOICES).keys():
@@ -356,10 +365,10 @@ class Bet(models.Model):
                 else:
                     raise BetException("Invalid claim")
             if self.is_lottery():
-                if claim == None and claim_lottery_winner in [b.id for b in self.bids.all()]:
-                    self.claim_lottery_winner = claim_lottery_winner
+                if claim == None and claim_lottery_winner in self.bids.all():
+                    self.refree_lottery_winner = claim_lottery_winner
                 elif claim == Bet.CLAIM_NULL:
-                    self.claim = Bet.CLAIM_NULL
+                    self.referee_claim = Bet.CLAIM_NULL
                 else:
                     raise BetException("Invalid claim")
         else:
@@ -506,10 +515,12 @@ class Bid(models.Model):
         self.author = author
 
     def add_participant(self, p):
-        self.participants.add(p)
         if self.is_lottery():
+            if p.id in self.bet.participants():
+                raise BetException("Can't participate in more than one option in a lottery")
             p.lock_funds(self.amount)
             p.save()
+        self.participants.add(p)
 
     def complain(self, user, claim=None, claim_message=""):
         if not self.bet.is_participant(user):

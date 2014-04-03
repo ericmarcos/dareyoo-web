@@ -134,11 +134,11 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
     def arbitrate(self, request, *args, **kwargs):
         bet = self.get_object()
         user = self.request.user
-        claim = request.DATA.get('claim', None)
-        claim_lottery_winner = request.DATA.get('claim_lottery_winner', None)
-        claim_message = request.DATA.get('claim_message', "")
+        referee_claim = request.DATA.get('claim', None)
+        referee_lottery_winner = request.DATA.get('claim_lottery_winner', None)
+        referee_message = request.DATA.get('claim_message', "")
         try:
-            bet.arbitrate(user, claim=claim, claim_lottery_winner=claim_lottery_winner, claim_message=claim_message)
+            bet.arbitrate(user, referee_claim=referee_claim, referee_lottery_winner=referee_lottery_winner, referee_message=referee_message)
             bet.closed_conflict()
             bet.save()
             serializer = BetSerializer(bet, context={'request': request})
