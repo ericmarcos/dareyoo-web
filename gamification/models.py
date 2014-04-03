@@ -144,7 +144,7 @@ class UserPoints(models.Model):
                 elif self.user == self.bet.author:
                     if self.bet.referee_lottery_winner == self.bet.claim_lottery_winner or (self.bet.referee_claim == Bet.CLAIM_NULL and self.bet.claim == Bet.CLAIM_NULL):
                         pass
-                    else
+                    else:
                         self.points = -10*self.bet.pot()
                 else:
                     self.points = self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.user in winners)
