@@ -26,6 +26,7 @@ var paths = {
   scripts_libs: ['./static/beta/lib/jquery/dist/jquery.min.js',
                 './static/beta/lib/bootstrap/dist/js/bootstrap.min.js',
                 './static/beta/lib/angular/angular.min.js',
+                './static/beta/lib/angular-route/angular-route.min.js',
                 './static/beta/lib/angular-bootstrap/ui-bootstrap-tpls.min.js',
                 './static/beta/lib/angular-ui-router/release/angular-ui-router.min.js',
                 './static/beta/lib/angular-cookies/angular-cookies.min.js',
@@ -53,7 +54,7 @@ gulp.task('copy_scripts', function() {
 gulp.task('dareyoo_all_min_scripts', function() {
   // Unify, minify and copy all JavaScript
   return gulp.src(paths.scripts_libs.concat(paths.scripts))
-    .pipe(uglify())
+    //.pipe(uglify())
     //.pipe(print())
     .pipe(concat('dareyoo.all.min.js'))
     .pipe(size())
