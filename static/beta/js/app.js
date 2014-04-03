@@ -4,6 +4,7 @@
 // Declare app level module which depends on filters, and services
 var dareyooApp = angular.module('dareyoo', [
   'ngCookies',
+  'ngRoute',
   'ui.router',
   'ui.bootstrap',
   'timeRelative',
@@ -23,8 +24,9 @@ config(['$sceDelegateProvider', function($sceDelegateProvider) {
     'http://s3-eu-west-1.amazonaws.com/dareyoo/**'
   ]); 
 }]).
-config(['$stateProvider', '$urlRouterProvider', 'config', function($stateProvider, $urlRouterProvider, config) {
+config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'config', function($stateProvider, $urlRouterProvider, $locationProvider, config) {
     $urlRouterProvider.otherwise("/main/timeline");
+    $locationProvider.html5Mode(true).hashPrefix('!'); // enable pushState
     $stateProvider
         .state('main', {
           url: "/main",
