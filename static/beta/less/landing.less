@@ -1,0 +1,141 @@
+@import "fonts.less";
+@import (inline) "../lib/magnific-popup/dist/magnific-popup.css";
+@import "../lib/bootstrap/less/bootstrap.less";
+@import "../lib/retina.js/src/retina.less";
+@import "common.less";
+
+@font-size-h1: 32px;
+@headings-font-weight:    300;
+@headings-color: @brand-primary;
+
+h4 {
+  font-weight: 400;
+  text-align: center;
+  margin: 10px 0px 0px;
+}
+
+strong {
+  font-weight: 600;
+}
+
+p {
+  margin: 0px auto;
+  max-width: 750px;
+  font-size: 16px;
+}
+
+/////////////////////// LANDING SECTION 0: INTRO /////////////////////
+
+#intro{
+  .at2x('/static/beta/build/img/landing_intro_pattern.jpg', 58px, 102px);
+  margin: 0 auto;
+  padding: 100px 0px 0px;
+}
+.social-btns {
+  float: right; 
+  a { display: block; margin-bottom: 10px; }
+}
+.app-btns {
+  a { float: right; margin-left: 10px; }
+  margin: 40px 0px 30px;
+}
+.logo-claim {
+  margin: 20px auto 0px;
+  img { display: inline-block; }
+  h2 { color: white; font-size: 24px; font-weight: 400; }
+}
+.features {
+  display: inline-block;
+  margin: 40px auto 40px;
+  .feature {
+    float: left;
+    text-align: center;
+    margin-right: 20px;
+    color: white;
+    img { display: block; margin-bottom: 10px; }
+    p { font-weight: 400; }
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.btn-video {
+  .button-variant(white, rgba(255, 255, 255, 0), white);
+  box-shadow: inset 0 0 4px #fff;
+  padding: 10px 20px;
+  &:hover {
+    box-shadow: inset 0 0 8px #fff;
+  }
+}
+
+/////////////////////// LANDING SECTION 1: OPEN /////////////////////
+
+#open { padding: 60px 0px 60px; }
+#apuesta-basica-img { margin-top: 120px; }
+#subasta-img { margin-top: 98px; }
+#porra-img { margin-top: 65px; }
+
+#parallax1 {
+    height: 500px;
+    background: url('http://i.istockimg.com/file_thumbview_approve/35341688/2/stock-photo-35341688-young-man-using-smart-phone.jpg') 50% 0 no-repeat fixed;
+    background-size: cover;
+}
+
+/////////////////////// LANDING SECTION 2: SOCIAL /////////////////////
+
+#social { padding: 60px 0px 60px; border-bottom: 1px solid #999; }
+#social-text {
+  padding: 100px 90px 0px 0px;
+  p { margin-top: 20px; }
+}
+
+/////////////////////// LANDING SECTION 3: SELF-MANAGED /////////////////////
+
+#selfmanaged { padding: 60px 0px 60px; }
+#selfmanaged-text {
+  padding: 90px 60px 0px 30px;
+  p { margin-top: 20px; }
+}
+
+#parallax2 {
+    height: 500px;
+    background: url('http://i.istockimg.com/file_thumbview_approve/21992271/2/stock-photo-21992271-babyfoot.jpg') 50% 0 no-repeat fixed;
+    background-size: cover;
+}
+
+/////////////////////// LANDING SECTION 4: FUN /////////////////////
+
+#fun {
+  .at2x('/static/beta/build/img/trofeo.png', 700px);
+  background-repeat: no-repeat;
+  background-position: right 30% bottom;
+  padding: 120px 0px 160px;
+}
+#fun-text p { margin-top: 20px; }
+
+/////////////////////// LANDING SECTION 5: CLOSING /////////////////////
+
+@closing-height: 500px;
+
+#closing {
+  height: @closing-height;
+  #closing-left {
+    .at2x('/static/beta/build/img/closing.jpg', 700px);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-color: #000;
+    height: @closing-height;
+  }
+  #closing-right {
+    .at2x('/static/beta/build/img/landing_intro_pattern.jpg', 58px, 102px);
+    height: @closing-height;
+    .closing-right-content {
+      max-width: 500px;
+      padding-top: 80px;
+      text-align: center;
+      p, h1 { color: white; margin-bottom: 20px; }
+    }
+  }
+}

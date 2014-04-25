@@ -14,7 +14,6 @@
   {% endblock %}
   <title>{% block title %}Dareyoo (beta){% endblock %}</title>
   {% block css %}
-  <link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/dareyoo.all.min.css">
   {% endblock %}
 {% endblock %}
 </head>
@@ -43,12 +42,6 @@
   </script>
   {% endblock %}
   {% block js %}
-  <script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
-  <!-- Checks if jQuery is loaded. If not, we load it from our server -->
-  <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}beta/build/js/jquery.min.js"><'+'/script>')</script>
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-  <!-- Checks if Twitter Bootstrap is loaded. If not, we load it from our server -->
-  <script>(typeof $().modal == 'function') || (document.write('<script src="{{ STATIC_URL }}beta/build/js/bootstrap.min.js"><'+'/script>'))</script>
   {% endblock %}
 </body>
 </html>

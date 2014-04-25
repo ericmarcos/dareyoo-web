@@ -1,4 +1,4 @@
-//sudo npm install --save-dev gulp yargs gulp-if gulp-uglify gulp-size gulp-less gulp-rename gulp-replace gulp-git gulp-s3 gulp-clean
+//sudo npm install --save-dev gulp gulp-shell yargs gulp-if gulp-uglify gulp-size gulp-less gulp-rename gulp-replace gulp-git gulp-s3 gulp-clean
 
 var gulp = require('gulp');
 var args   = require('yargs').argv;
@@ -6,34 +6,53 @@ var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var size = require('gulp-size');
 var less = require('gulp-less');
+var imagemin = require('gulp-imagemin');
 var rename = require("gulp-rename");
 var replace = require("gulp-replace");
 var git = require("gulp-git");
 var s3 = require("gulp-s3");
 var clean = require("gulp-clean");
 var print = require("gulp-print");
+var gulpif = require("gulp-if");
+var connect = require("gulp-connect");
+var shell = require("gulp-shell");
 
-var isPro = args.pro;
+var isPro = args.pro || args.server == "pro";
 var isPre = args.pre;
 
 var paths = {
   html: ['./static/beta/partials/**'],
-  scripts: ['./static/beta/js/ng-time-relative.js',
+  app_scripts: ['./static/beta/js/ng-time-relative.js',
             './static/beta/js/services.js',
             './static/beta/js/directives.js',
             './static/beta/js/controllers.js',
             './static/beta/js/app.js'],
-  scripts_libs: ['./static/beta/lib/jquery/dist/jquery.min.js',
+  app_scripts_libs: ['./static/beta/lib/jquery/jquery.min.js',
                 './static/beta/lib/bootstrap/dist/js/bootstrap.min.js',
                 './static/beta/lib/angular/angular.min.js',
                 './static/beta/lib/angular-route/angular-route.min.js',
                 './static/beta/lib/angular-bootstrap/ui-bootstrap-tpls.min.js',
                 './static/beta/lib/angular-ui-router/release/angular-ui-router.min.js',
                 './static/beta/lib/angular-cookies/angular-cookies.min.js',
-                './static/beta/lib/momentjs/min/moment-with-langs.min.js'],
-  less: './static/beta/less/dareyoo.less',
-  less_libs: ['./static/beta/less', './static/beta/lib/bootstrap/less'],
+                './static/beta/lib/momentjs/min/moment-with-langs.min.js',
+                './static/beta/lib/retina.js/dist/retina.min.js'],
+  landing_scripts: ['./static/beta/js/landing.js'],
+  landing_scripts_libs: ['./static/beta/lib/jquery/jquery.min.js',
+                './static/beta/lib/jquery.scrollTo/jquery.scrollTo.min.js',
+                './static/beta/lib/jquery.localScroll/jquery.localScroll.min.js',
+                './static/beta/lib/jquery.parallax/jquery.parallax.js',
+                './static/beta/lib/bootstrap/dist/js/bootstrap.min.js',
+                './static/beta/lib/retina.js/dist/retina.min.js',
+                './static/beta/lib/magnific-popup/dist/jquery.magnific-popup.min.js'],
+  app_less: ['./static/beta/less/app.less'],
+  landing_less: ['./static/beta/less/landing.less'],
+  less_libs: ['./static/beta/less',
+              './static/beta/lib/bootstrap/less',
+              './static/beta/lib/retina.js/src/retina.less',
+              './static/beta/less/common.less',
+              './static/beta/less/fonts.less'],
   css_libs: [],
+  images: ['./static/beta/img/**'],
   fonts_libs: ['./static/beta/lib/bootstrap/dist/fonts/**']
 };
 
@@ -46,31 +65,52 @@ gulp.task('html', function(){
 
 gulp.task('copy_scripts', function() {
   // Copy vendor JavaScript
-  return gulp.src(paths.scripts_libs.concat(paths.scripts))
+  return gulp.src(paths.app_scripts_libs.concat(paths.app_scripts))
     .pipe(size())
     .pipe(gulp.dest('./static/beta/build/js'));
 });
 
-gulp.task('dareyoo_all_min_scripts', function() {
+gulp.task('app_all_min_scripts', function() {
   // Unify, minify and copy all JavaScript
-  return gulp.src(paths.scripts_libs.concat(paths.scripts))
+  return gulp.src(paths.app_scripts_libs.concat(paths.app_scripts))
     //.pipe(uglify())
     //.pipe(print())
-    .pipe(concat('dareyoo.all.min.js'))
+    .pipe(concat('dareyoo_app.all.min.js'))
+    .pipe(size())
+    .pipe(gulp.dest('./static/beta/build/js'));
+});
+
+gulp.task('landing_all_min_scripts', function() {
+  // Unify, minify and copy all JavaScript
+  return gulp.src(paths.landing_scripts_libs.concat(paths.landing_scripts))
+    //.pipe(uglify())
+    //.pipe(print())
+    .pipe(concat('dareyoo_landing.all.min.js'))
     .pipe(size())
     .pipe(gulp.dest('./static/beta/build/js'));
 });
 
 // All scripts
-gulp.task('scripts', ['copy_scripts', 'dareyoo_all_min_scripts']);
+gulp.task('scripts', ['copy_scripts', 'app_all_min_scripts', 'landing_all_min_scripts']);
 
-gulp.task('less', function () {
-  return gulp.src(paths.less)
+gulp.task('app_less', function () {
+  return gulp.src(paths.app_less)
         .pipe(less({
             compress: true,
             paths: paths.less_libs
         }))
-        .pipe(rename('dareyoo.all.min.css'))
+        .pipe(rename('dareyoo_app.all.min.css'))
+        .pipe(size())
+        .pipe(gulp.dest('./static/beta/build/css'));
+});
+
+gulp.task('landing_less', function () {
+  return gulp.src(paths.landing_less)
+        .pipe(less({
+            compress: true,
+            paths: paths.less_libs
+        }))
+        .pipe(rename('landing.all.min.css'))
         .pipe(size())
         .pipe(gulp.dest('./static/beta/build/css'));
 });
@@ -82,7 +122,7 @@ gulp.task('vendor_css', function () {
 });
 
 // All css
-gulp.task('css', ['less', 'vendor_css']);
+gulp.task('css', ['app_less', 'landing_less']);
 
 gulp.task('fonts', function () {
   return gulp.src(paths.fonts_libs)
@@ -96,12 +136,18 @@ gulp.task('paths', function () {
 });
 
 gulp.task('images', function () {
-  console.log("Treating images...");
+  return gulp.src(paths.images)
+        .pipe(imagemin())
+        .pipe(gulp.dest('./static/beta/build/img'));
 });
 
 // Rerun the task when a file changes
 gulp.task('watch', function() {
-  gulp.watch(paths.less_libs, ['less']);
+  gulp.watch(paths.app_scripts, ['scripts']);
+  gulp.watch(paths.landing_scripts, ['scripts']);
+  gulp.watch(paths.landing_less.concat(paths.less_libs), ['css']);
+  gulp.watch(paths.app_less.concat(paths.less_libs), ['css']);
+  gulp.watch(paths.images, ['images']);
 });
 
 // Deploy to S3. TODO (this code is just an example)
@@ -115,11 +161,22 @@ gulp.task('s3', function() {
 gulp.task('deploy', function(done){
   //var options = {args: " -f"};
   var options = {};
-  git.push('pro', 'master', options, done);
+  var branch = "master";
+  console.log('Branch: ' + JSON.stringify(process.stdout, null, 4) + '.');
+  //git.push('pro', 'master', options, done);
 });
 
 gulp.task('clean', function () {
     return gulp.src(['build/css', 'build/js', 'build/img', 'build/partials'], {read: false}).pipe(clean());
+});
+
+gulp.task('env', function () {
+    console.log('Env ' + process.env.PROJECT_NAME);
+    process.env.PROJECT_NAME = isPro;
+    console.log('Env ' + process.env.PROJECT_NAME);
+    return gulp.src(paths.images)
+        .pipe(gulpif(isPro == "lala", shell('echo $PROJECT_NAME')))
+        .pipe(gulpif(!isPro, shell('pwd')))
 });
 
 // Build
