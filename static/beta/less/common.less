@@ -1,3 +1,11 @@
+///////// Custom media queries //////////
+
+@xs: ~'max-width: @{screen-xs}';
+@sm: ~'max-width: @{screen-sm}';
+@md: ~'max-width: @{screen-md}';
+@retina: @highdpi; //defined at retina.less
+
+
 //Overriding common vars
 @brand-primary: #ff4c4c;
 @font-family-custom: 'Source Sans Pro', Tahoma, sans-serif;
@@ -54,6 +62,14 @@
 
 @nav-open-link-hover-color:                 #fff;
 
+.navbar-padding-active() {
+  padding-top: @navbar-padding-vertical - 4;
+  padding-bottom: @navbar-padding-vertical - 0;
+  @media @retina {
+    padding-top: @navbar-padding-vertical - 3;
+    padding-bottom: @navbar-padding-vertical - 1;
+  }
+}
 
 // Default navbar
 .navbar-default {
@@ -66,8 +82,7 @@
 
   .navbar-nav > .active > a {
     border-top: 4px solid @brand-primary;
-    padding-top: @navbar-padding-vertical - 3;
-    padding-bottom: @navbar-padding-vertical - 1;
+    .navbar-padding-active();
     color: @brand-primary;
     font-weight: bold;
     //#gradient > .vertical(@start-color: darken(@navbar-default-bg, 5%); @end-color: darken(@navbar-default-bg, 2%));
@@ -85,8 +100,7 @@
     &:hover,
     &:focus  {
       border-top: 4px solid @brand-primary;
-      padding-top: @navbar-padding-vertical - 3;
-      padding-bottom: @navbar-padding-vertical - 1;
+      .navbar-padding-active();
       color: @brand-primary;
     }
   }
