@@ -5,17 +5,17 @@
 @import "common.less";
 
 @font-size-h1: 32px;
-@headings-font-weight:    300;
+@headings-font-weight:    @light;
 @headings-color: @brand-primary;
 
 h4 {
-  font-weight: 400;
+  font-weight: @regular;
   text-align: center;
   margin: 10px 0px 0px;
 }
 
 strong {
-  font-weight: 600;
+  font-weight: @bold;
 }
 
 p {
@@ -48,7 +48,7 @@ p {
 .logo-claim {
   margin: 20px auto 0px;
   img { display: inline-block; }
-  h2 { color: white; font-size: 24px; font-weight: 400; }
+  h2 { color: white; font-size: 24px; font-weight: @regular; }
 }
 .features {
   display: inline-block;
@@ -59,7 +59,7 @@ p {
     margin-right: 20px;
     color: white;
     img { display: block; margin-bottom: 10px; }
-    p { font-weight: 400; }
+    p { font-weight: @regular; }
     &:hover {
       text-decoration: underline;
     }

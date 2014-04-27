@@ -22,7 +22,36 @@
 {% endblock %}
   {% block navbar %}
   {% endblock %}
-  {% block content %}{% endblock %}
+  {% block content %}
+
+<nav class="navbar-default navbar-fixed-top" id="nav-top" role="navigation">
+<!-- Brand and toggle get grouped for better mobile display -->
+  <div class="container">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#landing-navbar-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="/"><img src="{{ STATIC_URL }}beta/build/img/logo_small.png"></a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="landing-navbar-collapse">
+    <ul class="nav navbar-nav navbar-left">
+      <li {% if request.resolver_match.url_name == "beta-como" %}class="active"{% endif %}><a href="#">CÓMO FUNCIONA</a></li>
+      <li {% if request.resolver_match.url_name == "beta-quienes" %}class="active"{% endif %}><a href="#">QUIÉNES SOMOS</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li {% if request.resolver_match.url_name == "beta-register" %}class="active"{% endif %}><a href="{% url "beta-login" %}">Registrar</a></li>
+      <li {% if request.resolver_match.url_name == "beta-login" %}class="active"{% endif %}><a href="{% url "beta-login" %}">Login</a></li>
+    </ul>
+  </div><!-- /.navbar-collapse -->
+  </div>
+</nav>
+
+  {% endblock %}
   {% block footer %}{% endblock %}
   {% block analytics %}
   <script type="text/javascript">

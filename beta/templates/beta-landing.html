@@ -6,33 +6,7 @@
 {% endblock %}
 
 {% block content %}
-<nav class="navbar-default navbar-fixed-top" id="nav-top" role="navigation">
-<!-- Brand and toggle get grouped for better mobile display -->
-  <div class="container">
-  <div class="navbar-header">
-    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#landing-navbar-collapse">
-      <span class="sr-only">Toggle navigation</span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
-    <a class="navbar-brand" href="#"><img src="{{ STATIC_URL }}beta/build/img/logo_small.png"></a>
-  </div>
-
-  <!-- Collect the nav links, forms, and other content for toggling -->
-  <div class="collapse navbar-collapse" id="landing-navbar-collapse">
-    <ul class="nav navbar-nav navbar-left">
-      <li class="active"><a href="#">WHAT IS IT</a></li>
-      <li class=""><a href="#">ABOUT US</a></li>
-      <li class=""><a href="#">CONTACT</a></li>
-    </ul>
-    <ul class="nav navbar-nav navbar-right">
-      <li><a href="{% url "beta-login" %}">Register</a></li>
-      <li><a href="{% url "beta-login" %}">Login</a></li>
-    </ul>
-  </div><!-- /.navbar-collapse -->
-  </div>
-</nav>
+{{ block.super }}
 
 
 <header id="intro">

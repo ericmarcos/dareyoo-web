@@ -18,7 +18,7 @@ def login_view(request):
                 login(request, user)
                 return HttpResponseRedirect(reverse('beta-home'))
             params['errors'].append('Invalid username or password')
-        return render_to_response('beta-landing.html', context_instance=RequestContext(request, params))
+        return render_to_response('beta-login.html', context_instance=RequestContext(request, params))
 
 
 def logout_view(request):
