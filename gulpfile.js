@@ -23,6 +23,7 @@ var isPre = args.pre;
 var paths = {
   html: ['./static/beta/partials/**'],
   app_scripts: ['./static/beta/js/ng-time-relative.js',
+            './static/beta/js/fb-login.js',
             './static/beta/js/services.js',
             './static/beta/js/directives.js',
             './static/beta/js/controllers.js',
@@ -36,7 +37,8 @@ var paths = {
                 './static/beta/lib/angular-cookies/angular-cookies.min.js',
                 './static/beta/lib/momentjs/min/moment-with-langs.min.js',
                 './static/beta/lib/retina.js/dist/retina.min.js'],
-  landing_scripts: ['./static/beta/js/landing.js'],
+  landing_scripts: ['./static/beta/js/fb-login.js',
+                    './static/beta/js/landing.js'],
   landing_scripts_libs: ['./static/beta/lib/jquery/jquery.min.js',
                 './static/beta/lib/jquery.scrollTo/jquery.scrollTo.min.js',
                 './static/beta/lib/jquery.localScroll/jquery.localScroll.min.js',

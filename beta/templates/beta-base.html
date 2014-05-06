@@ -42,6 +42,7 @@
     <ul class="nav navbar-nav navbar-left">
       <li {% if request.resolver_match.url_name == "beta-como" %}class="active"{% endif %}><a href="#">CÓMO FUNCIONA</a></li>
       <li {% if request.resolver_match.url_name == "beta-quienes" %}class="active"{% endif %}><a href="#">QUIÉNES SOMOS</a></li>
+      <li {% if request.resolver_match.url_name == "beta-faq" %}class="active"{% endif %}><a href="#">FAQ</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li {% if request.resolver_match.url_name == "beta-register" %}class="active"{% endif %}><a href="{% url "beta-login" %}">Registrar</a></li>
