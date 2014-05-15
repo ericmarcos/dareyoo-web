@@ -11,7 +11,6 @@ angular.module('dareyoo.directives', [])
       scope: {
         bet: '='
       },
-      //templateUrl: '/static/alpha/partials/directives/dy-bet-list-item.html'
       templateUrl: config.static_url + 'beta/build/partials/directives/dy-bet-list-item.html'
     };
   }])
@@ -21,7 +20,6 @@ angular.module('dareyoo.directives', [])
       scope: {
         user: '=',
       },
-      //templateUrl: '/static/alpha/partials/directives/dy-user-pic.html',
       templateUrl: config.static_url + 'beta/build/partials/directives/dy-user-pic.html',
       link: function(scope, element, attrs) {
         var size = 'small';
@@ -39,7 +37,6 @@ angular.module('dareyoo.directives', [])
         user: '=',
         inAlert: '='
       },
-      //templateUrl: '/static/alpha/partials/directives/dy-user-name.html'
       templateUrl: config.static_url + 'beta/build/partials/directives/dy-user-name.html'
     };
   }])
@@ -49,7 +46,6 @@ angular.module('dareyoo.directives', [])
       scope: {
         limit: '='
       },
-      //templateUrl: '/static/alpha/partials/directives/dy-bidding-deadline.html'
       templateUrl: config.static_url + 'beta/build/partials/directives/dy-bidding-deadline.html'
     };
   }])
@@ -59,7 +55,22 @@ angular.module('dareyoo.directives', [])
       scope: {
         limit: '='
       },
-      //templateUrl: '/static/alpha/partials/directives/dy-event-deadline.html'
       templateUrl: config.static_url + 'beta/build/partials/directives/dy-event-deadline.html'
     };
-  }]);
+  }])
+  .directive("fileread", [function () {
+    //http://stackoverflow.com/questions/17063000/ng-model-for-input-type-file
+    return {
+        link: function (scope, element, attributes) {
+            element.bind("change", function (changeEvent) {
+                var reader = new FileReader();
+                reader.onload = function (loadEvent) {
+                    scope.$apply(function () {
+                        scope.fileread = loadEvent.target.result;
+                    });
+                }
+                reader.readAsDataURL(changeEvent.target.files[0]);
+            });
+        }
+    }
+}]);

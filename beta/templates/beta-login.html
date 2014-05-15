@@ -2,30 +2,49 @@
 {% block css %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/landing.all.min.css">
+<style type="text/css">
+    html, body { height: 100%; }
+</style>
 {% endblock %}
 {% block content %}
 {{ block.super }}
-<div id="login" class="container text-center" style="max-width:300px; margin-top:200px">
-    <h1>Dareyoo (beta)</h1>
-    <form role="form" name="LoginForm" action="{% url 'beta-login' %}" method="post">
-    {% csrf_token %}
-    {% if next %}
-        <input type="hidden" name="next" value="{{ next }}" />
-        {% endif %}
-        <div id="name-group" class="form-group">
-            <input type="text" id="username" name="username" class="form-control" placeholder="email">
-            <span class="help-block"></span>
+<div class="vertical-center text-center">
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 col-md-offset-3 right-divider">
+            <p>Iniciar sesión:</p><br>
+            {% for error in errors %}
+            <div class="alert alert-danger">{{error}}</div>
+            {% endfor %}
 
-            <input type="password" id="password" name="password" placeholder="password" class="form-control">
-            <span class="help-block"></span>
+            <form method="post" role="form" name="LoginForm" action="{% url 'django.contrib.auth.views.login' %}">
+            {% csrf_token %}
+            <div id="name-group" class="form-group">
+                <input type="text" id="username" name="username" class="form-control" placeholder="email">
+                <span class="help-block"></span>
+
+                <input type="password" id="password" name="password" placeholder="password" class="form-control">
+                <span class="help-block"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Login</button>
+            <input type="hidden" name="next" value="{{ next }}" />
+            </form>
         </div>
-        {% for error in errors %}
-        <div class="alert alert-danger">{{error}}</div>
-        {% endfor %}
-        <button type="submit" class="btn btn-primary">Login</button>
-        <fb:login-button scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button>
-        <p><br><br><a href="/recover-password">Forgot your password?</a></p>
-        <p><br>Don't have an account? <a href="/register">Register here</a>.</p>
-    </form>
+        <div class="col-md-3">
+            <p>Iniciar sesión con otro proveedor:</p><br><br>
+            <a href="{% url 'social:begin' "facebook" %}">
+                <button class='zocial facebook'>Facebook Login</button>
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <p><br><br><a href="/recover-password">Olvidaste tu password?</a></p>
+            <p><br>¿Aún no has creado una cuenta? <a href="{% url 'beta-register' %}">Regístrate aquí</a>.</p>
+        </div>
+    </div>
 </div>
+</div>
+
 {% endblock %}

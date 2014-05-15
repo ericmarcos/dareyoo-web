@@ -16,13 +16,16 @@ class TimeRangeQuerySet(QuerySet):
         today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
         monday = today + timedelta(days=-today.weekday(), weeks=-prev_weeks)
         sunday = monday + timedelta(weeks=1) # this is actually next monday
-        return self.filter(created_at__range=(monday, sunday))
+        return self.between(monday, sunday)
 
     def month(self, prev_months=0):
         first = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         first = first + relativedelta(months=-prev_months)
         last = first + relativedelta(months=1)
-        return self.filter(created_at__range=(first, last))
+        return self.between(first, last)
+
+    def between(self, start, end):
+        return self.filter(created_at__range=(start, end))
 
 
 class TagQuerySet(QuerySet):
@@ -54,6 +57,9 @@ class UserPointsManager(models.Manager):
         qs = qs.values('user').annotate(total_points=Sum('points'))
         qs = qs.order_by('-total_points')
         return qs
+
+    def sum(self):
+        return self.get_queryset().sum()
 
     def week(self, prev_weeks=0):
         return self.get_queryset().week(prev_weeks)
@@ -88,6 +94,10 @@ class UserPointsManager(models.Manager):
         cqs = self.get_clean_queryset().month(prev_months).tag(tag)
         pos = cqs.values('user').annotate(total_points=Sum('points')).filter(total_points__gt=points).count()
         return pos + 1
+
+    #level of experience
+    def level(self):
+        return UserPoints.calculate_level(self.sum())
 
 
 class UserPointsFactory:
@@ -128,8 +138,17 @@ class UserPoints(models.Model):
     points = models.FloatField(blank=True, null=True, default=0)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True, editable=False)
 
+    @staticmethod
+    def calculate_level(points):
+        return math.floor(math.sqrt(points/1000.)) + 1
+
+    @staticmethod
+    def calculate_level_bounds(points):
+        level = UserPointsFactory.calculate_level(points)
+        return ((level - 1)**2*1000, level**2*1000)
 
     def calculatePointsFromBet(self, bid=None):
+        #TODO: this code is soooo ugly...
         winners = self.bet.winners() if self.bet else None
         ref = self.bet.referee if self.bet else None
         if ref:
@@ -169,24 +188,34 @@ class UserPoints(models.Model):
 
 
     winner_factor = 4
-    loser_factor = 1
+    loser_factor = 0.5
+    lottery_factor = 0.2
 
     def pointsFromAmount(self, q0, q1, p):
         '''p=0 (False) means q0 is the winner. p=1 (True) means q1 is the winner'''
         pot = q0 + q1
-        risc0 = (pot*0.5/q0)**0.2
-        risc1 = (pot*0.5/q1)**0.2
+        risc0 = (pot*0.5/float(q0))**0.2
+        risc1 = (pot*0.5/float(q1))**0.2
         if p:
             return (math.floor(pot*risc1*self.winner_factor), math.floor(pot*risc0*self.loser_factor))
         else:
             return (math.floor(pot*risc0*self.winner_factor), math.floor(pot*risc1*self.loser_factor))
 
     def pointsFromAmountLottery(self, pot, ni, n, p):
-        risc = 1 - ni / n
+        risc = 1 - float(ni) / n
         if p:
-            return math.floor(pot*risc*self.winner_factor)
+            return math.floor(pot*risc*self.winner_factor*self.lottery_factor)
         else:
-            return math.floor(pot*risc*self.loser_factor)
+            return math.floor(pot*risc*self.loser_factor*self.lottery_factor)
 
+
+class UserBadges(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='badges', blank=True, null=True)
+    fair_play = models.SmallIntegerField(blank=True, null=True, default=0)
+    max_coins = models.SmallIntegerField(blank=True, null=True, default=0)
+    week_points = models.SmallIntegerField(blank=True, null=True, default=0)
+    loser = models.SmallIntegerField(blank=True, null=True, default=0)
+    straight_wins = models.SmallIntegerField(blank=True, null=True, default=0)
+    total_wins = models.SmallIntegerField(blank=True, null=True, default=0)
 
 import gamification.signals

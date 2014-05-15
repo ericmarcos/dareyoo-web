@@ -1,0 +1,9 @@
+{% extends "beta-base.html" %}
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/landing.all.min.css">
+{% endblock %}
+{% block content %}
+{{ block.super }}
+Logged out
+{% endblock %}

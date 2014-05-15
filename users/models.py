@@ -7,6 +7,7 @@ except ImportError:
     from urlparse import urljoin
     from urllib import urlencode
 
+import requests
 from django.utils.translation import ugettext_lazy as _
 from django.core import validators
 from django.db import models
@@ -36,15 +37,15 @@ class DareyooUser(AbstractEmailUser):
         validators=[
             validators.RegexValidator(re.compile('^[\w.@+-]+$'), _('Enter a valid username.'), 'invalid')
         ])
-    first_name = models.CharField(_('first name'), max_length=30, blank=True, null=True)
-    last_name = models.CharField(_('last name'), max_length=30, blank=True, null=True)
-    date_of_birth = models.DateField(blank=True, null=True)
     reference_user = models.ForeignKey('self', blank=True, null=True, related_name='invited_users')
+    registered = models.BooleanField(default=False)
     following = models.ManyToManyField('self', blank=True, null=True, symmetrical=False, related_name='followers')
-    facebook_uid = models.CharField(max_length=255, blank=True, null=True)
-
+    profile_pic = models.ImageField(upload_to='profiles', null=True, blank=True)
+    description = models.CharField(max_length=255, blank=True, null=True)
     coins_available = models.FloatField(blank=True, null=True, default=settings.INITIAL_COINS)
     coins_locked = models.FloatField(blank=True, null=True, default=0)
+    is_pro = models.BooleanField(default=False)
+    is_vip = models.BooleanField(default=False)
 
     def n_following(self):
         return self.following.all().count()
@@ -67,9 +68,6 @@ class DareyooUser(AbstractEmailUser):
 
     def is_following(self, user_id):
         return self.following.filter(id=user_id).exists()
-
-    def is_vip(self):
-        pass
 
     def has_funds(self, amount=None):
         if amount:
@@ -119,6 +117,33 @@ class DareyooUser(AbstractEmailUser):
             return urljoin(settings.AVATAR_GRAVATAR_BASE_URL, path)
 
         return default_avatar
+
+    def get_profile_pic_url(self):
+        if self.profile_pic:
+            return self.profile_pic._get_url()
+        else:
+            return ""
+
+    def get_fb_friends(self):
+        social_user = self.social_auth.filter(
+            provider='facebook',
+        ).first()
+        if social_user:
+            url = u'https://graph.facebook.com/{0}/' \
+                  u'friends?fields=id,name,picture' \
+                  u'&access_token={1}'.format(
+                      social_user.uid,
+                      social_user.extra_data['access_token'],
+                  )
+            resp = requests.get(url).json()
+            friends = resp['data']
+            while 'paging' in resp and 'next' in resp['paging']:
+                resp = requests.get(resp['paging']['next']).json()
+                friends.extend(resp['data'])
+            uids = [f['id'] for f in friends]
+            in_app_friends = DareyooUser.objects.filter(social_auth__uid__in=uids, social_auth__provider='facebook')
+            return in_app_friends
+        return []
 
     def __unicode__(self):
         return "%s - %s" % (self.email, self.username)

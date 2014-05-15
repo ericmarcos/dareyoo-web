@@ -2,8 +2,11 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.forms import EmailField
 from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
+from StringIO import StringIO
 from rest_framework import viewsets, permissions, renderers, status, generics
-from rest_framework.decorators import link, action
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.decorators import link, action, api_view
 from rest_framework.response import Response
 from .models import *
 from .serializers import *
@@ -53,6 +56,23 @@ class DareyooUserViewSet(viewsets.ModelViewSet):
         except DareyooUserException as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+    @link(permission_classes=[])
+    def pic(self, request, *args, **kwargs):
+        user = self.get_object()
+        if user.profile_pic and user.profile_pic._get_url():
+            return Response("", status=status.HTTP_303_SEE_OTHER, headers={'Location': user.profile_pic._get_url()})
+        else:
+            return Response({'detail': "No profile pic available"}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(permission_classes=[permissions.IsAuthenticated, IsSelfOrReadOnly], renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
+    def pic_upload(self, request, *args, **kwargs):
+        user = self.get_object()
+        ext = "jpg" if request.FILES['profile_pic'].content_type == 'image/jpeg' else 'png'
+        request.FILES['profile_pic'].name = '{0}_social.{1}'.format(user.id, ext)
+        user.profile_pic = request.FILES['profile_pic']
+        user.save()
+        return Response({'status': 'Profile pic uploaded successfully.', 'url': user.profile_pic._get_url()})
+
     @action(permission_classes=[permissions.IsAuthenticated], renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
     def follow(self, request, *args, **kwargs):
         user = self.get_object()
@@ -82,26 +102,19 @@ class MeUserView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
-@csrf_exempt
-def invite_request(request):
-    email = request.POST.get('email')
-    if request.is_ajax():
-        if email and isEmailAddressValid(email):
-            if len(DareyooUser.objects.filter(email=email)) > 0:
-                return HttpResponse("This email is already registered")
-            else:
-                u = DareyooUser.objects.create_user(email=request.POST.get('email'))
-                u.save()
-                return HttpResponse("ok")
-        else:
-            return HttpResponse("Invalid email")
-    else:
-        return HttpResponse("Invalid request")
+class SearchFacebookFriendsList(generics.ListAPIView):
+    model = DareyooUser
+    serializer_class = DareyooUserShortSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
- 
-def isEmailAddressValid(email):
-    try:
-        EmailField().clean(email)
-        return True
-    except ValidationError:
-        return False
+    def get_queryset(self):
+        return self.request.user.get_fb_friends()
+
+
+class SearchDareyooSuggestedList(generics.ListAPIView):
+    model = DareyooUser
+    serializer_class = DareyooUserShortSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        return DareyooUser.objects.filter(is_vip=True).order_by('?')

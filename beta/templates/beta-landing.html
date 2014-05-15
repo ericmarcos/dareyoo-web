@@ -3,18 +3,30 @@
 {% block css %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/landing.all.min.css">
+<style type="text/css">
+    #design {
+        background: url('/static/dareyoo_landing_v44.jpg');
+        background-size: 1600px 5349px;
+        opacity: 1;
+        z-index: 2;
+        position: absolute;
+        top: 0px;
+        left: -100px;
+        width: 1600px;
+        height: 5349px;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 {{ block.super }}
 
-
+<!-- <div id="design"></div> -->
 <header id="intro">
     <div class="container text-center">
         <div class="social-btns">
-            <a href=""><img src="{{ STATIC_URL }}beta/build/img/fb.png"></a>
-            <a href=""><img src="{{ STATIC_URL }}beta/build/img/twitter.png"></a>
-            <a href=""><img src="{{ STATIC_URL }}beta/build/img/linkedin.png"></a>
+            <a href=""><div class="fb"></div></a>
+            <a href=""><div class="twitter"></div></a>
         </div>
         <div class="logo-claim">
             <img src="{{ STATIC_URL }}beta/build/img/dareyoo_logo_white.png">
@@ -22,19 +34,19 @@
         </div>
         <div class="features">
             <a href="#free" class="feature">
-                <img src="{{ STATIC_URL }}beta/build/img/free_picto.png" alt="libre" width="80">
+                <img src="{{ STATIC_URL }}beta/build/img/free_picto.png" alt="libre">
                 <p>Libre</p>
             </a>
-            <a href="#social" class="feature">
-                <img src="{{ STATIC_URL }}beta/build/img/social_picto.png" alt="Social" width="80">
+            <a href="#social_a" class="feature">
+                <img src="{{ STATIC_URL }}beta/build/img/social_picto.png" alt="Social">
                 <p>Social</p>
             </a>
-            <a href="#selfmanaged" class="feature">
-                <img src="{{ STATIC_URL }}beta/build/img/self_managed_picto.png" alt="Auto-gestionado" width="80">
+            <a href="#democratic" class="feature">
+                <img src="{{ STATIC_URL }}beta/build/img/self_managed_picto.png" alt="Democrático">
                 <p>Democrático</p>
             </a>
-            <a href="#fun" class="feature">
-                <img src="{{ STATIC_URL }}beta/build/img/fun_picto.png" alt="Divertido" width="80">
+            <a href="#fun" class="feature" id="fun_feature">
+                <img src="{{ STATIC_URL }}beta/build/img/fun_picto.png" alt="Divertido">
                 <p>Divertido</p>
             </a>
         </div>
@@ -56,17 +68,17 @@
         <p class="text-center">Bienvenido a la primera red social de apuestas totalmente libre. Al contrario que en las casas de apuestas tradicionales, aquí sois los propios usuarios los que creáis las apuestas, sin límites ni restricciones.<br>Tienes tres modalidades de apuesta para elegir:</p>
         <div class="row text-center">
             <div class="col-md-4">
-                <img id="apuesta-basica-img" src="{{ STATIC_URL }}beta/build/img/apuesta_basica.png">
+                <img id="apuesta-basica-img" src="{{ STATIC_URL }}beta/build/img/apuesta_basica.png" width="260">
                 <h4>Apuesta básica</h4>
                 <p>El primero en aceptar será tu rival</p>
             </div>
             <div class="col-md-4">
-                <img id="subasta-img" src="{{ STATIC_URL }}beta/build/img/subasta.png">
+                <img id="subasta-img" src="{{ STATIC_URL }}beta/build/img/subasta.png" width="220">
                 <h4>Subasta</h4>
                 <p>Tú eliges la mejor oferta</p>
             </div>
             <div class="col-md-4">
-                <img id="porra-img" src="{{ STATIC_URL }}beta/build/img/porra.png">
+                <img id="porra-img" src="{{ STATIC_URL }}beta/build/img/porra.png" width="180">
                 <h4>Porra</h4>
                 <p>La de toda la vida</p>
             </div>
@@ -76,29 +88,29 @@
 
 <section id="parallax1"></section>
 
-<a id="social"></a>
+<a id="social_a"></a>
 <section id="social">
     <div class="container">
         <div class="row">
-            <div id="social-text" class="col-md-6">
+            <div id="social-text" class="col-md-6 col-md-offset-1">
                 <h1><strong>Reta a tus amigos,</strong><br>elige a tu rival</h1>
-                <p>Sigue a tus amigos para enterarte de qué estan jugando o envíales <a href="">apuestas privadas</a>. Busca los <a href="">eventos del momento</a> para encontrar apuestas más allá de tu círculo y juega contra usuarios de todo el mundo!</p> 
+                <p>Sigue a tus amigos para enterarte de a qué estan jugando o envíales <a href="">apuestas privadas</a>. Busca los <a href="">eventos del momento</a> para encontrar apuestas más allá de tu círculo y juega contra usuarios de todo el mundo!</p> 
             </div>
-            <div class="col-md-6 text-center">
+            <div class="col-md-4 text-right">
                 <img src="{{ STATIC_URL }}beta/build/img/social.png" height="380">
             </div>
         </div>
     </div>
 </section>
 
-<a id="selfmanaged"></a>
-<section id="selfmanaged">
+<a id="democratic"></a>
+<section id="democratic">
     <div class="container">
         <div class="row">
             <div class="col-md-6 text-center">
                 <img src="{{ STATIC_URL }}beta/build/img/juez.png" height="380">
             </div>
-            <div id="selfmanaged-text" class="col-md-6">
+            <div id="democratic-text" class="col-md-6">
                 <h1>Toma el control del juego,<br><strong>tu eres el protagonista</strong></h1>
                 <p>Como creador de una apuesta tendrás la responsabilidad de <a href="">resolverla</a> y como participante siempre tendrás derecho a <a href="">reclamar</a>.<br><br>En caso de conflicto, la apuesta será resuelta por otro usuario que actuará de <a href="">árbitro</a>, ¡cuida tu reputación para llegar a ser uno de ellos!</p> 
             </div>

@@ -44,17 +44,19 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'social_auth',
+#    'social_auth',
     'south',
     'gunicorn',
     'storages',
     'rest_framework',
     'djcelery',
     'kombu.transport.django',
-    'haystack',
+#    'haystack',
     'provider',
     'provider.oauth2',
     'custom_user',
+    'social.apps.django_app.default',
+#    'social.apps.django_app.me',
     'avatar',
     'dareyoo',
     'bets',
@@ -125,7 +127,9 @@ TEMPLATE_CONTEXT_PROCESSORS = ("django.contrib.auth.context_processors.auth",
                                 "django.core.context_processors.static",
                                 "django.core.context_processors.tz",
                                 "django.contrib.messages.context_processors.messages",
-                                "django.core.context_processors.request")
+                                "django.core.context_processors.request",
+                                "social.apps.django_app.context_processors.backends",
+                                "social.apps.django_app.context_processors.login_redirect",)
 
 ####### S3 Storage setup ########
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
@@ -174,38 +178,64 @@ CELERY_TIMEZONE = 'UTC'
 # Not using migrations for the following apps. (strange errors)
 SOUTH_MIGRATION_MODULES = {
     'provider': 'ignore',
-    'oauth2': 'ignore',
-    'social_auth': 'ignore',
+    'oauth2': 'ignore'
 }
 
+#AUTHENTICATION_BACKENDS = (
+#    'social_auth.backends.facebook.FacebookBackend',
+#    'django.contrib.auth.backends.ModelBackend',
+#)
+
+#FACEBOOK_APP_ID = os.environ.get('FACEBOOK_APP_ID')
+#FACEBOOK_API_SECRET = os.environ.get('FACEBOOK_API_SECRET')
+#FACEBOOK_EXTENDED_PERMISSIONS = ['email']
+SOCIAL_AUTH_FACEBOOK_KEY = os.environ.get('FACEBOOK_APP_ID')
+SOCIAL_AUTH_FACEBOOK_SECRET = os.environ.get('FACEBOOK_API_SECRET')
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email', 'user_friends']
+SOCIAL_AUTH_FACEBOOK_EXTRA_DATA = ['first_name', 'middle_name', 'last_name', 'locale', 'gender', 'location', 'timezone']
+
 AUTHENTICATION_BACKENDS = (
-    'social_auth.backends.facebook.FacebookBackend',
+    'social.backends.facebook.FacebookOAuth2',
+    'social.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 
-FACEBOOK_APP_ID = os.environ.get('FACEBOOK_APP_ID')
-FACEBOOK_API_SECRET = os.environ.get('FACEBOOK_API_SECRET')
-FACEBOOK_EXTENDED_PERMISSIONS = ['email']
+#http://python-social-auth.readthedocs.org/en/latest/configuration/settings.html#urls-options
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/app/main/timeline'
+SOCIAL_AUTH_LOGIN_URL = '/login/'
+SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/app/edit-profile?new'
+SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/new-association-redirect-url/'
+SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/account-disconnected-redirect-url/'
+SOCIAL_AUTH_INACTIVE_USER_URL = '/inactive-user/'
+
+SOCIAL_AUTH_STRATEGY = 'social.strategies.django_strategy.DjangoStrategy'
+SOCIAL_AUTH_STORAGE = 'social.apps.django_app.default.models.DjangoStorage'
 
 AUTH_USER_MODEL = 'users.DareyooUser'
 SOCIAL_AUTH_USER_MODEL = 'users.DareyooUser'
 
 SOCIAL_AUTH_PIPELINE = (
-    'social_auth.backends.pipeline.social.social_auth_user',
-    'social_auth.backends.pipeline.associate.associate_by_email',
-    'social_auth.backends.pipeline.user.get_username',
-    'social_auth.backends.pipeline.user.create_user',
-    'social_auth.backends.pipeline.social.associate_user',
-    'social_auth.backends.pipeline.social.load_extra_data',
-    'social_auth.backends.pipeline.user.update_user_details'
+    'social.pipeline.social_auth.social_details',
+    'social.pipeline.social_auth.social_uid',
+    'social.pipeline.social_auth.auth_allowed',
+    'social.pipeline.social_auth.social_user',
+    'social.pipeline.user.get_username',
+    'social.pipeline.user.create_user',
+    'social.pipeline.social_auth.associate_user',
+    'social.pipeline.social_auth.load_extra_data',
+    'social.pipeline.user.user_details',
+    'users.pipelines.save_profile_picture',
+    'users.pipelines.save_username',
+    'users.pipelines.save_reference_user',
+    'users.pipelines.save_registered',
 )
 
 ### Haystack ###
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
-    },
-}
+#HAYSTACK_CONNECTIONS = {
+#    'default': {
+#        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+#    },
+#}
 
 
 #### REST framework ####

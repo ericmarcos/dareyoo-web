@@ -1,0 +1,50 @@
+{% extends "beta-base.html" %}
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/landing.all.min.css">
+<style type="text/css">
+    html, body { height: 100%; }
+</style>
+{% endblock %}
+{% block content %}
+{{ block.super }}
+<div class="vertical-center text-center">
+<div class="container">
+    <div class="row fill">
+        <div class="col-md-3 col-md-offset-3 right-divider">
+            <p>Crear nueva cuenta:</p><br>
+            {% for error in errors %}
+            <div class="alert alert-danger">{{error}}</div>
+            {% endfor %}
+
+            <form method="post" role="form" name="LoginForm" action="{% url 'beta-register' %}">
+            {% csrf_token %}
+            <input type="text" id="email" name="email" class="form-control" placeholder="email">
+            <span class="help-block"></span>
+
+            <input type="password" id="password" name="password" placeholder="password" class="form-control">
+            <span class="help-block"></span>
+
+            <input type="password" id="password2" name="password2" placeholder="repite el password" class="form-control">
+            <span class="help-block"></span>
+
+            <button type="submit" class="btn btn-primary">Registrar</button>
+            <input type="hidden" name="next" value="{{ next }}" />
+            </form>
+        </div>
+        <div class="col-md-3">
+            <p>Registrarse con otro proveedor:</p><br><br>
+            <a href="{% url 'social:begin' "facebook" %}">
+                <button class='zocial facebook'>Regístrate con Facebook</button>
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3 text-center">
+            <p><br>Ya tienes una cuenta? <a href="{% url 'beta-login' %}">Inicia la sesión aquí</a>.</p>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}

@@ -4,6 +4,104 @@
 /* Controllers */
 
 angular.module('dareyoo.controllers', []).
+  controller('EditProfileCtrl', ['$scope', '$http', '$location', '$routeParams', 'config', 'blob', function($scope, $http, $location, $routeParams, config, blob) {
+    $scope.new_user = $location.search('new');
+    $scope.upload_state = 'initial';
+    if($scope.user) {
+      $scope.new_email = $scope.user.email;
+      $scope.new_username = $scope.user.username;
+      $scope.new_description = $scope.user.description;
+    } else {
+      $scope.$watch('user', function() {
+        if($scope.user) {
+          $scope.new_email = $scope.user.email;
+          $scope.new_username = $scope.user.username;
+          $scope.new_description = $scope.user.description;
+        }
+      });
+    }
+    $scope.$watch('fileread', function() {
+      if($scope.fileread) {
+        //http://stackoverflow.com/questions/15328191/shrink-image-before-uploading-with-javascript
+        $scope.upload_state = 'file_selected';
+        var tmp_img = new Image();
+        tmp_img.src = $scope.fileread;
+        tmp_img.onload = function() {
+          var canvas = document.createElement('canvas');
+          canvas.width = 200;
+          canvas.height = 200;
+          var ctx = canvas.getContext('2d');
+          var w = tmp_img.width;
+          var h = tmp_img.height;
+          if(w > h) {
+            ctx.drawImage(tmp_img, (w - h) / 2, 0, h, h, 0, 0, 200, 200);
+          } else {
+            ctx.drawImage(tmp_img, 0, (h - w) / 2, w, w, 0, 0, 200, 200);
+          }
+          $scope.shrinked = canvas.toDataURL();
+          $scope.new_pic = $scope.shrinked;
+          $scope.upload_state = 'file_processed';
+        }
+      }
+    });
+    $scope.$watch('upload_state', function() {
+      if($scope.upload_state == 'file_processed') {
+        $('#new_pic_preview').animate({left:40, opacity:1});
+        $('#old_pic_preview').animate({opacity:0.5});
+      }
+    });
+    $scope.cancelFile = function() {
+      $scope.upload_state = 'initial';
+      $('#new_pic_preview').animate({left:0, opacity:0});
+      $('#old_pic_preview').animate({opacity:1});
+    }
+    $scope.uploadFile = function(files) {
+      $scope.upload_state = 'file_uploading';
+      var fd = new FormData();
+      var b = blob($scope.shrinked);
+      fd.append("profile_pic", b, "profile_pic");
+      $http.post("/api/v1/users/" + $scope.user.id + "/pic_upload/", fd, {
+          withCredentials: true,
+          headers: {'Content-Type': undefined},
+          transformRequest: angular.identity
+      }).success(function(){
+        $scope.upload_state = 'initial';
+        $scope.user.pic = $scope.user.pic + "?" + new Date().getTime(); //refreshing img
+        $('#old_pic_preview').animate({opacity:1});
+      }).error(function(){
+        $scope.upload_state = 'file_uploaded_error';
+        $('#old_pic_preview').animate({opacity:1});
+      });
+    };
+    $scope.save = function() {
+      console.log("desc: " + $scope.new_description);
+      $http.put("/api/v1/users/" + $scope.user.id + "/", {
+          email: $scope.new_email,
+          username: $scope.new_username,
+          description: $scope.new_description
+      }).success(function(response){
+        if($scope.new_user) {
+          $scope.$state.go("who-to-follow");
+        }
+      }).error(function(response){
+        console.log(response);
+      });
+    };
+  }]).
+  controller('WhoToFollowCtrl', ['$scope', '$http', '$location', '$filter', function($scope, $http, $location, $filter) {
+    $scope.provider = '';
+    $scope.friends_list = [];
+    $scope.search_friends = function(provider) {
+      $scope.provider = provider;
+      var url = "/api/v1/search-dareyoo-suggested/";
+      if(provider == 'facebook')
+        url = "/api/v1/search-facebook-friends/";
+      $http.get(url).success(function(response) {
+        if(response.results) $scope.friends_list = response.results;
+        else $scope.friends_list = response;
+      });
+    };
+  }]).
   controller('RankingCtrl', ['$scope', '$http', '$location', '$filter', function($scope, $http, $location, $filter) {
     $scope.ranking = [];
     $scope.getRanking = function(order) {

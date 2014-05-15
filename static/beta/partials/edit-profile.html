@@ -1,0 +1,87 @@
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <h1 ng-if="!new_user">Editar perfil</h1>
+        <h1 ng-if="new_user">Completa tu perfil</h1>
+        <h3>Avatar</h3>
+        <div class="row avatar-edit">
+            <div class="col-md-2">
+                <div id="pic_preview">
+                    <!-- <dy-user-pic user="user" size="big"></dy-user-pic> -->
+                    <img id="old_pic_preview" ng-src="[[user.pic]]" class="img-circle" width="60" height="60">
+                    <img id="new_pic_preview" ng-show="upload_state=='file_processed'" ng-src="[[new_pic]]" class="img-circle" width="60" height="60">
+                </div>
+            </div>
+            <div class="col-md-10 buttons">
+                <span ng-show="upload_state=='initial'" class="btn btn-default btn-file">
+                    Elegir nueva imagen... <input type="file" id="pic" name="pic" fileread>
+                </span>
+                <span ng-show="upload_state=='file_selected'" class="btn btn-default btn-file active">
+                    Procesando...
+                </span>
+                <span ng-show="upload_state=='file_processed'" class="btn btn-default btn-file" ng-click="uploadFile()">
+                    Subir
+                </span>
+                <span ng-show="upload_state=='file_processed'" class="btn btn-danger btn-file" ng-click="cancelFile()">
+                    Cancelar
+                </span>
+                <span ng-show="upload_state=='file_uploading'" class="btn btn-default btn-file active">
+                    Guardando cambios...
+                </span>
+            </div>
+        </div>
+        <hr>
+        <h3>Password</h3>
+        <div class="row">
+            <div class="col-md-4">
+                <fieldset disabled>
+                <input type="password" id="password" name="password" class="form-control" value="00000000">
+                </fieldset>
+            </div>
+            <div class="col-md-4">
+                <button type="button" class="btn btn-default" ng-click="save()">
+                    Cambiar password
+                </button>
+            </div>
+        </div>
+        <hr>
+        <h3>Email</h3>
+        <div class="row">
+            <div class="col-md-4">
+                <input type="text" id="email" name="email" class="form-control" ng-model="new_email">
+            </div>
+        </div>
+        <h3>Username</h3>
+        <div class="row">
+            <div class="col-md-4">
+                <input type="text" id="username" name="username" class="form-control" ng-model="new_username">
+            </div>
+        </div>
+        <h3>Descripción</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <textarea id="description" name="description" class="form-control" rows="3">[[new_description]]</textarea>
+            </div>
+        </div>
+        <h3>Notificaciones</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="new_email_notifications">
+                        Recibir notificaciones por email
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" ng-show="!new_user" class="btn btn-default" ng-click="save()">
+                    Aceptar
+                </button>
+                <button type="button" ng-show="new_user" class="btn btn-default pull-right" ng-click="save()">
+                    Siguiente <small><span class="glyphicon glyphicon-chevron-right"></span></small>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

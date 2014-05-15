@@ -3,7 +3,7 @@ from django.db.models import Q
 from rest_framework import viewsets, permissions, renderers, status, mixins, generics
 from rest_framework.decorators import link, action
 from rest_framework.response import Response
-from haystack.query import SearchQuerySet
+#from haystack.query import SearchQuerySet
 from users.models import DareyooUserException
 from users.views import DareyooUserViewSet
 from users.serializers import *
@@ -197,14 +197,15 @@ class SearchBetsList(generics.ListAPIView):
     serializer_class = BetSerializer
 
     def get_queryset(self):
-        sqs = SearchQuerySet().models(Bet).load_all()
+        #sqs = SearchQuerySet().models(Bet).load_all()
+        sqs = Bet.objects.all()
         sqs = sqs.filter(bet_state='bidding')
         if self.request.user.is_authenticated():
             user = self.request.user
             sqs = sqs.filter(Q(public=True) | Q(author=user) | Q(recipients=user))
         else:
             sqs = sqs.filter(public=True)
-        sqs = sqs.auto_query(self.request.QUERY_PARAMS.get('q', ''))
+        #sqs = sqs.auto_query(self.request.QUERY_PARAMS.get('q', ''))
         sqs = sqs.order_by('bidding_deadline')
         return sqs
 

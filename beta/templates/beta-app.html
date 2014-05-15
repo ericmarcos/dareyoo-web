@@ -99,6 +99,6 @@
 <script src="{{ STATIC_URL }}beta/build/js/dareyoo_app.all.min.js"></script>
 <script type="text/javascript">
   angular.module('dareyoo').
-  constant('config', {static_url: {{ STATIC_URL }} });
+  constant('config', {static_url: "{{ STATIC_URL }}", fb_key: "{{ fb_key }}" });
 </script>
 {% endblock %}

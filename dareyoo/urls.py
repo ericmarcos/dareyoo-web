@@ -19,6 +19,8 @@ extra_api_urls = patterns('',
     url(r'^open-bets/$', OpenBetsList.as_view(), name='open-bets'),
     url(r'^me/$', MeUserPointsView.as_view(), name='me-user-detail'),
     url(r'^ranking/$', WeekRankingList.as_view(), name='ranking'),
+    url(r'^search-facebook-friends/$', SearchFacebookFriendsList.as_view(), name='search-facebook-friends'),
+    url(r'^search-dareyoo-suggested/$', SearchDareyooSuggestedList.as_view(), name='search-dareyoo-suggested'),
 )
 
 from django.contrib import admin
@@ -35,16 +37,11 @@ urlpatterns = patterns('',
     #url(r'^alpha/', include('alpha.urls')),
     url(r'^api/v1/', include(extra_api_urls)),
     url(r'^api/v1/', include(router.urls)),
-    #url(r'^api/v1/user/(?P<pk>[0-9]+)/followers/$', followers, name='followers'),
-    #url(r'^api/v1/user/(?P<pk>[0-9]+)/following/$', following, name='following'),
-    #url(r'^$', TemplateView.as_view(template_name="index.html"), name='home'),
     url(r'^oauth2/', include('provider.oauth2.urls', namespace = 'oauth2')),
     #(r'^api/', include(v1_api.urls)),
     url(r'^admin/', include(admin.site.urls)),
-    #url(r'', include('users.urls')),
-    url(r'', include('social_auth.urls')),
-    #url(r'', include('bets.urls')),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     (r'^avatar/', include('avatar.urls')),
+    url('', include('social.apps.django_app.urls', namespace='social'))
 )
 urlpatterns += staticfiles_urlpatterns()

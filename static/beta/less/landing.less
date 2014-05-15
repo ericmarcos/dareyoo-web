@@ -2,7 +2,10 @@
 @import (inline) "../lib/magnific-popup/dist/magnific-popup.css";
 @import "../lib/bootstrap/less/bootstrap.less";
 @import "../lib/retina.js/src/retina.less";
+@import "../lib/zocial-less/css/zocial.less";
 @import "common.less";
+
+@zocialPath: '../fonts';
 
 @font-size-h1: 32px;
 @headings-font-weight:    @light;
@@ -21,7 +24,15 @@ strong {
 p {
   margin: 0px auto;
   max-width: 750px;
-  font-size: 16px;
+  font-size: 19px;
+  font-weight: 300;
+  line-height: 22px;
+}
+
+body {
+  /*.at2x('/static/beta/build/img/paper.jpg', 500px, 593px);*/
+  background-image: url('/static/beta/build/img/paper.png');
+  background-repeat: repeat;
 }
 
 /////////////////////// LANDING SECTION 0: INTRO /////////////////////
@@ -33,7 +44,7 @@ p {
 }
 .social-btns {
   float: right; 
-  a { display: block; margin-bottom: 10px; }
+  a { display: block; }
 
   @media(@xs) {
     float: none;
@@ -41,66 +52,100 @@ p {
     a { display: inline-block; margin-bottom: 10px; }
   }
 }
+.fb {
+  width: 45px;
+  height: 45px;
+  .at2x('/static/beta/build/img/fb.png', 45px, 90px);
+  background-repeat: no-repeat;
+  &:hover {
+    background-position: 0 -45px;
+  }
+}
+.twitter {
+  width: 45px;
+  height: 45px;
+  .at2x('/static/beta/build/img/twitter.png', 45px, 90px);
+  background-repeat: no-repeat;
+  &:hover {
+    background-position: 0 -45px;
+  }
+}
 .app-btns {
   a { float: right; margin-left: 10px; }
   margin: 40px 0px 30px;
 }
 .logo-claim {
-  margin: 20px auto 0px;
-  img { display: inline-block; }
-  h2 { color: white; font-size: 24px; font-weight: @regular; }
+  img {
+    display: inline-block;
+    width: 233px;
+    height: 80px;
+    margin: 0px auto;
+  }
+  h2 {
+    color: white;
+    font-size: 22px;
+    font-weight: @light;
+    margin: 8px auto 0px;
+    width: 300px;
+    padding-right: 25px;
+  }
 }
 .features {
   display: inline-block;
   margin: 40px auto 40px;
   .feature {
     float: left;
+    width: 116px;
     text-align: center;
     margin-right: 20px;
     color: white;
+    #fun_feature { margin-right: 0px; }
     img { display: block; margin-bottom: 10px; }
-    p { font-weight: @regular; }
+    p { font-weight: @light; }
     &:hover {
       text-decoration: underline;
     }
   }
 }
 
-.btn-video {
-  .button-variant(white, rgba(255, 255, 255, 0), white);
-  box-shadow: inset 0 0 4px #fff;
-  padding: 10px 20px;
-  &:hover {
-    box-shadow: inset 0 0 8px #fff;
+.video-btn {
+  padding-right: 25px;
+  .btn-video {
+    .button-variant(white, rgba(255, 255, 255, 0), white);
+    box-shadow: inset 0 0 4px #fff;
+    padding: 10px 20px;
+    &:hover {
+      box-shadow: inset 0 0 8px #fff;
+    }
   }
 }
 
 /////////////////////// LANDING SECTION 1: OPEN /////////////////////
 
-#open { padding: 60px 0px 60px; }
+#open { padding: 30px 0px 60px; }
 #apuesta-basica-img { margin-top: 120px; }
 #subasta-img { margin-top: 98px; }
 #porra-img { margin-top: 65px; }
 
 #parallax1 {
     height: 500px;
-    background: url('http://i.istockimg.com/file_thumbview_approve/35341688/2/stock-photo-35341688-young-man-using-smart-phone.jpg') 50% 0 no-repeat fixed;
+    background: url('/static/beta/build/img/parallax1.jpg') 50% 0 no-repeat fixed;
     background-size: cover;
 }
 
 /////////////////////// LANDING SECTION 2: SOCIAL /////////////////////
 
-#social { padding: 60px 0px 60px; border-bottom: 1px solid #999; }
+#social { padding: 40px 20px 40px; border-bottom: 1px solid #999; }
 #social-text {
-  padding: 100px 90px 0px 0px;
+  padding: 60px 30px 0px 0px;
   p { margin-top: 20px; }
 }
 
-/////////////////////// LANDING SECTION 3: SELF-MANAGED /////////////////////
+/////////////////////// LANDING SECTION 3: DEMOCRATIC /////////////////////
 
-#selfmanaged { padding: 60px 0px 60px; }
-#selfmanaged-text {
-  padding: 90px 60px 0px 30px;
+#democratic { padding: 60px 0px 60px; }
+#democratic-text {
+  padding: 60px 60px 0px 30px;
   p { margin-top: 20px; }
 }
 
@@ -115,8 +160,8 @@ p {
 #fun {
   .at2x('/static/beta/build/img/trofeo.png', 700px);
   background-repeat: no-repeat;
-  background-position: right 30% bottom;
-  padding: 120px 0px 160px;
+  background-position: right 30% bottom -10px;
+  padding: 80px 0px 160px;
 }
 #fun-text p { margin-top: 20px; }
 
@@ -144,4 +189,11 @@ p {
       p, h1 { color: white; margin-bottom: 20px; }
     }
   }
+}
+
+/////////////////////// LOGIN/REGISTER /////////////////////
+
+.right-divider {
+  border-right:1px solid #ccc;
+  padding-right:24px;
 }

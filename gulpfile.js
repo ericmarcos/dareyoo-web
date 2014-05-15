@@ -23,7 +23,6 @@ var isPre = args.pre;
 var paths = {
   html: ['./static/beta/partials/**'],
   app_scripts: ['./static/beta/js/ng-time-relative.js',
-            './static/beta/js/fb-login.js',
             './static/beta/js/services.js',
             './static/beta/js/directives.js',
             './static/beta/js/controllers.js',
@@ -35,27 +34,31 @@ var paths = {
                 './static/beta/lib/angular-bootstrap/ui-bootstrap-tpls.min.js',
                 './static/beta/lib/angular-ui-router/release/angular-ui-router.min.js',
                 './static/beta/lib/angular-cookies/angular-cookies.min.js',
+                './static/beta/lib/angular-facebook/angular-facebook.js',
                 './static/beta/lib/momentjs/min/moment-with-langs.min.js',
-                './static/beta/lib/retina.js/dist/retina.min.js'],
-  landing_scripts: ['./static/beta/js/fb-login.js',
-                    './static/beta/js/landing.js'],
+                './static/beta/lib/retina.js/dist/retina.min.js',
+                './static/beta/lib/hello/dist/hello.all.js'],
+  landing_scripts: ['./static/beta/js/landing.js'],
   landing_scripts_libs: ['./static/beta/lib/jquery/jquery.min.js',
                 './static/beta/lib/jquery.scrollTo/jquery.scrollTo.min.js',
                 './static/beta/lib/jquery.localScroll/jquery.localScroll.min.js',
                 './static/beta/lib/jquery.parallax/jquery.parallax.js',
                 './static/beta/lib/bootstrap/dist/js/bootstrap.min.js',
                 './static/beta/lib/retina.js/dist/retina.min.js',
-                './static/beta/lib/magnific-popup/dist/jquery.magnific-popup.min.js'],
+                './static/beta/lib/magnific-popup/dist/jquery.magnific-popup.min.js',
+                './static/beta/lib/hello/dist/hello.all.min.js'],
   app_less: ['./static/beta/less/app.less'],
   landing_less: ['./static/beta/less/landing.less'],
   less_libs: ['./static/beta/less',
               './static/beta/lib/bootstrap/less',
               './static/beta/lib/retina.js/src/retina.less',
+              './static/beta/lib/zocial-less/css/zocial.less',
               './static/beta/less/common.less',
               './static/beta/less/fonts.less'],
   css_libs: [],
   images: ['./static/beta/img/**'],
-  fonts_libs: ['./static/beta/lib/bootstrap/dist/fonts/**']
+  fonts_libs: ['./static/beta/lib/bootstrap/dist/fonts/**',
+                './static/beta/lib/zocial-less/css/*webfont*']
 };
 
 gulp.task('html', function(){
@@ -145,6 +148,7 @@ gulp.task('images', function () {
 
 // Rerun the task when a file changes
 gulp.task('watch', function() {
+  gulp.watch(paths.html, ['html']);
   gulp.watch(paths.app_scripts, ['scripts']);
   gulp.watch(paths.landing_scripts, ['scripts']);
   gulp.watch(paths.landing_less.concat(paths.less_libs), ['css']);
@@ -182,7 +186,7 @@ gulp.task('env', function () {
 });
 
 // Build
-gulp.task('build', ['html', 'css', 'scripts', 'images', 'fonts']);
+gulp.task('build', ['html', 'css', 'scripts', 'fonts']);
 
 // Default task (called when you run `gulp` from cli)
 gulp.task('default', ['clean'], function () {

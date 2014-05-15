@@ -4,15 +4,13 @@ from users.serializers import DareyooUserFullSerializer, DareyooUserShortSeriali
 
 
 class DareyooUserPointsFullSerializer(DareyooUserFullSerializer):
-    n_following = serializers.Field(source='n_following')
-    n_followers = serializers.Field(source='n_followers')
-    avatar = serializers.Field(source='avatar')
     week_total_points = serializers.Field(source='points.week_sum')
     week_total_position = serializers.Field(source='points.week_pos')
+    level = serializers.Field(source='points.level')
 
     class Meta:
         model = DareyooUser
-        fields = ('url', 'id', 'username', 'avatar', 'first_name', 'last_name', 'coins_available', 'coins_locked', 'week_total_points', 'week_total_position', 'n_following', 'n_followers')
+        fields = ('url', 'id', 'username', 'email', 'description', 'pic', 'week_total_points', 'week_total_position', 'n_following', 'n_followers', 'level')
         read_only_fields = ('coins_available', 'coins_locked',)
 
 
