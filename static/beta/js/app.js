@@ -142,7 +142,7 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
       $http.get("/api/v1/me/").success(function(response) {
           $rootScope.user = response;
       });
-      $timeout($rootScope.getMe, 5000);
+      //$timeout($rootScope.getMe, 5000);
     };
 
     $rootScope.getNotifications = function() {
@@ -155,7 +155,7 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
           $rootScope.new_notifications = not.filter(function(elem) {return elem && elem.is_new;}).length;
         }
       });
-      $timeout($rootScope.getNotifications, 5000);
+      //$timeout($rootScope.getNotifications, 5000);
     };
 
     $rootScope.notificationsClick = function() {

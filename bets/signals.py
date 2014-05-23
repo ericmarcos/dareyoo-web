@@ -24,7 +24,6 @@ def bet_auto_queue_deadlines_tasks(sender, **kwargs):
     if settings.AUTO_QUEUE_DEADLINES:
         bet = kwargs.get('instance')
         transition = kwargs.get('name')
-        print bet, transition
         if transition == 'event':
             send_task('event_deadline', [bet.id], eta=bet.event_deadline)
 

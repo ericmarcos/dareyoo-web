@@ -97,7 +97,21 @@ class UserPointsManager(models.Manager):
 
     #level of experience
     def level(self):
-        return UserPoints.calculate_level(self.sum())
+        return UserPoints.level(self.sum())
+
+    def experience(self):
+        points = self.sum()
+        level = UserPoints.level(points)
+        bounds = UserPoints.level_bounds(points)
+        return {
+            'points': points,
+            'level': level,
+            'prev_level': bounds[0],
+            'next_level': bounds[1]
+        }
+
+    def level_bounds(self):
+        return UserPoints.calculate_level_bounds(self.sum())
 
 
 class UserPointsFactory:
@@ -139,13 +153,14 @@ class UserPoints(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True, editable=False)
 
     @staticmethod
-    def calculate_level(points):
-        return math.floor(math.sqrt(points/1000.)) + 1
+    def level(points):
+        return int(math.floor((max(points, 0)/1000.)**0.625) + 1)
 
     @staticmethod
-    def calculate_level_bounds(points):
-        level = UserPointsFactory.calculate_level(points)
-        return ((level - 1)**2*1000, level**2*1000)
+    def level_bounds(points):
+        level = UserPoints.level(points)
+        return (int(math.floor((level - 1)**1.6*1000)),
+                int(math.floor(level**1.6*1000)))
 
     def calculatePointsFromBet(self, bid=None):
         #TODO: this code is soooo ugly...
@@ -192,7 +207,8 @@ class UserPoints(models.Model):
     lottery_factor = 0.2
 
     def pointsFromAmount(self, q0, q1, p):
-        '''p=0 (False) means q0 is the winner. p=1 (True) means q1 is the winner'''
+        '''p=0 (False) means q0 is the winner. p=1 (True) means q1 is the winner
+        returns a tuple (points of the winner, points of the loser)'''
         pot = q0 + q1
         risc0 = (pot*0.5/float(q0))**0.2
         risc1 = (pot*0.5/float(q1))**0.2
@@ -202,6 +218,10 @@ class UserPoints(models.Model):
             return (math.floor(pot*risc0*self.winner_factor), math.floor(pot*risc1*self.loser_factor))
 
     def pointsFromAmountLottery(self, pot, ni, n, p):
+        '''pot = total amount involved in the lottery
+        ni = # of players involved in the current bid
+        n = # of players involved in the lottery
+        p = current user has won (current bid is the winner bid)'''
         risc = 1 - float(ni) / n
         if p:
             return math.floor(pot*risc*self.winner_factor*self.lottery_factor)
@@ -210,12 +230,136 @@ class UserPoints(models.Model):
 
 
 class UserBadges(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='badges', blank=True, null=True)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='badges', blank=True, null=True)
     fair_play = models.SmallIntegerField(blank=True, null=True, default=0)
     max_coins = models.SmallIntegerField(blank=True, null=True, default=0)
     week_points = models.SmallIntegerField(blank=True, null=True, default=0)
     loser = models.SmallIntegerField(blank=True, null=True, default=0)
     straight_wins = models.SmallIntegerField(blank=True, null=True, default=0)
     total_wins = models.SmallIntegerField(blank=True, null=True, default=0)
+
+    precal_total_wins = models.IntegerField(blank=True, null=True, default=0)
+
+    def unlock_badge(self, badge, level):
+        if badge in ["fair_play","max_coins","week_points","loser","straight_wins","total_wins"]:
+            prev = getattr(self, badge)
+            if level != prev:
+                setattr(self, badge, level)
+                self.save()
+                gamification.signals.badge_unlocked.send(sender=self.__class__, user=self.user, badge=badge, level=level, prev_level=prev)
+
+    @staticmethod
+    def fromBet(bet):
+        for user in bet.participants():
+            check_fair_play(user)
+            check_max_coins(user)
+            check_week_points(user)
+            check_loser(user)
+            check_straight_wins(user)
+            if user in bet.winners():
+                user.badges.precal_total_wins += 1
+                user.badges.save()
+            check_total_wins(user)
+
+    fair_play_levels = [4, 9, 19, 49]
+    @staticmethod
+    def check_fair_play(user):
+        #TODO: do it at DB level!
+        last_bets = user.bets.last_finished(50)
+        if len(last_bets) > 0:
+            current_level = user.badges.fair_play
+            straight = 0
+            for bet in last_bets:
+                if bet.has_conflict():
+                    break
+                straight += 1
+            if straight == 0 and current_level != 0:
+                user.badges.unlock_badge("fair_play", 0)
+            else:
+                next_level = sorted(fair_play_levels + [straight]).index(straight)
+                if next_level > current_level:
+                    user.badges.unlock_badge("fair_play", next_level)
+
+
+    max_coins_levels = [499, 999, 2999, 4999]
+    @staticmethod
+    def check_max_coins(user):
+        next_level = sorted(max_coins_levels + [user.coins_available]).index(user.coins_available)
+        if next_level > user.badges.max_coins:
+            user.badges.unlock_badge('max_coins', next_level)
+
+    week_points_levels = [499, 999, 2999, 4999]
+    @staticmethod
+    def check_week_points(user):
+        week_points = user.points.week_sum()
+        next_level = sorted(week_points_levels + [week_points]).index(week_points)
+        if next_level > user.badges.week_points:
+            user.badges.unlock_badge('week_points', next_level)
+
+    loser_levels = [4, 9, 14, 19]
+    @staticmethod
+    def check_loser(user):
+        last_bets = user.bets.last_finished(20)
+        if len(last_bets) > 0:
+            straight = 0
+            for bet in last_bets:
+                if user not in (bet.losers() or []):
+                    break
+                straight += 1
+            next_level = sorted(loser_levels + [straight]).index(straight)
+            if next_level > user.badges.loser:
+                user.badges.unlock_badge("loser", next_level)
+
+    straight_wins_levels = [2, 4, 9, 24]
+    @staticmethod
+    def check_straight_wins(user):
+        last_bets = user.bets.last_finished(25)
+        if len(last_bets) > 0:
+            straight = 0
+            for bet in last_bets:
+                if user not in (bet.winners() or []):
+                    break
+                straight += 1
+            next_level = sorted(straight_wins_levels + [straight]).index(straight)
+            if next_level > user.badges.straight_wins:
+                user.badges.unlock_badge("straight_wins", next_level)
+
+    total_wins_levels = [9, 24, 49, 99]
+    @staticmethod
+    def check_total_wins(user):
+        total_wins = user.badges.precal_total_wins
+        next_level = sorted(total_wins_levels + [total_wins]).index(total_wins)
+        if next_level > user.badges.total_wins:
+            user.badges.unlock_badge('total_wins', next_level)
+
+
+
+class TournamentManager(models.Manager):
+    use_for_related_fields = True
+    '''
+    def get_queryset(self):
+        return UserPointsQuerySet(self.model, using=self._db)
+
+    def get_clean_queryset(self):
+        return UserPointsQuerySet(self.model, using=self._db)
+    '''
+
+
+class Tournament(models.Model):
+    objects = TournamentManager()
+
+    author = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='tournaments_created', blank=True, null=True)
+    public = models.BooleanField(blank=True, default=True)
+    only_author = models.BooleanField(blank=True, default=True)
+    participants = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, null=True, related_name='tournaments')
+    tag = models.CharField(max_length=255, blank=True, null=True)
+    start = models.DateTimeField(blank=True, null=True, editable=False, default=None)
+    end = models.DateTimeField(blank=True, null=True, editable=False, default=None)
+    #reset = models.CharField(max_length=255, blank=True, null=True)
+    pic = models.ImageField(upload_to='tournaments', null=True, blank=True)
+    title = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(blank=True, null=True, default="")
+    bets = models.ManyToManyField(Bet, blank=True, null=True, related_name='tournaments')
+
 
 import gamification.signals

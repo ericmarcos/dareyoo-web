@@ -197,17 +197,18 @@ class SearchBetsList(generics.ListAPIView):
     serializer_class = BetSerializer
 
     def get_queryset(self):
-        #sqs = SearchQuerySet().models(Bet).load_all()
+        user = self.request.user
+        query = self.request.QUERY_PARAMS.get('q')
         sqs = Bet.objects.all()
-        sqs = sqs.filter(bet_state='bidding')
-        if self.request.user.is_authenticated():
-            user = self.request.user
-            sqs = sqs.filter(Q(public=True) | Q(author=user) | Q(recipients=user))
+        sqs = sqs.bidding()
+        if user.is_authenticated():
+            sqs = sqs.involved(user) | sqs.public()
         else:
-            sqs = sqs.filter(public=True)
-        #sqs = sqs.auto_query(self.request.QUERY_PARAMS.get('q', ''))
+            sqs = sqs.public()
+        if query:
+            sqs.search(query)
         sqs = sqs.order_by('bidding_deadline')
-        return sqs
+        return sqs.distinct()
 
 
 class TimelineList(generics.ListAPIView):
@@ -221,23 +222,23 @@ class TimelineList(generics.ListAPIView):
         bet_type = self.request.QUERY_PARAMS.get('type', None)
         all_bets = self.request.QUERY_PARAMS.get('global', None)
         order = self.request.QUERY_PARAMS.get('order', '-created_at')
+        qs = Bet.objects.all()
         if all_bets:
-            qs = Bet.objects.filter(Q(recipients=user) | Q(author=user) | Q(public=True))
+            #Global timeline: all public bets plus private bets where user is involved
+            qs = qs.involved(user) | qs.public()
         else:
-            qs = Bet.objects.filter(Q(recipients=user) | Q(author=user) | (Q(author__in=list(user.following.all())) & Q(public=True)))
+            #User timeline
+            qs = qs.involved(user) | qs.following(user)
         if bet_state:
-            if bet_state in dict(Bet.BET_STATE_CHOICES).values():
-                qs = qs.filter(bet_state=bet_state)
-            else:
-                raise Exception('Invalid state')
-        elif not all_bets:
-            qs = qs.exclude(bet_state='closed')
+            qs = qs.state(bet_state)
         if bet_type:
-            qs = qs.filter(bet_type=bet_type)
+            qs = qs.type(bet_type)
         if not order in ('-created_at', 'bidding_deadline'):
             order = '-created_at'
-        qs = qs.order_by(order)
-        return qs
+        #qs = qs.order_by(order)
+        print "HEEEELLOOOOOOOO!!"
+        print qs.distinct('id')
+        return qs.distinct('id')
 
 
 class OpenBetsList(generics.ListAPIView):
@@ -246,9 +247,8 @@ class OpenBetsList(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
-        user = self.request.user
-        qs = Bet.objects.filter(Q(author=user) | Q(recipients=user) | Q(bids__author=user) | Q(bids__participants=user)).exclude(bet_state='closed').order_by('-created_at')
-        return qs.distinct()
+        qs = Bet.objects.open(self.request.user)
+        return qs.order_by('-created_at').distinct()
 
 
 class DareyooUserBetViewSet(DareyooUserViewSet):
@@ -258,38 +258,36 @@ class DareyooUserBetViewSet(DareyooUserViewSet):
         all_bets = request.QUERY_PARAMS.get('all', False)
         bet_state = request.QUERY_PARAMS.get('state', None)
         bet_type = request.QUERY_PARAMS.get('type', None)
-        qs = Bet.objects.filter(author=user)
+
+        qs = Bet.objects.all().creted_by(user)
         if bet_state:
-            if bet_state in dict(Bet.BET_STATE_CHOICES).values():
-                qs = qs.filter(bet_state=bet_state)
-            else:
-                return Response({'detail': 'Invalid state'}, status=status.HTTP_400_BAD_REQUEST)
+            qs = qs.state(bet_state)
         elif not all_bets:
-            qs = qs.exclude(bet_state='closed')
+            qs = qs.open()
         if bet_type:
-            qs = qs.filter(bet_type=bet_type)
+            qs = qs.type(bet_type)
         if not request.user.is_authenticated():
-            qs = qs.filter(public=True)
+            qs = qs.public()
         elif user != request.user:
-            qs = qs.filter(Q(public=True) | Q(recipients=request.user))
-        qs.order_by('-created_at')
+            qs = qs.public() | qs.sent_to(request.user)
+        qs.order_by('-created_at').distinct()
+
         serializer = BetSerializer(qs, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
-    def n_bets(self, request, *args, **kwargs):
-        user = self.get_object()
-        all_bets = request.QUERY_PARAMS.get('all', False)
-        bet_state = request.QUERY_PARAMS.get('state', None)
-        bet_type = request.QUERY_PARAMS.get('type', None)
-        qs = Bet.objects.filter(author=user)
-        if bet_state:
-            if bet_state in dict(Bet.BET_STATE_CHOICES).values():
-                qs = qs.filter(bet_state=bet_state)
-            else:
-                return Response({'detail': 'Invalid state'}, status=status.HTTP_400_BAD_REQUEST)
-        elif not all_bets:
-            qs = qs.exclude(bet_state='closed')
-        if bet_type:
-            qs = qs.filter(bet_type=bet_type)
-        return Response({'count': qs.count()}, status=status.HTTP_200_OK)
+    #@link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
+    #def n_bets(self, request, *args, **kwargs):
+    #    user = self.get_object()
+    #    all_bets = request.QUERY_PARAMS.get('all', False)
+    #    bet_state = request.QUERY_PARAMS.get('state', None)
+    #    bet_type = request.QUERY_PARAMS.get('type', None)
+    #    
+    #    qs = Bet.objects.all().creted_by(user)
+    #    if bet_state:
+    #        qs = qs.state(bet_state)
+    #    elif not all_bets:
+    #        qs = qs.open()
+    #    if bet_type:
+    #        qs = qs.type(bet_type)
+    #
+    #    return Response({'count': qs.count()}, status=status.HTTP_200_OK)

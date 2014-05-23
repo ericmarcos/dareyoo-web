@@ -1,15 +1,18 @@
-from rest_framework import generics, views, response, status
-from bets.views import DareyooUserBetViewSet
-from users.views import MeUserView
-from .serializers import DareyooUserPointsFullSerializer, RankingSerializer
+from rest_framework import generics, views, response, status, renderers
+from rest_framework.decorators import link
+from rest_framework.response import Response
+from bets.views import *
+from .serializers import *
 from .models import UserPoints
+
 
 class DareyooUserBetPointsViewSet(DareyooUserBetViewSet):
     serializer_class = DareyooUserPointsFullSerializer
+    short_serializer_class = DareyooUserPointsShortSerializer
 
 
-class MeUserPointsView(MeUserView):
-    serializer_class = DareyooUserPointsFullSerializer
+class BetPointsViewSet(BetViewSet):
+    serializer_class = BetPointsSerializer
 
 
 class WeekRankingList(views.APIView):

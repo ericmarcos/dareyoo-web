@@ -1,7 +1,7 @@
 from .models import *
 from django.http import Http404
 from rest_framework import serializers, exceptions, status
-from users.serializers import DareyooUserShortSerializer
+from users.serializers import *
 
 
 class BidSerializer(serializers.HyperlinkedModelSerializer):
@@ -18,17 +18,6 @@ class BetSerializer(serializers.HyperlinkedModelSerializer):
     bids = BidSerializer(many=True, read_only=True)
     accepted_bid = BidSerializer(read_only=True)
     winners = DareyooUserShortSerializer(read_only=True, source="winners", many=True)
-
-    def __init__(self, *args, **kwargs):
-        super(BetSerializer, self).__init__(*args, **kwargs)
-        '''
-        instance = self.data.get('instance', None)
-        if instance and instance(instance, Bet):
-            self.exclude = []
-            if instance.bet_type == Bet.TYPE_SIMPLE:
-                self.exclude.append('accepted_bid')
-        '''
-
 
     class Meta:
         model = Bet
@@ -50,3 +39,20 @@ class BetSerializer(serializers.HyperlinkedModelSerializer):
 
         # Create new instance
         return BetFactory.create(**attrs)
+
+
+class DareyooUserBetsFullSerializer(DareyooUserFullSerializer):
+    open_bets = serializers.SerializerMethodField('get_open_bets')
+    created_bets = serializers.SerializerMethodField('get_created_bets')
+    bets_link = serializers.HyperlinkedIdentityField(view_name='dareyoouser-bets')
+
+    def get_open_bets(self, obj):
+        return Bet.objects.open(obj).count()
+
+    def get_created_bets(self, obj):
+        return Bet.objects.all().created_by(obj).count()
+
+    class Meta:
+        model = DareyooUserFullSerializer.Meta.model
+        fields = DareyooUserFullSerializer.Meta.fields + ('open_bets', 'created_bets', 'bets_link')
+        read_only_fields = DareyooUserFullSerializer.Meta.read_only_fields

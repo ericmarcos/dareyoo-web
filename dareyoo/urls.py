@@ -9,15 +9,19 @@ from rest_framework import routers
 
 router = routers.DefaultRouter()
 router.register(r'users', DareyooUserBetPointsViewSet)
-router.register(r'bets', BetViewSet)
+router.register(r'bets', BetPointsViewSet)
 router.register(r'bids', BidViewSet)
 router.register(r'notifications', NotificationViewSet)
+#TODO:
+#/search/
+#/search/users/
+#/search/bets/
+#/search/tournaments/
 
 extra_api_urls = patterns('',
     url(r'^bets/search/$', SearchBetsList.as_view(), name='bets-search'),
     url(r'^timeline/$', TimelineList.as_view(), name='timeline'),
-    url(r'^open-bets/$', OpenBetsList.as_view(), name='open-bets'),
-    url(r'^me/$', MeUserPointsView.as_view(), name='me-user-detail'),
+    url(r'^me/(?P<rest>\w*)', MeRedirectView.as_view(), name='me-user-detail'),
     url(r'^ranking/$', WeekRankingList.as_view(), name='ranking'),
     url(r'^search-facebook-friends/$', SearchFacebookFriendsList.as_view(), name='search-facebook-friends'),
     url(r'^search-dareyoo-suggested/$', SearchDareyooSuggestedList.as_view(), name='search-dareyoo-suggested'),

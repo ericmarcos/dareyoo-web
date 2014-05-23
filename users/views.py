@@ -1,8 +1,11 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.http import Http404
 from django.forms import EmailField
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
+from django.views.generic.base import RedirectView
+from django.core.urlresolvers import reverse, NoReverseMatch
 from StringIO import StringIO
 from rest_framework import viewsets, permissions, renderers, status, generics
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -31,19 +34,22 @@ class DareyooUserViewSet(viewsets.ModelViewSet):
     API endpoint that allows users to be viewed or edited.
     """
     queryset = DareyooUser.objects.all()
-    serializer_class = DareyooUserSerializer
+    serializer_class = DareyooUserFullSerializer
+    short_serializer_class = DareyooUserShortSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsSelfOrReadOnly)
 
     @link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
     def followers(self, request, *args, **kwargs):
         user = self.get_object()
-        serializer = DareyooUserSerializer(user.followers.all(), many=True)
+        serializer_class = self.short_serializer_class
+        serializer = serializer_class(user.followers.all(), many=True, context={'request': request})
         return Response(serializer.data)
 
     @link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
     def following(self, request, *args, **kwargs):
         user = self.get_object()
-        serializer = DareyooUserSerializer(user.following.all(), many=True)
+        serializer_class = self.short_serializer_class
+        serializer = serializer_class(user.following.all(), many=True, context={'request': request})
         return Response(serializer.data)
 
     @link(permission_classes=[permissions.IsAuthenticated], renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
@@ -93,13 +99,32 @@ class DareyooUserViewSet(viewsets.ModelViewSet):
         except DareyooUserException as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-class MeUserView(generics.RetrieveUpdateAPIView):
-    queryset = DareyooUser.objects.all()
-    serializer_class = DareyooUserFullSerializer
-    permission_classes = (permissions.IsAuthenticated,)
 
-    def get_object(self):
-        return self.request.user
+class MeRedirectView(RedirectView):
+    permanent = False
+    query_string = True
+    pattern_name = 'dareyoouser-detail'
+
+    def get_redirect_url(self, *args, **kwargs):
+        if not self.request.user.is_authenticated():
+            raise Http404
+        kwargs.update({'pk': self.request.user.id})
+        rest = kwargs.pop('rest', '')
+        #https://github.com/django/django/blob/1.6.4/django/views/generic/base.py#L173
+        if self.url:
+            url = self.url % kwargs
+        elif self.pattern_name:
+            try:
+                url = reverse(self.pattern_name, args=args, kwargs=kwargs)
+            except NoReverseMatch:
+                return None
+        else:
+            return None
+        url += rest
+        args = self.request.META.get('QUERY_STRING', '')
+        if args and self.query_string:
+            url = "%s?%s" % (url, args)
+        return url
 
 
 class SearchFacebookFriendsList(generics.ListAPIView):

@@ -4,6 +4,8 @@ import warnings
 from django.utils import timezone
 from django.db import models
 from django.conf import settings
+from django.db.models.query import QuerySet
+from django.db.models import Sum, Q
 from django_fsm.db.fields import FSMField, transition
 from rest_framework.exceptions import APIException
 
@@ -78,7 +80,109 @@ class BetFactory:
         #b.save()
         return b
 
+
+class BetQuerySet(QuerySet):
+    def tag(self, tag=None):
+        if tag:
+            return self.filter(title__icontains=tag)
+        else:
+            return self
+
+    def state(self, bet_state):
+        if bet_state and bet_state in dict(Bet.BET_STATE_CHOICES).values():
+            return self.filter(bet_state=bet_state)
+        else:
+            raise BetException('Invalid bet state (valid types: ' + str(dict(Bet.BET_STATE_CHOICES).values()) + ')')
+
+    def bidding(self):
+        return self.filter(bet_state='bidding')
+
+    def event(self):
+        return self.filter(bet_state='event')
+
+    def resolving(self):
+        return self.filter(bet_state='resolving')
+
+    def complaining(self):
+        return self.filter(bet_state='complaining')
+
+    def arbitrating(self):
+        return self.filter(bet_state='arbitrating')
+
+    def closed(self):
+        return self.filter(bet_state='closed')
+
+    def open(self):
+        return self.exclude(bet_state='closed')
+
+    def type(self, bet_type):
+        if bet_type and int(bet_type) in [1, 2, 3]:
+            return self.filter(bet_type=bet_type)
+        else:
+            raise BetException('Invalid bet type (valid types: 1, 2, 3)')
+
+    def simple(self):
+        return self.filter(bet_type=1)
+
+    def auction(self):
+        return self.filter(bet_type=2)
+
+    def lottery(self):
+        return self.filter(bet_type=3)
+
+    def created_by(self, user):
+        return self.filter(author=user)
+
+    def bidded_by(self, user):
+        return self.filter(bids__author=user)
+
+    def participated_by(self, user):
+        return self.filter(bids__participants=user)
+
+    def sent_to(self, user):
+        return self.filter(recipients=user)
+
+    def involved(self, user):
+        return self.created_by(user) | self.bidded_by(user) | self.participated_by(user) | self.sent_to(user)
+
+    def public(self):
+        return self.filter(public=True)
+
+    def following(self, user):
+        #TODO: this is very inefficient!
+        return self.filter(Q(author__in=list(user.following.all())) & Q(public=True))
+
+    def search_title(self, query):
+        return self.filter(title__icontains=query)
+
+    def search_description(self, query):
+        return self.filter(description__icontains=query)
+
+    def search(self, query):
+        return self.search_title(query) | self.search_description(query)
+
+
+class BetsManager(models.Manager):
+    use_for_related_fields = True
+
+    def get_queryset(self):
+        return BetQuerySet(self.model, using=self._db)
+
+    def get_clean_queryset(self):
+        return BetQuerySet(self.model, using=self._db)
+
+    def open(self, user):
+        qs = self.get_clean_queryset()
+        return qs.involved(user) & qs.open()
+
+    def last_finished(self, count = 1):
+        qs = self.get_clean_queryset()
+        return qs.filter(finished_at__isnull=False).order_by('-finished_at')[0:count]
+
+
 class Bet(models.Model):
+    objects = BetsManager()
+
     TYPE_SIMPLE  = 1
     TYPE_AUCTION = 2
     TYPE_LOTTERY = 3
@@ -117,6 +221,7 @@ class Bet(models.Model):
     odds = models.FloatField(blank=True, null=True, default=2)
     accepted_bid = models.ForeignKey("Bid", blank=True, null=True, related_name='accepted')
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True, editable=False)
+    finished_at = models.DateTimeField(blank=True, null=True, editable=False, default=None)
     bidding_deadline = models.DateTimeField(blank=True, null=True)
     event_deadline = models.DateTimeField(blank=True, null=True)
     public = models.BooleanField(blank=True, default=True)
@@ -164,6 +269,9 @@ class Bet(models.Model):
         elif self.is_lottery():
             return sum([len(bid.participants.all()) for bid in self.bids.all()]) > 1
 
+    def has_conflict(self):
+        return self.referee != None
+
     def get_type_name(self):
         return dict(Bet.BET_TYPE_CHOICES).get(self.bet_type)
 
@@ -189,13 +297,7 @@ class Bet(models.Model):
         return self.bet_state == self.get_state_name(Bet.STATE_CLOSED)
 
     def is_participant(self, user):
-        if self.is_simple() or self.is_auction():
-            if self.accepted_bid:
-                return user == self.author or user == self.accepted_bid.author
-            else:
-                return user == self.author
-        elif self.is_lottery():
-            return user.id in [u.id for b in self.bids.all() for u in b.participants.all()]
+        return user in self.participants()
 
     def participants(self):
         if self.is_simple() or self.is_auction():
@@ -208,7 +310,7 @@ class Bet(models.Model):
 
     def pot(self):
         '''
-        This is very expensive because it performs many queries
+        TODO: This is very expensive because it performs many queries
         to the database. Pot should be precalculated.
         '''
         if self._pot:
@@ -238,6 +340,7 @@ class Bet(models.Model):
                     return (self.author,)
                 else:
                     return (self.accepted_bid.author,) if self.accepted_bid else None
+        return None
 
     def losers(self):
         if self.is_closed():
@@ -252,6 +355,7 @@ class Bet(models.Model):
                     return (self.author,)
                 else:
                     return (self.accepted_bid.author,)
+        return None
 
     def winning_fees(self):
         return math.ceil(self.pot()*settings.WINNING_FEES_RATIO)
@@ -375,12 +479,17 @@ class Bet(models.Model):
             raise BetException("Can't arbitrate on a bet that is not in arbitrating state (current state: %s)" % self.bet_state)
 
     def close(self, arbitrating=False):
-        if self.is_simple():
-            self.close_simple(arbitrating)
-        elif self.is_auction():
-            self.close_auction(arbitrating)
-        elif self.is_lottery():
-            self.close_lottery(arbitrating)
+        if self.bids.count() == 0:
+            self.author.unlock_funds(self.amount + self.referee_escrow)
+            self.author.save()
+        else:
+            if self.is_simple():
+                self.close_simple(arbitrating)
+            elif self.is_auction():
+                self.close_auction(arbitrating)
+            elif self.is_lottery():
+                self.close_lottery(arbitrating)
+        self.finished_at = timezone.now()
 
     def close_simple(self, arbitrating=False):
         claim = self.claim
@@ -478,8 +587,7 @@ class Bet(models.Model):
 
     @transition(field=bet_state, source='bidding', target='closed', save=True)
     def closed_desert(self):
-        self.author.unlock_funds(self.amount + self.referee_escrow)
-        self.author.save()
+        self.close()
 
     @transition(field=bet_state, source='complaining', target='closed', save=True)
     def closed_ok(self):
