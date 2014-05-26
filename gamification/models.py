@@ -7,8 +7,17 @@ from django.db import models
 from django.db.models.query import QuerySet
 from django.db.models import Sum, Q
 from django.conf import settings
+from rest_framework.exceptions import APIException
 from bets.models import Bet
 from users.models import DareyooUser
+
+
+class GamificationException(APIException):
+    status_code = 400
+
+    @property
+    def detail(self):
+        return str(self)
 
 
 class TimeRangeQuerySet(QuerySet):
@@ -333,16 +342,36 @@ class UserBadges(models.Model):
             user.badges.unlock_badge('total_wins', next_level)
 
 
+class TournamentQuerySet(QuerySet):
+
+    def public(self):
+        return self.filter(public=True)
+
+    def private(self):
+        return self.filter(public=False)
+
+    def is_author(self, user):
+        return self.filter(author=user)
+
+    def is_participant(self, user):
+        return self.filter(participants=user)
+
+    def is_allowed(self, user):
+        return self.public() | self.is_author() | self.is_participant()
+
 
 class TournamentManager(models.Manager):
     use_for_related_fields = True
-    '''
+    
     def get_queryset(self):
-        return UserPointsQuerySet(self.model, using=self._db)
+        return TournamentQuerySet(self.model, using=self._db)
 
     def get_clean_queryset(self):
-        return UserPointsQuerySet(self.model, using=self._db)
-    '''
+        return TournamentQuerySet(self.model, using=self._db)
+
+    def is_allowed(self, user):
+        qs = self.get_queryset()
+        return qs.is_allowed(user)
 
 
 class Tournament(models.Model):
@@ -360,6 +389,49 @@ class Tournament(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True, default="")
     bets = models.ManyToManyField(Bet, blank=True, null=True, related_name='tournaments')
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super(Tournament, self).save(*args, **kwargs)
+        if is_new:
+            self.add_participant(self.author)
+
+    @staticmethod
+    def check_bet_all_tournaments(bet):
+        for t in Tournament.objects.is_allowed(bet.author):
+            t.check_bet(bet)
+
+    @staticmethod
+    def check_bet_bidder_tournaments(bet):
+        for t in bet.tournaments.all():
+            t.add_participant(bet.accepted_bid.author)
+
+    @staticmethod
+    def check_bet_participant_tournaments(bet):
+        for t in bet.tournaments.all():
+            self.participants.add(*list(bet.participants()))
+
+    def check_bet(self, bet):
+        '''Checks if a bet matches the conditions of
+        the tournament and adds it if true'''
+        if bet in self.bets.all():
+            return False
+        if bet.author != self.author and self.only_author:
+            #raise GamificationException("Can't add a bet by another author")
+            return False
+        if tag and not tag in bet.title:
+            return False
+        if not public and not bet.author in self.participants.all():
+            return False
+        self.add_bet(bet)
+        if self.public and not bet.is_lottery():
+            self.add_participant(bet.author)
+
+    def add_bet(self, bet):
+        self.bets.add(bet)
+
+    def add_participant(self, user):
+        self.participants.add(user)
 
 
 import gamification.signals

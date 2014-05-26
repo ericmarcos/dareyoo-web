@@ -16,10 +16,12 @@ class DareyooUserPointsFullSerializer(DareyooUserBetsFullSerializer):
     level = serializers.Field(source='points.level')
     fair_play = serializers.Field(source='badges.fair_play')
     badges = UserBadgesSerializer()
+    tournaments = serializers.Field(source='tournaments.all.count')
+    tournaments_url = serializers.HyperlinkedIdentityField(view_name='dareyoouser-tournaments')
 
     class Meta:
         model = DareyooUserBetsFullSerializer.Meta.model
-        fields = DareyooUserBetsFullSerializer.Meta.fields + ('fair_play', 'badges', 'experience', 'level',)
+        fields = DareyooUserBetsFullSerializer.Meta.fields + ('fair_play', 'badges', 'experience', 'level', 'tournaments', 'tournaments_url')
         read_only_fields = DareyooUserBetsFullSerializer.Meta.read_only_fields
 
 
@@ -54,3 +56,13 @@ class UserField(DareyooUserShortSerializer):
 class RankingSerializer(serializers.Serializer):
     user = UserField()
     points = serializers.FloatField(source='total_points')
+
+
+class TournamentSerializer(serializers.HyperlinkedModelSerializer):
+    upload_pic_url = serializers.HyperlinkedIdentityField(view_name='tournament-pic-upload')
+    author = DareyooUserPointsShortSerializer()
+
+    class Meta:
+        model = Tournament
+        fields = ('url', 'id', 'author', 'public', 'tag', 'start', 'end',
+             'pic', 'title', 'description', 'upload_pic_url')

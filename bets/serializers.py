@@ -44,7 +44,7 @@ class BetSerializer(serializers.HyperlinkedModelSerializer):
 class DareyooUserBetsFullSerializer(DareyooUserFullSerializer):
     open_bets = serializers.SerializerMethodField('get_open_bets')
     created_bets = serializers.SerializerMethodField('get_created_bets')
-    bets_link = serializers.HyperlinkedIdentityField(view_name='dareyoouser-bets')
+    bets_url = serializers.HyperlinkedIdentityField(view_name='dareyoouser-bets')
 
     def get_open_bets(self, obj):
         return Bet.objects.open(obj).count()
@@ -54,5 +54,5 @@ class DareyooUserBetsFullSerializer(DareyooUserFullSerializer):
 
     class Meta:
         model = DareyooUserFullSerializer.Meta.model
-        fields = DareyooUserFullSerializer.Meta.fields + ('open_bets', 'created_bets', 'bets_link')
+        fields = DareyooUserFullSerializer.Meta.fields + ('open_bets', 'created_bets', 'bets_url')
         read_only_fields = DareyooUserFullSerializer.Meta.read_only_fields

@@ -9,17 +9,17 @@ class DareyooUserFullSerializer(serializers.HyperlinkedModelSerializer):
     im_following = serializers.SerializerMethodField('get_im_following')
     following_me = serializers.SerializerMethodField('get_following_me')
     pic = serializers.Field(source='get_profile_pic_url')
-    upload_pic_link = serializers.HyperlinkedIdentityField(view_name='dareyoouser-pic-upload')
-    followers_link = serializers.HyperlinkedIdentityField(view_name='dareyoouser-followers')
-    following_link = serializers.HyperlinkedIdentityField(view_name='dareyoouser-following')
-    follow_link = serializers.HyperlinkedIdentityField(view_name='dareyoouser-follow')
-    unfollow_link = serializers.HyperlinkedIdentityField(view_name='dareyoouser-unfollow')
+    upload_pic_url = serializers.HyperlinkedIdentityField(view_name='dareyoouser-pic-upload')
+    followers_url = serializers.HyperlinkedIdentityField(view_name='dareyoouser-followers')
+    following_url = serializers.HyperlinkedIdentityField(view_name='dareyoouser-following')
+    follow_url = serializers.HyperlinkedIdentityField(view_name='dareyoouser-follow')
+    unfollow_url = serializers.HyperlinkedIdentityField(view_name='dareyoouser-unfollow')
 
     class Meta:
         model = DareyooUser
-        fields = ('url', 'id', 'email', 'username', 'description', 'pic', 'upload_pic_link',
-             'following', 'followers','coins_available', 'coins_locked', 'followers_link',
-             'following_link', 'follow_link', 'unfollow_link', 'im_following', 'following_me')
+        fields = ('url', 'id', 'email', 'username', 'description', 'pic', 'upload_pic_url',
+             'following', 'followers','coins_available', 'coins_locked', 'followers_url',
+             'following_url', 'follow_url', 'unfollow_url', 'im_following', 'following_me')
         read_only_fields = ('coins_available', 'coins_locked',)
 
     def get_im_following(self, obj):
