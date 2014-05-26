@@ -407,9 +407,12 @@ class Tournament(models.Model):
             t.add_participant(bet.accepted_bid.author)
 
     @staticmethod
-    def check_bet_participant_tournaments(bet):
+    def check_bet_participant_tournaments(bet, participant=None):
         for t in bet.tournaments.all():
-            self.participants.add(*list(bet.participants()))
+            if participant:
+                self.add_participant(participant)
+            else:
+                self.participants.add(*list(bet.participants()))
 
     def check_bet(self, bet):
         '''Checks if a bet matches the conditions of

@@ -598,7 +598,7 @@ class Bet(models.Model):
         self.close(arbitrating=True)
 
     def __unicode__(self):
-        return self.title
+        return unicode(self.title) or unicode(self.id) or u"Bet object"
 
 
 class Bid(models.Model):
@@ -623,8 +623,8 @@ class Bid(models.Model):
         self.author = author
 
     def add_participant(self, p):
-        if self.is_lottery():
-            if p.id in self.bet.participants():
+        if self.bet.is_lottery():
+            if p in self.bet.participants():
                 raise BetException("Can't participate in more than one option in a lottery")
             p.lock_funds(self.amount)
             p.save()
@@ -648,7 +648,7 @@ class Bid(models.Model):
             raise BetException("Can't complain on a bet that is not in complaining state (current state: %s)" % self.bet.bet_state)
 
     def __unicode__(self):
-        return self.title
+        return unicode(self.title) or unicode(self.id) or u"Bid object"
 
     class Meta:
         pass
