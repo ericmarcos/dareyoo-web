@@ -4,6 +4,35 @@
 @import "common.less";
 
 
+/****************** OLD HOME *********************/
+/* Explanation of the following line: http://angular-ui.github.io/bootstrap/ */
+    .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
+    .container {
+      max-width: 1000px;
+    }
+    .new-bet-tips{width:300px;max-width:300px;}
+    .bet-list { border: 1px solid black; }
+    .bet-row { border-bottom: 1px solid #CCC; margin: 2px; padding:5px; }
+    .bet-image { padding: 10px; }
+    .bet-text { padding: 10px; max-width: 65%; }
+    .bet-username { font-family: Tahoma, Geneva, sans-serif; font-weight: bold; font-size: 1em; padding-right: 10px; }
+    .bet-title { font-family: Tahoma, Geneva, sans-serif; font-size: 1.3em; }
+    .bet-closing { color:red; font-family: Tahoma, Geneva, sans-serif; font-size: 0.8em; margin-bottom: 0px; }
+    .user-profile-link { color: black; text-align: center; }
+    .profile-image { display:block; margin: auto; }
+    .view-profile { color: gray; font-size: 0.8em; }
+    .coins-available { color: green; font-family: Tahoma, Geneva, sans-serif; font-weight: bold; font-size: 1.2em; }
+    .coins-locked { color: orange; font-family: Tahoma, Geneva, sans-serif; font-weight: bold; font-size: 1em; }
+    .points { color: black; font-family: Tahoma, Geneva, sans-serif; font-weight: bold; font-size: 0.9em; margin-top: 20px; }
+    .num-points { font-size: 4em; }
+    .text-points { color: #999; padding-top: 10px; }
+    .sidebar-nav { margin-top: 20px; }
+    .new_notifications_num { padding: 5px; text-align: center; }
+    /*.dropdown-menu>li.unread>a{ background-color: #EEBBFF; }
+    .dropdown-menu>li.unread>a:hover{ background-color: #DD99FF; }
+    .dropdown-menu>li>a:hover{ background-color: #DDDDDD; }*/
+
 /******************  EDIT PROFILE *********************/
 
 #pic_preview {
@@ -41,4 +70,65 @@
         height: 100%;
         padding-top: 13px;
     }
+}
+
+/******************* NEW BET WIDGET ***********************/
+@small-gutter: 6px;
+
+.new-bet-widget {
+    //This is for animating auto height
+    //http://stackoverflow.com/questions/18452532/angularjs-custom-directive-using-event-listener
+    height: auto;
+    max-height: 58px;
+    //height: 36px;
+    //overflow: hidden;
+    background-color: #ccc;
+    border-radius: 4px;
+    padding-top: @small-gutter*2;
+    padding-bottom: @small-gutter*2;
+    .container-fluid {
+        padding-right: @small-gutter;
+        padding-left: @small-gutter;
+    }
+}
+.new-bet-widget-input {
+    margin-bottom: @small-gutter;
+}
+.action-row {
+    margin-top: @small-gutter;
+}
+.new-bet-label {
+    padding-left: 4px;
+    font-weight: @bold;
+}
+.new-bet-widget-timepicker {
+    input, span {
+        padding-left: @small-gutter;
+        padding-right: @small-gutter;
+    }
+}
+.new-bet-calendar {
+    padding-left: @small-gutter;
+    padding-right: @small-gutter;
+    text-align: center;
+}
+
+//Customize bootstrap columns gutter:
+//http://stackoverflow.com/questions/16489307/how-to-remove-gutter-space-for-a-specific-div-only-bootstrap
+.row.small-gutter {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+.row.small-gutter [class*='col-'] {
+  padding-right: @small-gutter/2;
+  padding-left: @small-gutter/2;
+}
+
+.row.small-gutter [class*='col-']:first-child {
+  padding-left: @small-gutter;
+}
+
+.row.small-gutter [class*='col-']:last-child {
+  padding-right: @small-gutter;
 }

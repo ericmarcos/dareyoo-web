@@ -73,4 +73,13 @@ angular.module('dareyoo.directives', [])
             });
         }
     }
-}]);
+  }])
+  .directive('dyNewBetWidget', ['config', function(config) {
+    return {
+      restrict: 'E',
+      scope: {
+        limit: '='
+      },
+      templateUrl: config.static_url + 'beta/build/partials/directives/dy-new-bet-widget.html'
+    };
+  }]);

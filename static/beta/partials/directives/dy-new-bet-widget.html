@@ -1,0 +1,187 @@
+<script id="template/timepicker/timepicker.html" type="text/ng-template">
+    <div class="input-group new-bet-widget-input new-bet-widget-timepicker">
+        <input type="text" ng-model="hours" ng-change="updateHours()" class="form-control text-center" ng-mousewheel="incrementHours()" ng-readonly="readonlyInput" maxlength="2">
+        <span class="input-group-addon">h</span>
+        <input type="text" ng-model="minutes" ng-change="updateMinutes()" class="form-control text-center" ng-readonly="readonlyInput" maxlength="2">
+        <span class="input-group-addon">min</span>
+    </div>
+</script>
+
+<div class="new-bet-widget" ng-controller="NewBetCtrl">
+    <div class="container-fluid" ng-show="step==1">
+        <div class="row small-gutter">
+            <div class="col-xs-12">
+                <input id="title" type="text" name="title" class="form-control new-bet-widget-input" placeholder="Crea tu apuesta..." ng-model="newBetFormData.title" ng-focus="expandWidget()">    
+            </div>
+        </div>
+        <div class="row small-gutter" ng-show="focus">
+            <div class="col-xs-12">
+                <textarea id="description" name="description" placeholder="Añade detalles sobre tu apuesta (opcional)" ng-model="newBetFormData.description" class="form-control new-bet-widget-input" rows="3"></textarea>    
+            </div>
+        </div>
+        <div class="row small-gutter" ng-show="focus">
+            <div class="col-xs-12">
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-default" ng-class="{active:newBetFormData.public}" ng-click="setPublic(true)">
+                    <input type="radio"><small><span class="glyphicon glyphicon-globe"></span></small>
+                    </label>
+                    <label class="btn btn-default" ng-class="{active:!newBetFormData.public}" ng-click="setPublic(false)">
+                    <input type="radio"><small><span class="glyphicon glyphicon-lock"></span></small>
+                    </label>
+                </div>
+                <span class="new-bet-label" ng-click="setPublic(!newBetFormData.public)">[[newBetFormData.public && "Pública" || "Privada"]]</span>
+            </div>
+        </div>
+        <div class="row small-gutter action-row" ng-show="focus">
+            <div class="col-xs-4">
+                <button class="btn btn-primary btn-sm btn-block" ng-click="nextStep(1)">Básica</button>
+            </div>
+            <div class="col-xs-4">
+                <button class="btn btn-primary btn-sm btn-block" ng-click="nextStep(2)">Subasta</button>
+            </div>
+            <div class="col-xs-4">
+                <button class="btn btn-primary btn-sm btn-block" ng-click="nextStep(3)">Porra</button>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid" ng-show="step==2">
+        <div class="row small-gutter">
+            <div class="col-xs-6">
+                <span ng-show="newBetFormData.bet_type!=3" class="new-bet-label">Por: [<a href="#">?</a>]</span>
+                <span ng-show="newBetFormData.bet_type==3" class="new-bet-label">Cantidad: [<a href="#">?</a>]</span>
+            </div>
+            <div class="col-xs-6" ng-show="newBetFormData.bet_type==1">
+                <span class="new-bet-label">Contra: [<a href="#">?</a>]</span>
+            </div>
+        </div>
+        <div class="row small-gutter">
+            <div class="col-xs-6">
+                <div class="input-group new-bet-widget-input">
+                    <input type="number" id="amount" name="amount" class="form-control" value="10" ng-model="newBetFormData.amount">
+                    <span class="input-group-addon">Y</span>
+                </div>
+            </div>
+            <div class="col-xs-6" ng-show="newBetFormData.bet_type==1">
+                <div class="input-group new-bet-widget-input">
+                    <input type="number" id="against" name="against" class="form-control" value="10" ng-model="newBetFormData.against">
+                    <span class="input-group-addon">Y</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row small-gutter">
+            <div class="col-xs-12">
+                <span class="new-bet-label">Cierre: [<a href="#">?</a>]</span>
+            </div>
+        </div>
+        <div class="row small-gutter" ng-show="!timeRelativeBidding">
+            <div class="col-xs-4">
+                <input type="text" class="form-control new-bet-calendar" datepicker-popup="yyyy-MM-dd" ng-model="newBetFormData.bidding_deadline" is-open="biddingDeadlineCalendarOpened" min="minBiddingDeadline" datepicker-options="{'starting-day':1}" show-button-bar="false" show-weeks="false" ng-required="true" close-text="Close" />
+            </div>
+            <div class="col-xs-6">
+                <span ng-model="newBetFormData.bidding_deadline">
+                    <timepicker hour-step="1" minute-step="1" show-meridian="false"></timepicker>
+                </span>
+            </div>
+            <div class="col-xs-2">
+                <button class="btn btn-default active" type="button" ng-click="timeRelativeBidding=!timeRelativeBidding">
+                    <span class="glyphicon glyphicon glyphicon-calendar"></span>
+                </button>
+            </div>
+        </div>
+        <div class="row small-gutter" ng-show="timeRelativeBidding">
+            <div class="col-xs-10">
+                <div class="input-group new-bet-widget-input">
+                    <span class="input-group-addon">en</span>
+                    <select class="form-control new-bet-widget-input" ng-model="newBetFormData.bidding_deadline_simple" ng-options="option for option in simpleBetBiddingDeadlineOptions"></select>
+                </div>
+            </div>
+            <div class="col-xs-2">
+                <button class="btn btn-default" type="button" ng-click="timeRelativeBidding=!timeRelativeBidding">
+                    <span class="glyphicon glyphicon glyphicon-calendar"></span>
+                </button>
+            </div>
+        </div>
+        <div class="row small-gutter">
+            <div class="col-xs-12">
+                <span class="new-bet-label">Finalización: [<a href="#">?</a>]</span>
+            </div>
+        </div>
+        <div class="row small-gutter" ng-show="!timeRelativeEvent">
+            <div class="col-xs-4">
+                <input type="text" class="form-control new-bet-calendar" datepicker-popup="yyyy-MM-dd" ng-model="newBetFormData.event_deadline" is-open="eventDeadlineCalendarOpened" min="minEventDeadline" datepicker-options="{'starting-day':1}" show-button-bar="false" show-weeks="false" ng-required="true" close-text="Close" />
+            </div>
+            <div class="col-xs-6">
+                <span ng-model="newBetFormData.event_deadline">
+                    <timepicker hour-step="1" minute-step="1" show-meridian="false"></timepicker>
+                </span>
+            </div>
+            <div class="col-xs-2">
+                <button class="btn btn-default active" type="button" ng-click="timeRelativeEvent=!timeRelativeEvent">
+                    <span class="glyphicon glyphicon glyphicon-calendar"></span>
+                </button>
+            </div>
+        </div>
+        <div class="row small-gutter" ng-show="timeRelativeEvent">
+            <div class="col-xs-10">
+                <div class="input-group new-bet-widget-input">
+                    <span class="input-group-addon">en</span>
+                    <select class="form-control new-bet-widget-input" ng-model="newBetFormData.event_deadline_simple" ng-options="option for option in simpleBetEventDeadlineOptions"></select>
+                </div>
+            </div>
+            <div class="col-xs-2">
+                <button class="btn btn-default" type="button" ng-click="timeRelativeEvent=!timeRelativeEvent">
+                    <span class="glyphicon glyphicon glyphicon-calendar"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="row small-gutter action-row">
+            <div class="col-xs-3">
+                <button class="btn btn-primary btn-sm btn-block" ng-click="prevStep()"><small><span class="glyphicon glyphicon-chevron-left"></span></small></button>
+            </div>
+            <div class="col-xs-9">
+                <button class="btn btn-primary btn-sm btn-block" ng-click="nextStep()">Siguiente <small><span class="glyphicon glyphicon-chevron-right"></span></small></button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container-fluid" ng-show="step==3">
+        <div class="row small-gutter">
+            <div class="col-xs-12">
+                <div class="btn-group btn-group-justified" data-toggle="buttons">
+                    <label class="btn btn-default" ng-class="{active:newBetFormData.public}" ng-click="setPublic(true)">
+                    <input type="radio"><small><span class="glyphicon glyphicon-globe"></span></small> Pública
+                    </label>
+                    <label class="btn btn-default" ng-class="{active:!newBetFormData.public}" ng-click="setPublic(false)">
+                    <input type="radio"><small><span class="glyphicon glyphicon-lock"></span></small> Privada
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="row small-gutter">
+            <div class="col-xs-12">
+                <span class="new-bet-label">Invitar amigos</span>
+            </div>
+        </div>
+        <div class="row small-gutter">
+            <div class="col-xs-12">
+                <!-- https://coderwall.com/p/0lms3g -->
+                <input type="text" placeholder="" class="form-control new-bet-widget-input" list="_friends">
+                <datalist id="_friends">
+                    <select style="display: none;" id="_select" name="_select" ng-model='selectedFriend' ng-options='k as v for (k,v) in friends'></select>
+                </datalist>
+            </div>
+        </div>
+        <div class="row small-gutter action-row">
+            <div class="col-xs-3">
+                <button class="btn btn-primary btn-sm btn-block" ng-click="prevStep()"><small><span class="glyphicon glyphicon-chevron-left"></span></small></button>
+            </div>
+            <div class="col-xs-9">
+                <button class="btn btn-primary btn-sm btn-block" ng-click="nextStep()">Finalizar</button>
+            </div>
+        </div>
+        
+    </div>
+    
+</div>

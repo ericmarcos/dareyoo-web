@@ -335,7 +335,7 @@ angular.module('dareyoo.controllers', []).
     $scope.getBet($stateParams.betId);
   }])
   .controller('NewBetCtrl', ['$scope', '$http', function($scope, $http) {
-    $scope.popover = function(element, text) {
+    /*$scope.popover = function(element, text) {
       var showPopover = function () {
           $(element).popover('show');
       }
@@ -357,20 +357,71 @@ angular.module('dareyoo.controllers', []).
 
     $scope.popover("input#title", "eg: Messi will score a hat-trick tonight.");
     $scope.popover("textarea#description", "eg: If the game is cancelled I will declare this bet null");
-
+    */
     $scope.newBetFormData = { bet_type: 1,
                         amount: 10,
                         against: 10,
                         bidding_deadline: new Date(),
-                        bidding_deadline_simple: '10 minutes',
+                        bidding_deadline_simple: '10 minutos',
                         event_deadline: new Date(),
-                        event_deadline_simple: '2 hours',
-                        'public': true};
-    $scope.simpleBetBiddingDeadlineOptions = ['10 minutes', '30 minutes', '1 hour', '2 hours'];
-    $scope.simpleBetEventDeadlineOptions = ['2 hours', '6 hours', '12 hours', '24 hours'];
+                        event_deadline_simple: '2 horas',
+                        public: true};
+    $scope.simpleBetBiddingDeadlineOptions = ['10 minutos',
+                                              '20 minutos',
+                                              '30 minutos',
+                                              '45 minutos',
+                                              '1 hora',
+                                              '2 horas',
+                                              '4 horas',
+                                              '6 horas'];
+    $scope.simpleBetEventDeadlineOptions = ['20 minutos',
+                                            '30 minutos',
+                                            '45 minutos',
+                                            '1 hora',
+                                            '2 horas',
+                                            '4 horas',
+                                            '6 horas',
+                                            '12 horas',
+                                            '24 horas'];
 
     $scope.minBiddingDeadline = new Date();
     $scope.minEventDeadline = new Date();
+
+    $scope.timeRelativeBidding = true;
+    $scope.timeRelativeEvent = true;
+    $scope.step = 1;
+    $scope.focus = false;
+    
+    $scope.selectedCountry = null;
+    $scope.countries = {'sumadors':'torneo', 'Josep':'amigo', 'Jaume':'amigo'};
+
+
+
+    $scope.expandWidget = function() {
+      //$('.new-bet-widget').css({"height":"150px","transition":"0.8s"});
+      $('.new-bet-widget').css({"max-height":"300px","transition":"1s"});
+      $scope.focus = true;
+    }
+    $scope.prevStep = function() {
+      if($scope.step == 2) {
+        $scope.step = 1;
+      } else if($scope.step == 3) {
+        $scope.step = 2;
+      }
+    }
+    $scope.nextStep = function(bet_type) {
+      if($scope.step == 1) {
+        $scope.newBetFormData.bet_type = bet_type;
+        $scope.step = 2;
+      } else if($scope.step == 2) {
+        $scope.step = 3;
+      } else if($scope.step == 3) {
+        $scope.step = 4;
+      }
+    }
+    $scope.setPublic = function(pub) {
+      $scope.newBetFormData.public = pub;
+    }
 
     $scope.biddingDeadlineCalendarOpened = false;
     $scope.openBiddingDeadlineCalendar = function($event) {
@@ -388,31 +439,32 @@ angular.module('dareyoo.controllers', []).
       $scope.eventDeadlineCalendarOpened = true;
     };
 
+    $scope.relToAbsTime = function(rel) {
+      var now = new Date();
+      switch(rel) {
+        case '10 minutos': now.setMinutes(now.getMinutes() + 10); break;
+        case '20 minutos': now.setMinutes(now.getMinutes() + 20); break;
+        case '30 minutos': now.setMinutes(now.getMinutes() + 30); break;
+        case '45 minutos': now.setMinutes(now.getMinutes() + 45); break;
+        case '1 horas': now.setMinutes(now.getMinutes() + 60); break;
+        case '2 horas': now.setMinutes(now.getMinutes() + 60*2); break;
+        case '4 horas': now.setMinutes(now.getMinutes() + 60*4); break;
+        case '6 horas': now.setMinutes(now.getMinutes() + 60*6); break;
+        case '12 horas': now.setMinutes(now.getMinutes() + 60*12); break;
+        case '24 horas': now.setMinutes(now.getMinutes() + 60*24); break;
+      }
+    }
+
     $scope.postNewBet = function() {
       var postData = jQuery.extend({}, $scope.newBetFormData);
       if (postData.bet_type == 1) {
         postData.odds = (postData.amount + postData.against) / postData.amount;
-        var now = new Date();
-        switch(postData.bidding_deadline_simple) {
-          case '10 minutes': now.setMinutes(now.getMinutes() + 10); break;
-          case '30 minutes': now.setMinutes(now.getMinutes() + 30); break;
-          case '1 hour': now.setMinutes(now.getMinutes() + 60); break;
-          case '2 hours': now.setMinutes(now.getMinutes() + 60*2); break;
-        }
-        postData.bidding_deadline = now;
-        now = new Date();
-        switch(postData.event_deadline_simple) {
-          case '2 hours':
-            //I'm adding 11 at the end because the backend requires a minimum distance
-            //of 10 minutes between the bidding and the event deadline
-            now.setMinutes(now.getMinutes() + 60*2 + 11); break;
-          case '6 hours': now.setMinutes(now.getMinutes() + 60*6); break;
-          case '12 hours': now.setMinutes(now.getMinutes() + 60*12); break;
-          case '24 hours': now.setMinutes(now.getMinutes() + 60*24); break;
-        }
-        postData.event_deadline = now;
       } else if(postData.bet_type == 2) {
 
+      }
+      if($scope.timeRelative) {
+        postData.bidding_deadline = $scope.relToAbsTime(postData.bidding_deadline_simple);
+        postData.event_deadline = $scope.relToAbsTime(postData.event_deadline_simple);
       }
       delete postData.against;
       delete postData.bidding_deadline_simple;

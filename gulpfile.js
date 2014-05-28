@@ -21,7 +21,7 @@ var isPro = args.pro || args.server == "pro";
 var isPre = args.pre;
 
 var paths = {
-  html: ['./static/beta/partials/**'],
+  html: ['./static/beta/partials/**', './static/beta/partials/directives/**'],
   app_scripts: ['./static/beta/js/ng-time-relative.js',
             './static/beta/js/services.js',
             './static/beta/js/directives.js',
