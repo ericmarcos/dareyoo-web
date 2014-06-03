@@ -14,6 +14,14 @@ exports = module.exports = function(module) {
           lastWeek : 'dddd, LT',
           nextWeek : '[Next] dddd, LT',
           sameElse : 'LL'
+        },
+        es: {
+          lastDay : '[Ayer a las] LT',
+          sameDay : '[Hoy a las] LT',
+          nextDay : '[Mañana a las] LT',
+          lastWeek : 'dddd, LT',
+          nextWeek : 'dddd D [a las] LT',
+          sameElse : 'LL'
         }
       }
     }).
@@ -33,7 +41,8 @@ if (angular) {
   var mod = angular.module('timeRelative', []);
   if (moment) {
     mod.constant('moment', moment);
-    moment.lang('en', {});
+    //moment.lang('en', {});
+    moment.lang('es', {});
   }
   exports(mod);
 }

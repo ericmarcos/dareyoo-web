@@ -235,9 +235,6 @@ class TimelineList(generics.ListAPIView):
             qs = qs.type(bet_type)
         if not order in ('-created_at', 'bidding_deadline'):
             order = '-created_at'
-        #qs = qs.order_by(order)
-        print "HEEEELLOOOOOOOO!!"
-        print qs.distinct('id')
         return qs.distinct('id')
 
 

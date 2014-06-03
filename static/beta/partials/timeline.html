@@ -2,7 +2,5 @@
 <button type="button" ng-class="{'btn': true, 'btn-xs': true, 'btn-primary': order_by=='-created_at', 'btn-default': order_by!='-created_at'}" ng-click="getTimeline('-created_at')">Recently created</button> 
 <button type="button" ng-class="{'btn': true, 'btn-xs': true, 'btn-primary': order_by=='bidding_deadline', 'btn-default': order_by!='bidding_deadline'}" ng-click="getTimeline('bidding_deadline')">Bidding deadline</button></p>
 <div ng-show="loaded" class="bets-list">
-  <div ng-repeat="bet in bets" class="row bet-row">
-    <dy-bet-list-item bet="bet"></dy-bet-list-item>
-  </div>
+    <dy-bet-list-item ng-repeat="bet in bets" bet="bet"></dy-bet-list-item>
 </div>

@@ -52,7 +52,7 @@ def register_view(request):
 def app(request):
     context = {'fb_key': settings.SOCIAL_AUTH_FACEBOOK_KEY}
     #Setting 'from' session, to measure virality
-    r = re.search(r'bet/(?P<id>\d)', request.path)
+    r = re.search(r'bet/(?P<id>\d*)', request.path)
     if r:
         bet = Bet.objects.get(id=r.group('id'))
         request.session['from'] = bet.author_id

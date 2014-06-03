@@ -357,7 +357,7 @@ class TournamentQuerySet(QuerySet):
         return self.filter(participants=user)
 
     def is_allowed(self, user):
-        return self.public() | self.is_author() | self.is_participant()
+        return self.public() | self.is_author(user) | self.is_participant(user)
 
 
 class TournamentManager(models.Manager):
@@ -422,9 +422,9 @@ class Tournament(models.Model):
         if bet.author != self.author and self.only_author:
             #raise GamificationException("Can't add a bet by another author")
             return False
-        if tag and not tag in bet.title:
+        if self.tag and not self.tag in bet.title:
             return False
-        if not public and not bet.author in self.participants.all():
+        if not self.public and not bet.author in self.participants.all():
             return False
         self.add_bet(bet)
         if self.public and not bet.is_lottery():

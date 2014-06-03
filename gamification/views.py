@@ -59,3 +59,7 @@ class TournamentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.R
         tournament.pic = request.FILES['tournament_pic']
         tournament.save()
         return Response({'status': 'Profile pic uploaded successfully.', 'url': tournament.pic._get_url()})
+
+
+class TimelinePointsList(TimelineList):
+    serializer_class = BetPointsSerializer

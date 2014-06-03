@@ -4,6 +4,11 @@
 @import "common.less";
 
 
+@basic-color: #4abde8;
+@auction-color: #5bd69b;
+@lottery-color: #fda455;
+
+
 /****************** OLD HOME *********************/
 /* Explanation of the following line: http://angular-ui.github.io/bootstrap/ */
     .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
@@ -11,16 +16,19 @@
     .container {
       max-width: 1000px;
     }
+    body {
+        background-color: #ddd;
+    }
     .new-bet-tips{width:300px;max-width:300px;}
-    .bet-list { border: 1px solid black; }
-    .bet-row { border-bottom: 1px solid #CCC; margin: 2px; padding:5px; }
-    .bet-image { padding: 10px; }
-    .bet-text { padding: 10px; max-width: 65%; }
-    .bet-username { font-family: Tahoma, Geneva, sans-serif; font-weight: bold; font-size: 1em; padding-right: 10px; }
-    .bet-title { font-family: Tahoma, Geneva, sans-serif; font-size: 1.3em; }
-    .bet-closing { color:red; font-family: Tahoma, Geneva, sans-serif; font-size: 0.8em; margin-bottom: 0px; }
-    .user-profile-link { color: black; text-align: center; }
-    .profile-image { display:block; margin: auto; }
+    //.bet-list { border: 1px solid black; }
+    //.bet-row { border-bottom: 1px solid #CCC; margin: 2px; padding:5px; }
+    //.bet-image { padding: 10px; }
+    //.bet-text { padding: 10px; max-width: 65%; }
+    //.bet-username { font-family: Tahoma, Geneva, sans-serif; font-weight: bold; font-size: 1em; padding-right: 10px; }
+    //.bet-title { font-family: Tahoma, Geneva, sans-serif; font-size: 1.3em; }
+    //.bet-closing { color:red; font-family: Tahoma, Geneva, sans-serif; font-size: 0.8em; margin-bottom: 0px; }
+    //.user-profile-link { color: black; text-align: center; }
+    //.profile-image { display:block; margin: auto; }
     .view-profile { color: gray; font-size: 0.8em; }
     .coins-available { color: green; font-family: Tahoma, Geneva, sans-serif; font-weight: bold; font-size: 1.2em; }
     .coins-locked { color: orange; font-family: Tahoma, Geneva, sans-serif; font-weight: bold; font-size: 1em; }
@@ -81,8 +89,8 @@
     height: auto;
     max-height: 58px;
     //height: 36px;
-    //overflow: hidden;
-    background-color: #ccc;
+    overflow: hidden;
+    background-color: #fff;
     border-radius: 4px;
     padding-top: @small-gutter*2;
     padding-bottom: @small-gutter*2;
@@ -91,8 +99,39 @@
         padding-left: @small-gutter;
     }
 }
+.new-bet-widget-header {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    margin-top: -@small-gutter*2;
+    margin-bottom: @small-gutter*2;
+    padding: @small-gutter @small-gutter*2;
+    height: 32px;
+    span.header-title {
+        display: inline-block;
+        height: 18px;
+        overflow: hidden;
+    }
+}
+.basic-bg {
+    background-color: @basic-color;
+}
+.auction-bg {
+    background-color: @auction-color;
+}
+.lottery-bg {
+    background-color: @lottery-color;
+}
+#title {
+    height: 34px;
+}
+#description {
+    height: 34px;
+}
 .new-bet-widget-input {
     margin-bottom: @small-gutter;
+}
+.input-grout-wide {
+    width: 60%;
 }
 .action-row {
     margin-top: @small-gutter;
@@ -131,4 +170,264 @@
 
 .row.small-gutter [class*='col-']:last-child {
   padding-right: @small-gutter;
+}
+
+.btn-basic {
+  .button-variant(white, @basic-color, @basic-color); //(button, hover)
+}
+.btn-auction {
+  .button-variant(white, @auction-color, @auction-color); //(button, hover)
+}
+.btn-lottery {
+  .button-variant(white, @lottery-color, @lottery-color); //(button, hover)
+}
+
+.label-invites {
+    border-radius: 4px;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    color: #333;
+    display: inline-block;
+    position: relative;
+    padding: 0px 20px 2px 5px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    .text-invite {
+        //line-height: 1.5;
+    }
+    .remove-invite {
+        position: absolute;
+        font-size: 21px;
+        font-weight: bold;
+        color: #ccc;
+        top: -4px;
+        right: 2px;
+        &:hover {
+            color: #333;
+        }
+    }
+}
+
+/***************** BET LIST ITEM *********************/
+
+.bet-row {
+    position: relative;
+    border-top: 1px solid #ddd;
+    min-height: 164px;
+    padding: 20px;
+    background-color: white;
+}
+.bet-title {
+    font-size: 20px;
+    font-weight: @light;
+    a {
+        color: #414141;
+    }
+}
+.bet-type {
+    position: absolute;
+    right: 20px;
+    top: -3px;
+    width: 24px;
+    height: 72px;
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+    .bet-type-text {
+        color: white;
+        -moz-transform: rotate(-90deg);  /* FF3.5+ */
+        -o-transform: rotate(-90deg);  /* Opera 10.5 */
+        -webkit-transform: rotate(-90deg);  /* Saf3.1+, Chrome */
+        filter:  progid:DXImageTransform.Microsoft.BasicImage(rotation=3);  /* IE6,IE7 */
+        -ms-filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+        margin-top: 30px;
+        margin-right: 2px;
+    }
+    &:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        width: 0;
+        height: 0;
+        border-left: 12px solid transparent;
+        border-right: 12px solid transparent;
+        border-bottom: 12px solid white;
+    }
+}
+.bet-title-basic {
+    color: @basic-color;
+    font-size: 20px;
+    font-weight: @regular;
+}
+.bet-title-auction {
+    color: @auction-color;
+    font-size: 20px;
+    font-weight: @regular;
+}
+.bet-title-lottery {
+    color: @lottery-color;
+    font-size: 20px;
+    font-weight: @regular;
+}
+.bet-closing {
+    color: #666;
+    font-size: 15px;
+    font-weight: @regular;
+    dy-bidding-deadline {
+        margin-right: 20px;
+    }
+}
+
+
+/********************* PROFILE PIC ************************/
+
+.border-shadow-img {
+    margin-top: 2px;
+    margin-left: 2px;
+    position: relative;
+    img {
+        z-index: 2;
+        position: absolute;
+    }
+    &:before {
+        position: absolute;
+        content: '';
+        display: block;
+        width: 100%;
+        height: 100%;
+        background: #ddd;
+        -moz-border-radius: 50%;
+        -webkit-border-radius: 50%;
+        border-radius: 50%;
+        top: -2px;
+        left:-2px;
+        //-webkit-box-shadow: 1px 1px 5px 0px rgba(200, 200, 200, 1);
+        //-moz-box-shadow: 1px 1px 5px 0px rgba(200, 200, 200, 1);
+        //box-shadow: 1px 1px 5px 0px rgba(200, 200, 200, 1);
+    }
+    .level {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        z-index: 4;
+        background-color: @brand-primary;
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        color: #fff;
+    }
+}
+
+/**************** PROFILE NAME **********************/
+
+.profile-name {
+    color: #000;
+    font-size: 16px;
+    font-weight: @light;
+    text-align: center;
+    &:hover {
+        color: #000;
+    }
+}
+
+.user-pic-name {
+    dy-user-pic {
+        display: block;
+        margin-bottom: 10px;
+    }
+    dy-user-name {
+        display: block;
+        text-align: center;
+    }
+}
+
+
+/******************** LOADER ************************/
+
+dy-loader {
+    display: block;
+    margin: auto;
+    width: 50px;
+}
+
+//http://cssload.net/
+#circleG {
+    width:46.666666666666664px;
+}
+.circleG {
+    background-color:#FFFFFF;
+    float:left;
+    height:10px;
+    margin-left:5px;
+    width:10px;
+    -moz-animation-name:bounce_circleG;
+    -moz-animation-duration:0.6000000000000001s;
+    -moz-animation-iteration-count:infinite;
+    -moz-animation-direction:linear;
+    -moz-border-radius:7px;
+    -webkit-animation-name:bounce_circleG;
+    -webkit-animation-duration:0.6000000000000001s;
+    -webkit-animation-iteration-count:infinite;
+    -webkit-animation-direction:linear;
+    -webkit-border-radius:7px;
+    -ms-animation-name:bounce_circleG;
+    -ms-animation-duration:0.6000000000000001s;
+    -ms-animation-iteration-count:infinite;
+    -ms-animation-direction:linear;
+    -ms-border-radius:7px;
+    -o-animation-name:bounce_circleG;
+    -o-animation-duration:0.6000000000000001s;
+    -o-animation-iteration-count:infinite;
+    -o-animation-direction:linear;
+    -o-border-radius:7px;
+    animation-name:bounce_circleG;
+    animation-duration:0.6000000000000001s;
+    animation-iteration-count:infinite;
+    animation-direction:linear;
+    border-radius:7px;
+}
+#circleG_1 {
+    -moz-animation-delay:0.12000000000000002s;
+    -webkit-animation-delay:0.12000000000000002s;
+    -ms-animation-delay:0.12000000000000002s;
+    -o-animation-delay:0.12000000000000002s;
+    animation-delay:0.12000000000000002s;
+}
+#circleG_2 {
+    -moz-animation-delay:0.28s;
+    -webkit-animation-delay:0.28s;
+    -ms-animation-delay:0.28s;
+    -o-animation-delay:0.28s;
+    animation-delay:0.28s;
+}
+#circleG_3 {
+    -moz-animation-delay:0.36s;
+    -webkit-animation-delay:0.36s;
+    -ms-animation-delay:0.36s;
+    -o-animation-delay:0.36s;
+    animation-delay:0.36s;
+}
+@-moz-keyframes bounce_circleG {
+    0% {}
+    50% { background-color:#000000 }
+    100% {}
+}
+@-webkit-keyframes bounce_circleG {
+    0% {}
+    50% { background-color:#000000 }
+    100% {}
+}
+@-ms-keyframes bounce_circleG {
+    0% {}
+    50% { background-color:#000000 }
+    100% {}
+}
+@-o-keyframes bounce_circleG {
+    0% {}
+    50% { background-color:#000000 }
+    100% {}
+}
+@keyframes bounce_circleG {
+    0% {}
+    50% { background-color:#000000 }
+    100% {}
 }

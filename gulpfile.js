@@ -26,6 +26,7 @@ var paths = {
             './static/beta/js/services.js',
             './static/beta/js/directives.js',
             './static/beta/js/controllers.js',
+            './static/beta/js/filters.js',
             './static/beta/js/app.js'],
   app_scripts_libs: ['./static/beta/lib/jquery/jquery.min.js',
                 './static/beta/lib/bootstrap/dist/js/bootstrap.min.js',

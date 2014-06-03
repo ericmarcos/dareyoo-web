@@ -3,19 +3,6 @@
 {% block css %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/landing.all.min.css">
-<style type="text/css">
-    #design {
-        background: url('/static/dareyoo_landing_v44.jpg');
-        background-size: 1600px 5349px;
-        opacity: 1;
-        z-index: 2;
-        position: absolute;
-        top: 0px;
-        left: -100px;
-        width: 1600px;
-        height: 5349px;
-    }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -29,24 +16,24 @@
             <a href=""><div class="twitter"></div></a>
         </div>
         <div class="logo-claim">
-            <img src="{{ STATIC_URL }}beta/build/img/dareyoo_logo_white.png">
+            <img src="{{ STATIC_URL }}beta/build/img/landing/intro/dareyoo_logo_white.png">
             <h2>Demuestra que sabes apostar</h2>
         </div>
         <div class="features">
             <a href="#free" class="feature">
-                <img src="{{ STATIC_URL }}beta/build/img/free_picto.png" alt="libre">
+                <img src="{{ STATIC_URL }}beta/build/img/landing/intro/free_picto.png" alt="libre">
                 <p>Libre</p>
             </a>
             <a href="#social_a" class="feature">
-                <img src="{{ STATIC_URL }}beta/build/img/social_picto.png" alt="Social">
+                <img src="{{ STATIC_URL }}beta/build/img/landing/intro/social_picto.png" alt="Social">
                 <p>Social</p>
             </a>
             <a href="#democratic" class="feature">
-                <img src="{{ STATIC_URL }}beta/build/img/self_managed_picto.png" alt="Democrático">
+                <img src="{{ STATIC_URL }}beta/build/img/landing/intro/democratic_picto.png" alt="Democrático">
                 <p>Democrático</p>
             </a>
             <a href="#fun" class="feature" id="fun_feature">
-                <img src="{{ STATIC_URL }}beta/build/img/fun_picto.png" alt="Divertido">
+                <img src="{{ STATIC_URL }}beta/build/img/landing/intro/fun_picto.png" alt="Divertido">
                 <p>Divertido</p>
             </a>
         </div>
@@ -54,8 +41,8 @@
             <a role="button" class="btn btn-video" href="https://www.youtube.com/watch?v=m7fujFOFaLU">Ver vídeo</a>
         </div>
         <div class="app-btns">
-            <a href=""><img src="{{ STATIC_URL }}beta/build/img/google_play.png"></a>
-            <a href=""><img src="{{ STATIC_URL }}beta/build/img/app_store.png"></a>
+            <a href=""><img src="{{ STATIC_URL }}beta/build/img/landing/google_play.png"></a>
+            <a href=""><img src="{{ STATIC_URL }}beta/build/img/landing/app_store.png"></a>
             <div class="clearfix"></div>
         </div>
     </div>
@@ -68,17 +55,17 @@
         <p class="text-center">Bienvenido a la primera red social de apuestas totalmente libre. Al contrario que en las casas de apuestas tradicionales, aquí sois los propios usuarios los que creáis las apuestas, sin límites ni restricciones.<br>Tienes tres modalidades de apuesta para elegir:</p>
         <div class="row text-center">
             <div class="col-md-4">
-                <img id="apuesta-basica-img" src="{{ STATIC_URL }}beta/build/img/apuesta_basica.png" width="260">
+                <img id="apuesta-basica-img" src="{{ STATIC_URL }}beta/build/img/landing/free/apuesta_basica.png" width="260">
                 <h4>Apuesta básica</h4>
                 <p>El primero en aceptar será tu rival</p>
             </div>
             <div class="col-md-4">
-                <img id="subasta-img" src="{{ STATIC_URL }}beta/build/img/subasta.png" width="220">
+                <img id="subasta-img" src="{{ STATIC_URL }}beta/build/img/landing/free/subasta.png" width="220">
                 <h4>Subasta</h4>
                 <p>Tú eliges la mejor oferta</p>
             </div>
             <div class="col-md-4">
-                <img id="porra-img" src="{{ STATIC_URL }}beta/build/img/porra.png" width="180">
+                <img id="porra-img" src="{{ STATIC_URL }}beta/build/img/landing/free/porra.png" width="180">
                 <h4>Porra</h4>
                 <p>La de toda la vida</p>
             </div>
@@ -97,7 +84,7 @@
                 <p>Sigue a tus amigos para enterarte de a qué estan jugando o envíales <a href="">apuestas privadas</a>. Busca los <a href="">eventos del momento</a> para encontrar apuestas más allá de tu círculo y juega contra usuarios de todo el mundo!</p> 
             </div>
             <div class="col-md-4 text-right">
-                <img src="{{ STATIC_URL }}beta/build/img/social.png" height="380">
+                <img src="{{ STATIC_URL }}beta/build/img/landing/social/social.png" height="380">
             </div>
         </div>
     </div>
@@ -108,7 +95,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6 text-center">
-                <img src="{{ STATIC_URL }}beta/build/img/juez.png" height="380">
+                <img src="{{ STATIC_URL }}beta/build/img/landing/democratic/juez.png" height="380">
             </div>
             <div id="democratic-text" class="col-md-6">
                 <h1>Toma el control del juego,<br><strong>tu eres el protagonista</strong></h1>
@@ -139,18 +126,18 @@
         </div>
         <div id="closing-right" class="col-md-6">
             <div class="closing-right-content">
-                <img src="{{ STATIC_URL }}beta/build/img/dareyoo_imago_white.png" height="52">
+                <img src="{{ STATIC_URL }}beta/build/img/landing/closing/dareyoo_imago_white.png" height="52">
                 <h1>¿A qué estás esperando?</h1>
-                <p>Ha nacido una nueva forma de apostar online.<br>Regístrate ahora y descúbrela.<br><br>Con nuestra aplicación móvil podrás apostar donde y cuando quieras.</p>
-                <a href=""><img src="{{ STATIC_URL }}beta/build/img/google_play.png"></a>
-                <a href=""><img src="{{ STATIC_URL }}beta/build/img/app_store.png"></a>
+                <p>Ha nacido una nueva forma de apostar online.<br>Regístrate ahora y descúbrela.<br><br>Con nuestra aplicación móvil podrás apostar<br>donde y cuando quieras.</p>
+                <a href=""><img src="{{ STATIC_URL }}beta/build/img/landing/google_play.png"></a>
+                <a href=""><img src="{{ STATIC_URL }}beta/build/img/landing/app_store.png"></a>
             </div>
         </div>
     </div>
 </section>
 
 <footer>
-    <p>Dareyoo Gaming. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <!-- <p>Dareyoo Gaming. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p> -->
 </footer>
 
 {% endblock %}

@@ -35,6 +35,7 @@ class DareyooUserPointsShortSerializer(DareyooUserFullSerializer):
 
 
 class BetPointsSerializer(BetSerializer):
+    author = DareyooUserPointsShortSerializer(read_only=True)
     points = serializers.SerializerMethodField('get_points')
 
     def get_points(self, obj):

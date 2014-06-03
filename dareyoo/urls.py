@@ -21,7 +21,7 @@ router.register(r'notifications', NotificationViewSet)
 
 extra_api_urls = patterns('',
     url(r'^bets/search/$', SearchBetsList.as_view(), name='bets-search'),
-    url(r'^timeline/$', TimelineList.as_view(), name='timeline'),
+    url(r'^timeline/$', TimelinePointsList.as_view(), name='timeline'),
     url(r'^me/(?P<rest>\w*)', MeRedirectView.as_view(), name='me-user-detail'),
     url(r'^ranking/$', WeekRankingList.as_view(), name='ranking'),
     url(r'^search-facebook-friends/$', SearchFacebookFriendsList.as_view(), name='search-facebook-friends'),

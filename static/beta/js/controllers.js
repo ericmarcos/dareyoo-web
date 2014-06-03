@@ -334,7 +334,7 @@ angular.module('dareyoo.controllers', []).
 
     $scope.getBet($stateParams.betId);
   }])
-  .controller('NewBetCtrl', ['$scope', '$http', function($scope, $http) {
+  .controller('NewBetCtrl', ['$scope', '$http', '$timeout', function($scope, $http, $timeout) {
     /*$scope.popover = function(element, text) {
       var showPopover = function () {
           $(element).popover('show');
@@ -358,14 +358,7 @@ angular.module('dareyoo.controllers', []).
     $scope.popover("input#title", "eg: Messi will score a hat-trick tonight.");
     $scope.popover("textarea#description", "eg: If the game is cancelled I will declare this bet null");
     */
-    $scope.newBetFormData = { bet_type: 1,
-                        amount: 10,
-                        against: 10,
-                        bidding_deadline: new Date(),
-                        bidding_deadline_simple: '10 minutos',
-                        event_deadline: new Date(),
-                        event_deadline_simple: '2 horas',
-                        public: true};
+
     $scope.simpleBetBiddingDeadlineOptions = ['10 minutos',
                                               '20 minutos',
                                               '30 minutos',
@@ -384,25 +377,83 @@ angular.module('dareyoo.controllers', []).
                                             '12 horas',
                                             '24 horas'];
 
-    $scope.minBiddingDeadline = new Date();
-    $scope.minEventDeadline = new Date();
+    $scope.friends = {'sumadors':'torneo', 'Josep':'amigo', 'Jaume':'amigo'};
+    $scope.invites = ['eric', 'pitut'];
 
-    $scope.timeRelativeBidding = true;
-    $scope.timeRelativeEvent = true;
-    $scope.step = 1;
-    $scope.focus = false;
-    
-    $scope.selectedCountry = null;
-    $scope.countries = {'sumadors':'torneo', 'Josep':'amigo', 'Jaume':'amigo'};
+    $scope.noFocusStyles = {"height": "58px", "max-height": "58px", "overflow": "hidden", "min-height":"initial"};
+    $scope.noFocusTextStyles = {"height": "34px"};
+    $scope.transitionStyles = {"height": "auto", "max-height":"400px","transition":"1s"};
+    $scope.transitionTitleStyles = {"height":"60px","transition":"1s"};
+    $scope.focusStyles = {"overflow":"visible", "min-height":"200px"};
 
-
+    $scope.resetWidget = function(new_bet) {
+      $scope.newBetFormData = { bet_type: 1,
+                        amount: 10,
+                        against: 10,
+                        bidding_deadline: new Date(),
+                        bidding_deadline_simple: '10 minutos',
+                        event_deadline: new Date(),
+                        event_deadline_simple: '2 horas',
+                        public: true};
+      $scope.timeRelativeBidding = true;
+      $scope.timeRelativeEvent = true;
+      $scope.minBiddingDeadline = new Date();
+      $scope.minEventDeadline = new Date();
+      $scope.step = 1;
+      $scope.show_comissions = false;
+      $scope.selectedFriend = null;
+      $scope.new_bet = null;
+      if (!new_bet) {
+        $scope.focus = false;
+        $('.new-bet-widget').css($scope.noFocusStyles);
+        $('#title').css($scope.noFocusTextStyles);
+      }
+      $('#description').css($scope.noFocusTextStyles);
+    }
+    $scope.resetWidget();
 
     $scope.expandWidget = function() {
       //$('.new-bet-widget').css({"height":"150px","transition":"0.8s"});
-      $('.new-bet-widget').css({"max-height":"300px","transition":"1s"});
+      $('.new-bet-widget').css($scope.transitionStyles);
+      $('#title').css($scope.transitionTitleStyles);
       $scope.focus = true;
+      $timeout(function() {
+        $('.new-bet-widget').css($scope.focusStyles);
+      }, 1000);
+    }
+    $scope.expandDescription = function() {
+      $('#description').css({"height":"80px","transition":"1s"});
+    }
+    $scope.pot = function() {
+      return $scope.newBetFormData.amount + $scope.newBetFormData.against;
+    }
+    $scope.getTypeName = function() {
+      if($scope.newBetFormData.bet_type == 1) {
+        return "Básica";
+      } else if($scope.newBetFormData.bet_type == 2) {
+        return "Subasta";
+      } else {
+        return "Porra";
+      }
+    }
+    $scope.getRefereeFees = function() {
+      if($scope.newBetFormData.bet_type == 1) {
+        return Math.ceil($scope.pot()*0.02)*2;
+      } else if($scope.newBetFormData.bet_type == 3) {
+        return 6;
+      } else {
+        return "?";
+      }
+    }
+    $scope.getWinningAmount = function() {
+      if($scope.newBetFormData.bet_type == 1) {
+        return $scope.pot() - Math.ceil($scope.pot()*0.02);
+      } else {
+        return "?";
+      }
     }
     $scope.prevStep = function() {
+      $scope.show_comissions = false;
       if($scope.step == 2) {
         $scope.step = 1;
       } else if($scope.step == 3) {
@@ -410,13 +461,20 @@ angular.module('dareyoo.controllers', []).
       }
     }
     $scope.nextStep = function(bet_type) {
+      $scope.show_comissions = false;
       if($scope.step == 1) {
         $scope.newBetFormData.bet_type = bet_type;
         $scope.step = 2;
       } else if($scope.step == 2) {
-        $scope.step = 3;
+        if($scope.newBetFormData.public) {
+          $scope.step = 4;
+          $scope.postNewBet();
+        } else {
+          $scope.step = 3;
+        }
       } else if($scope.step == 3) {
         $scope.step = 4;
+        $scope.postNewBet();
       }
     }
     $scope.setPublic = function(pub) {
@@ -453,31 +511,50 @@ angular.module('dareyoo.controllers', []).
         case '12 horas': now.setMinutes(now.getMinutes() + 60*12); break;
         case '24 horas': now.setMinutes(now.getMinutes() + 60*24); break;
       }
+      return now;
+    }
+
+    $scope.onInviteEnter = function(event) {
+      if (!event || event.which == 13) {
+        $scope.addInvite($('#invite_name').val());
+        $('#invite_name').val('');
+      }
+    }
+
+    $scope.addInvite = function(inv) {
+      if(inv) {
+        $scope.invites.push(inv);
+      }
+    }
+
+    $scope.removeInvite = function(inv) {
+      var index = $scope.invites.indexOf(inv);
+      if(index != -1) {
+        $scope.invites.splice(index, 1);
+      }
     }
 
     $scope.postNewBet = function() {
       var postData = jQuery.extend({}, $scope.newBetFormData);
       if (postData.bet_type == 1) {
         postData.odds = (postData.amount + postData.against) / postData.amount;
-      } else if(postData.bet_type == 2) {
-
       }
-      if($scope.timeRelative) {
+      if($scope.timeRelativeBidding)
         postData.bidding_deadline = $scope.relToAbsTime(postData.bidding_deadline_simple);
+      if($scope.timeRelativeEvent)
         postData.event_deadline = $scope.relToAbsTime(postData.event_deadline_simple);
-      }
+      
       delete postData.against;
       delete postData.bidding_deadline_simple;
       delete postData.event_deadline_simple;
       $http.post("/api/v1/bets/", postData)
       .success(function(response, status, headers, config) {
-        $('#new-bet-steps li:eq(3) a').tab('show');
-        //$scope.bets = response.results;
-        //$scope.loaded = true;
+        $scope.new_bet = response;
+        $scope.step = 5;
       })
       .error(function(response, status, headers, config) {
-        $('#new-bet-fail-message').text(JSON.stringify(response));
-        $('#new-bet-fail-modal').modal('show');
+        $scope.new_bet = response;
+        $scope.step = 5;
       });
     };
   }])

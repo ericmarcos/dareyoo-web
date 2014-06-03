@@ -1,22 +1,18 @@
-<div class="col-md-12">
-    <div class="pull-left text-center" style="height:100%; width:100px; padding-top:10px">
-        <div style="margin-bottom:8px"><dy-user-pic user="bet.author"></dy-user-pic></div>
-        <dy-user-name user="bet.author"></dy-user-name>
+<div class="row bet-row">
+    <div class="bet-type basic-bg" ng-if="bet.bet_type==1"><div class="bet-type-text">Básica</div></div>
+    <div class="bet-type auction-bg" ng-if="bet.bet_type==2"><div class="bet-type-text">Subasta</div></div>
+    <div class="bet-type lottery-bg" ng-if="bet.bet_type==3"><div class="bet-type-text">Porra</div></div>
+    <div class="col-xs-2">
+        <dy-user-pic-name user="bet.author" size="xl"></dy-user-pic-name>
     </div>
-    <div class="bet-text pull-left">
-        <p>
-            <span ng-if="bet.bet_type==1"><strong>Basic</strong></span>
-            <span ng-if="bet.bet_type==2"><strong>Auction</strong></span>
-            <span ng-if="bet.bet_type==3"><strong>Lottery</strong></span>
-            <!-- <time relative datetime="[[bet.created_at]]"></time> -->
-        </p>
+    <div class="col-xs-10">
         <p><span class="bet-title"><a ui-sref="main.bet({betId:bet.id})">[[bet.title]]</a></span></p>
-        <p ng-if="bet.bet_type==1">For [[bet.amount]] coins against [[bet.amount*bet.odds - bet.amount]]</p>
-        <p ng-if="bet.bet_type!=1">For [[bet.amount]] coins</p>
-        <span class="bet-closing">
-            <dy-bidding-deadline ng-if="bet.bet_state=='bidding'" style="margin-right:20px;" limit="bet.bidding_deadline"></dy-bidding-deadline>
+        <p ng-if="bet.bet_type==1" class="bet-title-basic">Por [[bet.amount]]Y contra [[bet.amount*bet.odds - bet.amount]]Y</p>
+        <p ng-if="bet.bet_type==2" class="bet-title-auction">Por [[bet.amount]]Y</p>
+        <p ng-if="bet.bet_type==3" class="bet-title-lottery">[[bet.amount]]Y por barba</p>
+        <div class="bet-closing">
+            <dy-bidding-deadline ng-if="bet.bet_state=='bidding'" limit="bet.bidding_deadline"></dy-bidding-deadline>
             <dy-event-deadline ng-if="bet.bet_state=='bidding' || bet.bet_state=='event'" limit="bet.event_deadline"></dy-event-deadline>
-        </span>
+        </div>
     </div>
-    <div class="clearfix"></div>
 </div>
