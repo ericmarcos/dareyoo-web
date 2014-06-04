@@ -32,7 +32,7 @@ TEMPLATE_DEBUG = DEBUG
 
 PROJECT_NAME = os.environ.get('PROJECT_NAME', 'django_template')
 
-ALLOWED_HOSTS = ['shielded-castle-9030.herokuapp.com', '.dareyoo.com', '.dareyoo.net']
+ALLOWED_HOSTS = ['shielded-castle-9030.herokuapp.com', '.dareyoo.com', '.dareyoo.net', '.dareyoo.es']
 
 
 # Application definition

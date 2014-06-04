@@ -1,6 +1,10 @@
 $(function(){
-    $('#parallax1').parallax("50%", 0.3);
-    $('#parallax2').parallax("50%", 0.3);
+    var mq = window.matchMedia( "(min-width: 768px)" );
+    console.log(mq);
+    if(mq.matches) {
+        $('#parallax1').parallax("50%", 0.3);
+        $('#parallax2').parallax("50%", 0.3);
+    }
 
     $('.video-btn a').magnificPopup({type:'iframe'});
 

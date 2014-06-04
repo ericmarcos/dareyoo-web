@@ -5,6 +5,9 @@
 @import "../lib/zocial-less/css/zocial.less";
 @import "common.less";
 
+///////// Base url ////////////
+@base-url: "[[LESS_BASE_URL]]";
+
 @zocialPath: '../fonts';
 
 @font-size-h1: 32px;
@@ -31,14 +34,14 @@ p {
 
 body {
   /*.at2x('/static/beta/build/img/paper.jpg', 500px, 593px);*/
-  background-image: url('/static/beta/build/img/landing/paper.png');
+  background-image: url("@{base-url}/static/beta/build/img/landing/paper.png");
   background-repeat: repeat;
 }
 
 /////////////////////// LANDING SECTION 0: INTRO /////////////////////
 
 #intro{
-  .at2x('/static/beta/build/img/landing/intro/landing_intro_pattern.jpg', 58px, 102px);
+  .at2x("@{base-url}/static/beta/build/img/landing/intro/landing_intro_pattern.jpg", 58px, 102px);
   margin: 0 auto;
   padding: 100px 0px 0px;
 }
@@ -55,7 +58,7 @@ body {
 .fb {
   width: 45px;
   height: 45px;
-  .at2x('/static/beta/build/img/landing/fb.png', 45px, 90px);
+  .at2x("@{base-url}/static/beta/build/img/landing/fb.png", 45px, 90px);
   background-repeat: no-repeat;
   &:hover {
     background-position: 0 -45px;
@@ -64,7 +67,7 @@ body {
 .twitter {
   width: 45px;
   height: 45px;
-  .at2x('/static/beta/build/img/landing/twitter.png', 45px, 90px);
+  .at2x("@{base-url}/static/beta/build/img/landing/twitter.png", 45px, 90px);
   background-repeat: no-repeat;
   &:hover {
     background-position: 0 -45px;
@@ -129,7 +132,7 @@ body {
 
 #parallax1 {
     height: 500px;
-    background: url('/static/beta/build/img/landing/parallax1.jpg') 50% 0 no-repeat fixed;
+    background: url("@{base-url}/static/beta/build/img/landing/parallax1.jpg") 50% 0 no-repeat fixed;
     background-size: cover;
 }
 
@@ -151,14 +154,14 @@ body {
 
 #parallax2 {
     height: 500px;
-    background: url('/static/beta/build/img/landing/parallax2.jpg') 50% 0 no-repeat fixed;
+    background: url("@{base-url}/static/beta/build/img/landing/parallax2.jpg") 50% 0 no-repeat fixed;
     background-size: cover;
 }
 
 /////////////////////// LANDING SECTION 4: FUN /////////////////////
 
 #fun {
-  .at2x('/static/beta/build/img/landing/fun/trofeo.png', 700px);
+  .at2x("@{base-url}/static/beta/build/img/landing/fun/trofeo.png", 700px);
   background-repeat: no-repeat;
   background-position: right 30% bottom -10px;
   padding: 80px 0px 160px;
@@ -170,17 +173,17 @@ body {
 @closing-height: 500px;
 
 #closing {
-  height: @closing-height;
+  .at2x("@{base-url}/static/beta/build/img/landing/intro/landing_intro_pattern.jpg", 58px, 102px);
+  //height: @closing-height;
   #closing-left {
-    .at2x('/static/beta/build/img/landing/closing/closing.jpg', 760px);
-    background-size: contain;
+    .at2x("@{base-url}/static/beta/build/img/landing/closing/closing.jpg");
+    background-size: cover;
     background-repeat: no-repeat;
-    background-position: right center;
-    background-color: #000;
+    background-position: center center;
+    //background-color: #000;
     height: @closing-height;
   }
   #closing-right {
-    .at2x('/static/beta/build/img/landing/intro/landing_intro_pattern.jpg', 58px, 102px);
     height: @closing-height;
     .closing-right-content {
       max-width: 500px;

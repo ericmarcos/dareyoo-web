@@ -19,6 +19,12 @@ var shell = require("gulp-shell");
 
 var isPro = args.pro || args.server == "pro";
 var isPre = args.pre;
+var isDev = !isPro && !isPre;
+
+//TODO: take it from env vars
+var dev_url = '';
+var pre_url = 'http://s3-eu-west-1.amazonaws.com/dareyoo-pre';
+var pro_url = 'http://s3-eu-west-1.amazonaws.com/dareyoo';
 
 var paths = {
   html: ['./static/beta/partials/**', './static/beta/partials/directives/**'],
@@ -101,6 +107,9 @@ gulp.task('scripts', ['copy_scripts', 'app_all_min_scripts', 'landing_all_min_sc
 
 gulp.task('app_less', function () {
   return gulp.src(paths.app_less)
+        .pipe(gulpif(isDev, replace("[[LESS_BASE_URL]]", dev_url)))
+        .pipe(gulpif(isPre, replace("[[LESS_BASE_URL]]", pre_url)))
+        .pipe(gulpif(isPro, replace("[[LESS_BASE_URL]]", pro_url)))
         .pipe(less({
             compress: true,
             paths: paths.less_libs
@@ -112,6 +121,9 @@ gulp.task('app_less', function () {
 
 gulp.task('landing_less', function () {
   return gulp.src(paths.landing_less)
+        .pipe(gulpif(isDev, replace("[[LESS_BASE_URL]]", dev_url)))
+        .pipe(gulpif(isPre, replace("[[LESS_BASE_URL]]", pre_url)))
+        .pipe(gulpif(isPro, replace("[[LESS_BASE_URL]]", pro_url)))
         .pipe(less({
             compress: true,
             paths: paths.less_libs
@@ -181,7 +193,7 @@ gulp.task('env', function () {
     console.log('Env ' + process.env.PROJECT_NAME);
     process.env.PROJECT_NAME = isPro;
     console.log('Env ' + process.env.PROJECT_NAME);
-    return gulp.src(paths.images)
+    return gulp.src('.')
         .pipe(gulpif(isPro == "lala", shell('echo $PROJECT_NAME')))
         .pipe(gulpif(!isPro, shell('pwd')))
 });
