@@ -1,0 +1,9 @@
+<h3 ng-if="profile_user.id==user.id">People you follow</h3>
+<h3 ng-if="profile_user.id!=user.id">People [[profile_user.username]] follows</h3>
+<table class="table table-striped" style="margin-top:30px;">
+    <tr ng-repeat="follower in following">
+        <td><dy-user-pic user="follower" size="micro"></dy-user-pic></td>
+        <td><dy-user-name user="follower"></dy-user-name></td>
+        <td><button ng-show="user && profile_user.id==user.id" type="button" class="btn btn-primary" ng-click="unfollowUser(follower.id)">Unfollow</button></td>
+    </tr>
+</table>
