@@ -10,6 +10,27 @@
 @auction-color: #5bd69b;
 @lottery-color: #fda455;
 
+@small-gutter: 6px;
+@border-radius: 4px;
+
+.dy-pill() {
+    background-color: #fff;
+    border-radius: @border-radius;
+    box-shadow: 1px 1px 3px 0px rgba(200, 200, 200, 1);
+}
+
+.dy-pill {
+    .dy-pill();
+}
+
+img.grayscale{
+    filter: grayscale(100%);
+    -webkit-filter: grayscale(100%); /* For Webkit browsers */
+    filter: gray; /* For IE 6 - 9 */
+    -webkit-transition: all .6s ease; /* Fade to color for Chrome and Safari */
+    filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 10+, Firefox on Android */
+}
+
 
 /****************** OLD HOME *********************/
 /* Explanation of the following line: http://angular-ui.github.io/bootstrap/ */
@@ -20,6 +41,7 @@
     }
     body {
         background-color: #ddd;
+        padding-bottom: 20px;
     }
     .new-bet-tips{width:300px;max-width:300px;}
     //.bet-list { border: 1px solid black; }
@@ -42,6 +64,35 @@
     /*.dropdown-menu>li.unread>a{ background-color: #EEBBFF; }
     .dropdown-menu>li.unread>a:hover{ background-color: #DD99FF; }
     .dropdown-menu>li>a:hover{ background-color: #DDDDDD; }*/
+
+/****************** SMALL GUTTER GRID *****************/
+
+.container-fluid-small {
+  //.container-fixed(); //can't pass gutter as argument so copy/paste code from mixins.less
+  margin-right: auto;
+  margin-left: auto;
+  padding-left:  (@small-gutter / 2);
+  padding-right: (@small-gutter / 2);
+  &:extend(.clearfix all);
+}
+
+.row-small {
+  .make-row(@small-gutter);
+}
+
+.col-small-1 { .make-xs-column(1, @small-gutter); }
+.col-small-2 { .make-xs-column(2, @small-gutter); }
+.col-small-3 { .make-xs-column(3, @small-gutter); }
+.col-small-4 { .make-xs-column(4, @small-gutter); }
+.col-small-5 { .make-xs-column(5, @small-gutter); }
+.col-small-6 { .make-xs-column(6, @small-gutter); }
+.col-small-7 { .make-xs-column(7, @small-gutter); }
+.col-small-8 { .make-xs-column(8, @small-gutter); }
+.col-small-9 { .make-xs-column(9, @small-gutter); }
+.col-small-10 { .make-xs-column(10, @small-gutter); }
+.col-small-11 { .make-xs-column(11, @small-gutter); }
+.col-small-12 { .make-xs-column(12, @small-gutter); }
+
 
 /******************  EDIT PROFILE *********************/
 
@@ -83,35 +134,31 @@
 }
 
 /******************* NEW BET WIDGET ***********************/
-@small-gutter: 6px;
 
 .new-bet-widget {
+    .dy-pill();
     //This is for animating auto height
     //http://stackoverflow.com/questions/18452532/angularjs-custom-directive-using-event-listener
     height: auto;
-    max-height: 58px;
+    max-height: 46px;
     //height: 36px;
     overflow: hidden;
-    background-color: #fff;
-    border-radius: 4px;
-    padding-top: @small-gutter*2;
-    padding-bottom: @small-gutter*2;
-    .container-fluid {
-        padding-right: @small-gutter;
-        padding-left: @small-gutter;
+    padding: @small-gutter 0px;
+    .container-fluid-small {
+        padding: 0px @small-gutter;
     }
 }
 .new-bet-widget-header {
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    margin-top: -@small-gutter*2;
+    .border-top-radius(@border-radius);
+    margin-top: -@small-gutter;
     margin-bottom: @small-gutter*2;
-    padding: @small-gutter @small-gutter*2;
+    padding: @small-gutter;
     height: 32px;
     span.header-title {
+        .text-overflow();
+        width: 100%;
         display: inline-block;
         height: 18px;
-        overflow: hidden;
     }
 }
 .basic-bg {
@@ -154,26 +201,6 @@
     text-align: center;
 }
 
-//Customize bootstrap columns gutter:
-//http://stackoverflow.com/questions/16489307/how-to-remove-gutter-space-for-a-specific-div-only-bootstrap
-.row.small-gutter {
-  margin-left: 0px;
-  margin-right: 0px;
-}
-
-.row.small-gutter [class*='col-'] {
-  padding-right: @small-gutter/2;
-  padding-left: @small-gutter/2;
-}
-
-.row.small-gutter [class*='col-']:first-child {
-  padding-left: @small-gutter;
-}
-
-.row.small-gutter [class*='col-']:last-child {
-  padding-right: @small-gutter;
-}
-
 .btn-basic {
   .button-variant(white, @basic-color, @basic-color); //(button, hover)
 }
@@ -185,7 +212,7 @@
 }
 
 .label-invites {
-    border-radius: 4px;
+    border-radius: @border-radius;
     background-color: #eee;
     border: 1px solid #ccc;
     color: #333;
@@ -215,9 +242,28 @@
 .bet-row {
     position: relative;
     border-top: 1px solid #ddd;
-    min-height: 164px;
-    padding: 20px;
+    padding: 16px 16px 6px 0px;
     background-color: white;
+    text-align: left;
+    .left {
+        width: 140px;
+        float: left;
+    }
+    .right {
+        margin-left: 140px;
+        margin-bottom: 40px;
+    }
+    .bet-closing {
+        position: absolute;
+        bottom: 6px;
+        left: 140px;
+        color: #666;
+        font-size: 15px;
+        font-weight: @regular;
+        dy-bidding-deadline {
+            margin-right: 20px;
+        }
+    }
 }
 .bet-title {
     font-size: 20px;
@@ -232,8 +278,7 @@
     top: -3px;
     width: 24px;
     height: 72px;
-    border-top-right-radius: 4px;
-    border-top-left-radius: 4px;
+    .border-top-radius(@border-radius);
     .bet-type-text {
         color: white;
         -moz-transform: rotate(-90deg);  /* FF3.5+ */
@@ -270,14 +315,6 @@
     font-size: 20px;
     font-weight: @regular;
 }
-.bet-closing {
-    color: #666;
-    font-size: 15px;
-    font-weight: @regular;
-    dy-bidding-deadline {
-        margin-right: 20px;
-    }
-}
 
 
 /********************* PROFILE PIC ************************/
@@ -311,11 +348,16 @@
         right: 0;
         bottom: 0;
         z-index: 4;
-        background-color: @brand-primary;
-        width: 30px;
-        height: 30px;
-        text-align: center;
-        color: #fff;
+    }
+    .fair_play {
+        .at2x("@{base-url}/beta/build/img/app/badges/fair_play.png", 32px, 32px);
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 32px;
+        height: 32px;
+        z-index: 4;
+        border-radius: 16px;
     }
 }
 
@@ -331,14 +373,225 @@
     }
 }
 
-.user-pic-name {
-    dy-user-pic {
-        display: block;
-        margin-bottom: 10px;
+dy-user-name {
+    .text-overflow();
+    display: block;
+    text-align: center;
+    max-width: 60%;
+    margin: 0px auto;
+    .inverted {
+        color: #fff;
+        &:hover {
+            color: #fff;
+        }
     }
-    dy-user-name {
-        display: block;
-        text-align: center;
+    .big { font-size: 20px; font-weight: @regular; }
+    &.horizontal { padding-top: 5%; padding-left: 4px; }
+}
+dy-user-pic {
+    display: inline-block;
+    text-align: left;
+    //margin: 10px auto 0px;
+}
+.user-pic-name {
+    display: block;
+    text-align: center;
+    .horizontal { float: left; }
+}
+
+/******************** USER SUMMARY *******************/
+
+dy-user-summary {
+    .dy-pill();
+    display: block;
+    background-color: #fff;
+    border-radius: 6px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    .container-fluid-small {
+        padding: @small-gutter;
+        .summary-pic-name {
+            margin-top: 8px;
+        }
+        .summary-exp-bar {
+            width: 70%;
+            min-width: 60px;
+            margin: auto;
+            text-align: center;
+        }
+        .summary-badges {
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+    }
+}
+
+.yoos-info {
+    position: relative;
+    background-color: #ddd;
+    color: @brand-primary;
+    height: 100%;
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    line-height: 1;
+    font-size: 22px;
+    font-weight: @bold;
+    text-align: center;
+}
+
+.dy-badge {
+    margin-top: @small-gutter;
+    &:first-child {
+        img { border-bottom-left-radius: @border-radius; }
+    }
+    &:nth-child(6) {
+        img { border-bottom-right-radius: @border-radius; }
+    }
+    img { width: 100%; }
+}
+
+/***************** EXP LEVEL BAR ***************/
+
+.exp-level-bar {
+    position: relative;
+    height: 40px;
+    padding-top: 19px - @border-radius;
+    .exp-bar-bg {
+        position: relative;
+        border-radius: @border-radius;
+        border: 1px @brand-primary solid;
+        background-color: #fff;
+        height: @border-radius*2;
+        margin-right: 45px;
+        .exp-bar-wrapper {
+            position: absolute;
+            top: 1px;
+            bottom: 1px;
+            left: 1px;
+            right: 1px;
+            .exp-bar {
+                border-radius: @border-radius - 1;
+                background-color: @brand-primary;
+                height: 100%;
+            }
+        }
+    }
+    .exp-bar-star {
+        position: absolute;
+        right: 0;
+        top: 0px;
+        background-color: #fff;
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        padding: 4px;
+    }
+}
+
+dy-level-star {
+    display: block;
+    .at2x("@{base-url}/beta/build/img/app/levelstar.png", 32px, 31px);
+    width: 32px;
+    height: 31px;
+    text-align: center;
+    padding-top: 6px;
+    color: #fff;
+}
+
+/****************** PROFILE *********************/
+
+.user-profile {
+    .dy-pill();
+    margin-top: 15px;
+    text-align: center;
+    padding: 0px;
+    padding-bottom: 15px;
+    .user-profile-top {
+        position: relative;
+        .edit-profile-btn {
+            position: absolute;
+            right: 20px;
+        }
+        .border-top-radius(@border-radius);
+        background-color: @brand-primary;
+        padding: 20px;
+        dy-user-name {
+            margin-bottom: 8px;
+        }
+        .profile-badges {
+            margin-top: 10px;
+            .profile-badge {
+                display: inline-block;
+                margin-right: 5px;
+            }
+        }
+        .profile-description {
+            color: #fff;
+            font-weight: @regular;
+            font-size: 14px;
+            margin-top: 16px;
+        }
+    }
+    .user-profile-bottom {
+        font-size: 12px;
+        font-weight: @regular;
+        .profile-cell {
+            padding: 10px;
+            cursor: pointer;
+            color: #000;
+            .profile-number {
+                color: @brand-primary;
+                font-size: 20px;
+                font-weight: @bold;
+            }
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}
+
+/****************** USER LIST ********************/
+
+.user-list-row {
+    margin: 0px;
+    padding: 12px;
+    border-top: 1px #ddd solid;
+    background-color: #f9f9f9;
+    &:nth-child(2n+0) { background-color: #fff; }
+    &:last-child { border-bottom: 1px #ddd solid; }
+}
+
+.empty-list-msg {
+    margin: 20px;
+}
+
+/***************** WHO TO FOLLOW ****************/
+
+.who-to-follow {
+    .dy-pill();
+    margin-top: 15px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    h1, h4 {
+        padding: 20px;
+    }
+    .finish-btn {
+        margin-top: 15px;
+        margin-right: 15px;
+    }
+}
+
+/****************** TIMELINE ********************/
+
+.timeline {
+    .dy-pill();
+    margin-top: 15px;
+    .timeline-header {
+        .border-top-radius(@border-radius);
+        padding: 8px;
+        background-color: @brand-primary;
     }
 }
 

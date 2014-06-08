@@ -1,3 +1,6 @@
-<div class="row bet-row" ng-repeat="bet in bets">
-    <dy-bet-list-item bet="bet"></dy-bet-list-item>
+<p class="empty-list-msg" ng-if="bets.length == 0 && profile_user.id == user.id">Aún no has creado ninguna apuesta</p>
+<p class="empty-list-msg" ng-if="bets.length == 0 && profile_user.id != user.id">[[profile_user.username]] aún no ha creado ninguna apuesta</p>
+<h4 ng-if="bets.length > 0">Apuestas creadas</h4>
+<div ng-show="bets.length > 0" class="bets-list">
+    <dy-bet-list-item ng-repeat="bet in bets" bet="bet"></dy-bet-list-item>
 </div>

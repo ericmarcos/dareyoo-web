@@ -31,7 +31,7 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
     def get_queryset(self):
         if self.request.user.is_authenticated():
             user = self.request.user
-            return Bet.objects.filter(Q(public=True) | Q(author=user) | Q(recipients=user))
+            return Bet.objects.filter(Q(public=True) | Q(author=user) | Q(recipients=user)).distinct()
         else:
             return Bet.objects.filter(public=True)
     
@@ -157,7 +157,7 @@ class BidViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
     def get_queryset(self):
         if self.request.user.is_authenticated():
             user = self.request.user
-            return Bid.objects.filter(Q(bet__public=True) | Q(author=user) | Q(bet__author=user) | Q(bet__recipients=user))
+            return Bid.objects.filter(Q(bet__public=True) | Q(author=user) | Q(bet__author=user) | Q(bet__recipients=user)).distinct()
         else:
             return Bid.objects.filter(bet__public=True)
 
@@ -249,6 +249,7 @@ class OpenBetsList(generics.ListAPIView):
 
 
 class DareyooUserBetViewSet(DareyooUserViewSet):
+    bets_serializer_class = BetSerializer
     @link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
     def bets(self, request, *args, **kwargs):
         user = self.get_object()
@@ -256,7 +257,7 @@ class DareyooUserBetViewSet(DareyooUserViewSet):
         bet_state = request.QUERY_PARAMS.get('state', None)
         bet_type = request.QUERY_PARAMS.get('type', None)
 
-        qs = Bet.objects.all().creted_by(user)
+        qs = Bet.objects.all().created_by(user)
         if bet_state:
             qs = qs.state(bet_state)
         elif not all_bets:
@@ -269,7 +270,7 @@ class DareyooUserBetViewSet(DareyooUserViewSet):
             qs = qs.public() | qs.sent_to(request.user)
         qs.order_by('-created_at').distinct()
 
-        serializer = BetSerializer(qs, many=True, context={'request': request})
+        serializer = self.bets_serializer_class(qs, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     #@link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])

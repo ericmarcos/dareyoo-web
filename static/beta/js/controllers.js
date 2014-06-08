@@ -89,6 +89,7 @@ angular.module('dareyoo.controllers', []).
     };
   }]).
   controller('WhoToFollowCtrl', ['$scope', '$http', '$location', '$filter', function($scope, $http, $location, $filter) {
+    $scope.new_user = $location.search('new');
     $scope.provider = '';
     $scope.friends_list = [];
     $scope.search_friends = function(provider) {
@@ -101,6 +102,7 @@ angular.module('dareyoo.controllers', []).
         else $scope.friends_list = response;
       });
     };
+    $scope.search_friends('dareyoo');
   }]).
   controller('RankingCtrl', ['$scope', '$http', '$location', '$filter', function($scope, $http, $location, $filter) {
     $scope.ranking = [];
@@ -194,7 +196,7 @@ angular.module('dareyoo.controllers', []).
     };
     $scope.getOpenBets();
   }])
-  .controller('UserCtrl', ['$scope', '$rootScope', '$http', '$stateParams', function($scope, $rootScope, $http, $stateParams) {
+  .controller('UserCtrl', ['$scope', '$rootScope', '$http', '$stateParams', 'config', function($scope, $rootScope, $http, $stateParams, config) {
     $scope.profile_user_follows_me = false;
     $scope.i_follow_profile_user = false;
     $scope.followers = [];
@@ -223,6 +225,10 @@ angular.module('dareyoo.controllers', []).
     };
     $scope.isFollowing = function(id, ask_id, success) {
       $http.get("/api/v1/users/" + id + "/is_following/", {'params': {'user_id': ask_id}}).success(success);
+    };
+
+    $scope.getBadgePath = function(badge, level) {
+      return config.static_url + "beta/build/img/app/badges/" + badge + ".png";
     };
     $scope.loadUser = function() {
       var id = $stateParams.userId;
@@ -380,7 +386,7 @@ angular.module('dareyoo.controllers', []).
     $scope.friends = {'sumadors':'torneo', 'Josep':'amigo', 'Jaume':'amigo'};
     $scope.invites = ['eric', 'pitut'];
 
-    $scope.noFocusStyles = {"height": "58px", "max-height": "58px", "overflow": "hidden", "min-height":"initial"};
+    $scope.noFocusStyles = {"height": "46px", "max-height": "46px", "overflow": "hidden", "min-height":"initial"};
     $scope.noFocusTextStyles = {"height": "34px"};
     $scope.transitionStyles = {"height": "auto", "max-height":"400px","transition":"1s"};
     $scope.transitionTitleStyles = {"height":"60px","transition":"1s"};
@@ -522,7 +528,7 @@ angular.module('dareyoo.controllers', []).
     }
 
     $scope.addInvite = function(inv) {
-      if(inv) {
+      if(inv && $scope.invites.indexOf(inv) == -1) {
         $scope.invites.push(inv);
       }
     }

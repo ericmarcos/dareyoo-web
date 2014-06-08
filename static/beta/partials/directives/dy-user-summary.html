@@ -1,0 +1,16 @@
+<div class="container-fluid-small">
+  <div class="summary-pic-name">
+    <dy-user-pic-name user="user" size="'big'" badges="true" big="true"></dy-user-pic-name>
+  </div>
+  <div class="summary-exp-bar">
+    <dy-experience-level-bar experience="user.experience"></dy-experience-level-bar>
+    <div class="summary-badges">
+      <img class="img-circle" width="26" ng-repeat="(badge, level) in user.badges" ng-if="level > 0" ng-src="[[getBadgePath(badge, level)]]">
+    </div>
+  </div>
+  <div class="row-small">
+    <div class="col-small-4"><div class="yoos-info">[[user.coins_available]]<br>Y</div></div>
+    <div class="col-small-4"><div class="yoos-info"><div>[[user.coins_locked]]<br>Y</div></div></div>
+    <div class="col-small-4"><div class="yoos-info"><div>+ Y<br>&nbsp;</div></div></div>
+  </div>
+</div>

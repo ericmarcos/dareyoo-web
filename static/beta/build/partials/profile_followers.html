@@ -1,8 +1,5 @@
-<h3 ng-if="profile_user.id==user.id">People following you</h3>
-<h3 ng-if="profile_user.id!=user.id">People following [[profile_user.username]]</h3>
-<table class="table table-striped" style="margin-top:30px;">
-    <tr ng-repeat="follower in followers">
-        <td><dy-user-pic user="follower" size="micro"></dy-user-pic></td>
-        <td><dy-user-name user="follower"></dy-user-name></td>
-    </tr>
-</table>
+<h4 ng-if="followers.length > 0">Seguidores</h4>
+<p class="empty-list-msg" ng-if="followers.length == 0 && profile_user.id == user.id">Nadie te está siguiendo, <a href="#" ui-sref="who-to-follow()">conecta con tus amigos</a> para empezar a tener seguidores!</p>
+<p class="empty-list-msg" ng-if="followers.length == 0 && profile_user.id != user.id">Nadie está siguiendo a [[profile_user.username]]</p>
+<!-- <h3 ng-if="profile_user.id!=user.id">People following [[profile_user.username]]</h3> -->
+<dy-user-list users="followers" logged-in-id="user.id"></dy-user-list>

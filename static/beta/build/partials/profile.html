@@ -1,5 +1,60 @@
 <div class="row">
-    <div class="col-md-4 col-md-offset-2">
+    <div class="col-xs-8 col-xs-offset-2 user-profile">
+        <div class="user-profile-top">
+            <div class="row">
+                <div class="col-xs-12">
+                    <a ng-if="user && profile_user.id==user.id" type="button" class="btn btn-primary edit-profile-btn" ui-sref="edit-profile()">
+                        <span class="glyphicon glyphicon-cog"></span>
+                    </a>
+                    <dy-user-pic user="profile_user" size="'xxl'" badges="false"></dy-user-pic>
+                    <dy-user-name user="profile_user" inverted="true" big="true"></dy-user-name>
+                    <!-- <p ng-if="profile_user.following_me">[[profile_user.username]] te sigue</p> -->
+                    <button ng-if="user && profile_user.id!=user.id && profile_user.im_following" type="button" class="btn btn-default" ng-click="unfollowUser(profile_user.id)">Dejar de seguir</button>
+                    <button ng-if="user && profile_user.id!=user.id && !profile_user.im_following" type="button" class="btn btn-default" ng-click="followUser(profile_user.id)">Seguir</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-8 col-xs-offset-2">
+                    <dy-experience-level-bar experience="profile_user.experience"></dy-experience-level-bar>
+                    <div class="profile-badges">
+                        <div class="profile-badge" ng-repeat="(badge, level) in profile_user.badges">
+                            <img ng-src="[[getBadgePath(badge, level)]]" class="img-circle" ng-class="{'grayscale': level == 0}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-8 col-xs-offset-2">
+                    <p class="profile-description">[[profile_user.description]]</p>
+                </div>
+            </div>
+        </div>
+        <div class="user-profile-bottom">
+            <div class="row">
+                <a href="#" ui-sref="profile.following({userId:profile_user.id})"><div class="col-xs-4 profile-cell"><span class="profile-number">[[profile_user.following]] </span>SIGUIENDO
+                </div></a>
+                <a href="#" ui-sref="profile.followers({userId:profile_user.id})"><div class="col-xs-4 profile-cell"><span class="profile-number">[[profile_user.followers]] </span>SEGUIDORES
+                </div></a>
+                <a href="#" ui-sref="profile.bets({userId:profile_user.id})"><div class="col-xs-4 profile-cell"><span class="profile-number">[[profile_user.created_bets]] </span>APUESTAS
+                </div></a>
+            </div>
+            <div ng-if="profile_user.id==user.id" class="row">
+                <div class="col-xs-4 profile-cell"><span class="profile-number">[[profile_user.coins_available]] </span>Y
+                </div>
+                <div class="col-xs-4 profile-cell"><span class="profile-number">[[profile_user.coins_locked]] </span>Y BLOQUEADOS
+                </div>
+                <div class="col-xs-4 profile-cell"><span class="profile-number">+ Y</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-8 col-xs-offset-2 user-profile">
+        <div ui-view></div>
+    </div>
+</div>
+    <!-- <div class="col-md-4 col-md-offset-2">
         <div class="text-center">
             <dy-user-pic user="profile_user"></dy-user-pic>
         </div>
@@ -26,5 +81,4 @@
             <span class="num-points">[[profile_user.week_total_points]]</span><br><span class="text-points">POINTS THIS WEEK (ranks #[[profile_user.week_total_position]])</span>
         </div>
     </div>
-</div>
-<div ui-view></div>
+</div> -->

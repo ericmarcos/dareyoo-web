@@ -106,10 +106,11 @@ gulp.task('landing_all_min_scripts', function() {
 gulp.task('scripts', ['copy_scripts', 'app_all_min_scripts', 'landing_all_min_scripts']);
 
 gulp.task('app_less', function () {
+  var less_base_url = dev_url;
+  if(isPre) less_base_url = pre_url;
+  if(isPro) less_base_url = pro_url;
   return gulp.src(paths.app_less)
-        .pipe(gulpif(isDev, replace("[[LESS_BASE_URL]]", dev_url)))
-        .pipe(gulpif(isPre, replace("[[LESS_BASE_URL]]", pre_url)))
-        .pipe(gulpif(isPro, replace("[[LESS_BASE_URL]]", pro_url)))
+        .pipe(replace("[[LESS_BASE_URL]]", less_base_url))
         .pipe(less({
             compress: true,
             paths: paths.less_libs
@@ -120,10 +121,11 @@ gulp.task('app_less', function () {
 });
 
 gulp.task('landing_less', function () {
+  var less_base_url = dev_url;
+  if(isPre) less_base_url = pre_url;
+  if(isPro) less_base_url = pro_url;
   return gulp.src(paths.landing_less)
-        .pipe(gulpif(isDev, replace("[[LESS_BASE_URL]]", dev_url)))
-        .pipe(gulpif(isPre, replace("[[LESS_BASE_URL]]", pre_url)))
-        .pipe(gulpif(isPro, replace("[[LESS_BASE_URL]]", pro_url)))
+        .pipe(replace("[[LESS_BASE_URL]]", less_base_url))
         .pipe(less({
             compress: true,
             paths: paths.less_libs

@@ -143,6 +143,8 @@ class BetQuerySet(QuerySet):
         return self.filter(recipients=user)
 
     def involved(self, user):
+        ''' Make sure to add distinct() at the end of your query if you
+        use this function '''
         return self.created_by(user) | self.bidded_by(user) | self.participated_by(user) | self.sent_to(user)
 
     def public(self):

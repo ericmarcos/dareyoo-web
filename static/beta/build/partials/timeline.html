@@ -1,6 +1,21 @@
-<p class="text-right">Order by 
-<button type="button" ng-class="{'btn': true, 'btn-xs': true, 'btn-primary': order_by=='-created_at', 'btn-default': order_by!='-created_at'}" ng-click="getTimeline('-created_at')">Recently created</button> 
-<button type="button" ng-class="{'btn': true, 'btn-xs': true, 'btn-primary': order_by=='bidding_deadline', 'btn-default': order_by!='bidding_deadline'}" ng-click="getTimeline('bidding_deadline')">Bidding deadline</button></p>
-<div ng-show="loaded" class="bets-list">
-    <dy-bet-list-item ng-repeat="bet in bets" bet="bet"></dy-bet-list-item>
+<div class="timeline">
+    <div class="timeline-header">
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"><small><span class="glyphicon glyphicon-chevron-down"></span></small>&nbsp;&nbsp;Ordenar por:
+            [[order_by=='bidding_deadline' && " fecha cierre" || " fecha creación"]]</span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li>
+                    <a href="#" ng-click="getTimeline('-created_at')"><small ng-show="order_by=='-created_at'"><span class="glyphicon glyphicon-ok"></span></small> Fecha creación</a>
+                </li>
+                <li>
+                    <a href="#" ng-click="getTimeline('bidding_deadline')"><small ng-show="order_by=='bidding_deadline'"><span class="glyphicon glyphicon-ok"></span></small> Fecha cierre</a>
+                </li>
+            </ul>
+        </div>
+        <button type="button" class="btn btn-primary pull-right" ng-click="getTimeline()"><span class="glyphicon glyphicon-refresh"></span> Actualizar</button> 
+    </div>
+    <div ng-show="loaded" class="bets-list">
+        <dy-bet-list-item ng-repeat="bet in bets" bet="bet"></dy-bet-list-item>
+    </div>
 </div>

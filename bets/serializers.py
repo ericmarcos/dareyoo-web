@@ -47,10 +47,10 @@ class DareyooUserBetsFullSerializer(DareyooUserFullSerializer):
     bets_url = serializers.HyperlinkedIdentityField(view_name='dareyoouser-bets')
 
     def get_open_bets(self, obj):
-        return Bet.objects.open(obj).count()
+        return Bet.objects.open(obj).distinct().count()
 
     def get_created_bets(self, obj):
-        return Bet.objects.all().created_by(obj).count()
+        return Bet.objects.all().created_by(obj).distinct().count()
 
     class Meta:
         model = DareyooUserFullSerializer.Meta.model

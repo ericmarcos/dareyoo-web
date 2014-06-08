@@ -9,6 +9,7 @@ from .models import *
 class DareyooUserBetPointsViewSet(DareyooUserBetViewSet):
     serializer_class = DareyooUserPointsFullSerializer
     short_serializer_class = DareyooUserPointsShortSerializer
+    bets_serializer_class = BetPointsSerializer
 
     @link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
     def tournaments(self, request, *args, **kwargs):
