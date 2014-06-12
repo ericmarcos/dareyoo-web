@@ -8,7 +8,7 @@ from django.db.models.query import QuerySet
 from django.db.models import Sum, Q
 from django.conf import settings
 from rest_framework.exceptions import APIException
-from bets.models import Bet
+from bets.models import Bet, Bid
 from users.models import DareyooUser
 
 
@@ -127,30 +127,35 @@ class UserPointsFactory:
 
     @staticmethod
     def fromBet(bet):
-        if bet.winners():
-            if bet.is_lottery():
-                for bid in bet.bids.all():
-                    for p in bid.participants.all():
-                        u = UserPoints()
-                        u.bet = bet
-                        u.user = p
-                        u.calculatePointsFromBet(bid)
-                        u.save()
-            else:
-                u = UserPoints()
-                u.bet = bet
-                u.user = bet.author
-                u.calculatePointsFromBet()
-                u.save()
-                u.id = None
-                u.user = bet.accepted_bid.author
-                u.calculatePointsFromBet()
-                u.save()
-            if bet.referee:
-                u.id = None
-                u.user = bet.referee
-                u.calculatePointsFromBet()
-                u.save()
+        if bet.is_lottery():
+            for bid in bet.bids.all():
+                for p in bid.participants.all():
+                    u = UserPoints()
+                    u.bet = bet
+                    u.user = p
+                    u.calculatePointsFromBet(bid)
+                    u.save()
+            #TODO: the creator of the lottery should get some extra points
+            #u = UserPoints()
+            #u.bet = bet
+            #u.user = bet.author
+            #u.points = u.lotteryCreatorPoints()
+            #u.save()
+        else:
+            u = UserPoints()
+            u.bet = bet
+            u.user = bet.author
+            u.calculatePointsFromBet()
+            u.save()
+            u.id = None
+            u.user = bet.accepted_bid.author
+            u.calculatePointsFromBet(bet.accepted_bid)
+            u.save()
+        if bet.referee:
+            u.id = None
+            u.user = bet.referee
+            u.calculatePointsFromBet()
+            u.save()
 
 
 class UserPoints(models.Model):
@@ -158,6 +163,7 @@ class UserPoints(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='points', blank=True, null=True)
     bet = models.ForeignKey(Bet, related_name='points', blank=True, null=True)
+    bid = models.ForeignKey(Bid, related_name='points', blank=True, null=True)
     points = models.FloatField(blank=True, null=True, default=0)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True, editable=False)
 
@@ -171,35 +177,54 @@ class UserPoints(models.Model):
         return (int(math.floor((level - 1)**1.6*1000)),
                 int(math.floor(level**1.6*1000)))
 
+    def conflictWinnerPoints():
+        ''' Extra points for winning a conflict (even if the user loses the bet) '''
+        return self.bet.pot()
+
+    def conflictLoserPoints():
+        return -3*self.bet.pot()
+
+    def refereePoints():
+        return 5*self.bet.pot()
+
+    def lotteryCreatorPoints():
+        return math.floor(0.5*self.bet.pot())
+
     def calculatePointsFromBet(self, bid=None):
         #TODO: this code is soooo ugly...
         winners = self.bet.winners() if self.bet else None
         ref = self.bet.referee if self.bet else None
+        self.bid = bid
         if ref:
             if self.bet.is_lottery():
                 if ref == self.user:
-                    self.points = 10*self.bet.pot()
+                    self.points = self.refereePoints()
                 elif self.user == bid.claim_author:
                     if self.bet.referee_lottery_winner == bid or (self.bet.referee_claim == Bet.CLAIM_NULL and bid.claim == Bet.CLAIM_NULL):
-                        pass
+                        self.points = self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.bet.referee_lottery_winner == bid)
+                        self.points += self.conflictWinnerPoints()
                     else:
-                        self.points = -10*self.bet.pot()
+                        self.points = self.conflictLoserPoints()
                 elif self.user == self.bet.author:
                     if self.bet.referee_lottery_winner == self.bet.claim_lottery_winner or (self.bet.referee_claim == Bet.CLAIM_NULL and self.bet.claim == Bet.CLAIM_NULL):
-                        pass
+                        self.points = self.conflictWinnerPoints()
+                        '''the author wins the conflict, but maybe he hasn't participated'''
+                        if self.user in self.bet.participants():
+                            self.points += self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.user in winners)
                     else:
-                        self.points = -10*self.bet.pot()
+                        self.points = self.conflictLoserPoints()
                 else:
                     self.points = self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.user in winners)
             else:
                 points = self.pointsFromAmount(self.bet.amount, self.bet.accepted_bid.amount, self.bet.author == winners[0])
                 if winners[0] == self.user:
                     self.points = points[0]
+                    self.points += self.conflictWinnerPoints()
                 elif ref == self.user:
-                    self.points = 10*self.bet.pot()
+                    self.points = self.refereePoints()
                 else:
-                    self.points = -10*self.bet.pot()
-        elif winners:
+                    self.points = self.conflictLoserPoints()
+        else:
             if self.bet.is_lottery():
                 self.points = self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.user in winners)
             else:
@@ -213,7 +238,7 @@ class UserPoints(models.Model):
 
     winner_factor = 4
     loser_factor = 0.5
-    lottery_factor = 0.2
+    lottery_factor = 0.8
 
     def pointsFromAmount(self, q0, q1, p):
         '''p=0 (False) means q0 is the winner. p=1 (True) means q1 is the winner
@@ -257,22 +282,22 @@ class UserBadges(models.Model):
                 self.save()
                 gamification.signals.badge_unlocked.send(sender=self.__class__, user=self.user, badge=badge, level=level, prev_level=prev)
 
-    @staticmethod
-    def fromBet(bet):
+    @classmethod
+    def fromBet(cls, bet):
         for user in bet.participants():
-            check_fair_play(user)
-            check_max_coins(user)
-            check_week_points(user)
-            check_loser(user)
-            check_straight_wins(user)
+            UserBadges.check_fair_play(user)
+            UserBadges.check_max_coins(user)
+            UserBadges.check_week_points(user)
+            UserBadges.check_loser(user)
+            UserBadges.check_straight_wins(user)
             if user in bet.winners():
                 user.badges.precal_total_wins += 1
                 user.badges.save()
-            check_total_wins(user)
+            UserBadges.check_total_wins(user)
 
     fair_play_levels = [4, 9, 19, 49]
-    @staticmethod
-    def check_fair_play(user):
+    @classmethod
+    def check_fair_play(cls, user):
         #TODO: do it at DB level!
         last_bets = user.bets.last_finished(50)
         if len(last_bets) > 0:
@@ -285,29 +310,29 @@ class UserBadges(models.Model):
             if straight == 0 and current_level != 0:
                 user.badges.unlock_badge("fair_play", 0)
             else:
-                next_level = sorted(fair_play_levels + [straight]).index(straight)
+                next_level = sorted(UserBadges.fair_play_levels + [straight]).index(straight)
                 if next_level > current_level:
                     user.badges.unlock_badge("fair_play", next_level)
 
 
     max_coins_levels = [499, 999, 2999, 4999]
-    @staticmethod
-    def check_max_coins(user):
-        next_level = sorted(max_coins_levels + [user.coins_available]).index(user.coins_available)
+    @classmethod
+    def check_max_coins(cls, user):
+        next_level = sorted(UserBadges.max_coins_levels + [user.coins_available]).index(user.coins_available)
         if next_level > user.badges.max_coins:
             user.badges.unlock_badge('max_coins', next_level)
 
     week_points_levels = [499, 999, 2999, 4999]
-    @staticmethod
-    def check_week_points(user):
+    @classmethod
+    def check_week_points(cls, user):
         week_points = user.points.week_sum()
-        next_level = sorted(week_points_levels + [week_points]).index(week_points)
+        next_level = sorted(UserBadges.week_points_levels + [week_points]).index(week_points)
         if next_level > user.badges.week_points:
             user.badges.unlock_badge('week_points', next_level)
 
     loser_levels = [4, 9, 14, 19]
-    @staticmethod
-    def check_loser(user):
+    @classmethod
+    def check_loser(cls, user):
         last_bets = user.bets.last_finished(20)
         if len(last_bets) > 0:
             straight = 0
@@ -315,13 +340,13 @@ class UserBadges(models.Model):
                 if user not in (bet.losers() or []):
                     break
                 straight += 1
-            next_level = sorted(loser_levels + [straight]).index(straight)
+            next_level = sorted(UserBadges.loser_levels + [straight]).index(straight)
             if next_level > user.badges.loser:
                 user.badges.unlock_badge("loser", next_level)
 
     straight_wins_levels = [2, 4, 9, 24]
-    @staticmethod
-    def check_straight_wins(user):
+    @classmethod
+    def check_straight_wins(cls, user):
         last_bets = user.bets.last_finished(25)
         if len(last_bets) > 0:
             straight = 0
@@ -329,15 +354,15 @@ class UserBadges(models.Model):
                 if user not in (bet.winners() or []):
                     break
                 straight += 1
-            next_level = sorted(straight_wins_levels + [straight]).index(straight)
+            next_level = sorted(UserBadges.straight_wins_levels + [straight]).index(straight)
             if next_level > user.badges.straight_wins:
                 user.badges.unlock_badge("straight_wins", next_level)
 
     total_wins_levels = [9, 24, 49, 99]
-    @staticmethod
-    def check_total_wins(user):
+    @classmethod
+    def check_total_wins(cls, user):
         total_wins = user.badges.precal_total_wins
-        next_level = sorted(total_wins_levels + [total_wins]).index(total_wins)
+        next_level = sorted(UserBadges.total_wins_levels + [total_wins]).index(total_wins)
         if next_level > user.badges.total_wins:
             user.badges.unlock_badge('total_wins', next_level)
 
@@ -376,8 +401,7 @@ class TournamentManager(models.Manager):
 
 class Tournament(models.Model):
     objects = TournamentManager()
-
-    author = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='tournaments_created', blank=True, null=True)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='tournaments_created', blank=True, null=True)
     public = models.BooleanField(blank=True, default=True)
     only_author = models.BooleanField(blank=True, default=True)
     participants = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, null=True, related_name='tournaments')
@@ -393,7 +417,7 @@ class Tournament(models.Model):
     def save(self, *args, **kwargs):
         is_new = self.pk is None
         super(Tournament, self).save(*args, **kwargs)
-        if is_new:
+        if is_new and self.author:
             self.add_participant(self.author)
 
     @staticmethod
@@ -410,9 +434,9 @@ class Tournament(models.Model):
     def check_bet_participant_tournaments(bet, participant=None):
         for t in bet.tournaments.all():
             if participant:
-                self.add_participant(participant)
+                t.add_participant(participant)
             else:
-                self.participants.add(*list(bet.participants()))
+                t.participants.add(*list(bet.participants()))
 
     def check_bet(self, bet):
         '''Checks if a bet matches the conditions of

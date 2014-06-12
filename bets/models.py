@@ -223,6 +223,9 @@ class Bet(models.Model):
     odds = models.FloatField(blank=True, null=True, default=2)
     accepted_bid = models.ForeignKey("Bid", blank=True, null=True, related_name='accepted')
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True, editable=False)
+    resolved_at = models.DateTimeField(blank=True, null=True, editable=False, default=None)
+    complained_at = models.DateTimeField(blank=True, null=True, editable=False, default=None)
+    arbitrated_at = models.DateTimeField(blank=True, null=True, editable=False, default=None)
     finished_at = models.DateTimeField(blank=True, null=True, editable=False, default=None)
     bidding_deadline = models.DateTimeField(blank=True, null=True)
     event_deadline = models.DateTimeField(blank=True, null=True)
@@ -387,7 +390,7 @@ class Bet(models.Model):
             #I'm not doing it now because of the lottery use case: a singe user
             #(for example, the bet creator) can add many bids
             # UPDATE: currently set at 3 bids per user
-            if self.is_auction() and len([bid.author for bid in self.bids.all() if bid.author == user]) >= auction_bid_limit:
+            if self.is_auction() and len([b.author for b in self.bids.all() if b.author == user]) >= auction_bid_limit:
                 raise BetException("Can't post more than %s bids per bet per user" % auction_bid_limit)
             bid.bet = self
             bid.set_author(user)
@@ -409,6 +412,7 @@ class Bet(models.Model):
                 if self.is_lottery():
                     for p in bid.participants.all():
                         p.unlock_funds(bid.amount)
+                        p.save()
                 bid.delete()
         else:
             raise BetException("Can't remove a bid from this bet because it's not on bidding sate (current state:%s)" % self.bet_state)
@@ -449,13 +453,14 @@ class Bet(models.Model):
                 else:
                     raise BetException("Invalid claim")
             if self.is_lottery():
-                if claim == None and claim_lottery_winner in [b.id for b in self.bids.all()]:
-                    self.claim_lottery_winner = claim_lottery_winner
+                if claim == None and self.bids.filter(id=claim_lottery_winner).count() > 0:
+                    self.claim_lottery_winner_id = claim_lottery_winner
                     self.claim_message = claim_message
                 elif claim == Bet.CLAIM_NULL:
                     self.claim = Bet.CLAIM_NULL
                 else:
                     raise BetException("Invalid claim")
+            self.resolved_at = timezone.now()
         else:
             raise BetException("Can't claim on a bet that is not in resolving state (current state: %s)" % self.bet_state)
 
@@ -471,12 +476,13 @@ class Bet(models.Model):
                 else:
                     raise BetException("Invalid claim")
             if self.is_lottery():
-                if claim == None and claim_lottery_winner in self.bids.all():
-                    self.refree_lottery_winner = claim_lottery_winner
+                if claim == None and self.bids.filter(id=claim_lottery_winner).count() > 0:
+                    self.refree_lottery_winner_id = claim_lottery_winner
                 elif claim == Bet.CLAIM_NULL:
                     self.referee_claim = Bet.CLAIM_NULL
                 else:
                     raise BetException("Invalid claim")
+            self.arbitrated_at = timezone.now()
         else:
             raise BetException("Can't arbitrate on a bet that is not in arbitrating state (current state: %s)" % self.bet_state)
 
@@ -508,8 +514,9 @@ class Bet(models.Model):
                 self.author.charge(self.referee_escrow / 2, locked=True)
                 self.accepted_bid.author.unlock_funds(self.referee_escrow / 2)
                 self.accepted_bid.author.charge(self.referee_escrow / 2, locked=True)
-            self.referee.coins_available += self.referee_escrow
-            self.referee.save()
+            if self.referee:
+                self.referee.coins_available += self.referee_escrow
+                self.referee.save()
         if claim == Bet.CLAIM_NULL:
             self.author.unlock_funds(self.amount)
             self.accepted_bid.author.unlock_funds(self.accepted_bid.amount)
@@ -538,7 +545,7 @@ class Bet(models.Model):
         if arbitrating:
             claim = self.referee_claim
             winner = self.referee_lottery_winner
-            complainer = next(bid for bid in self.bids if bid.claim != None)
+            complainer = next(bid for bid in self.bids.all() if bid.claim != None)
             if claim == self.claim or winner == self.claim_lottery_winner:
                 self.author.unlock_funds(self.referee_escrow)
                 complainer.claim_author.charge(self.referee_escrow, locked=True)
@@ -612,7 +619,6 @@ class Bid(models.Model):
     claim = models.PositiveSmallIntegerField(max_length=63, blank=True, null=True, choices=Bet.BET_CLAIM_CHOICES)
     claim_message = models.TextField(blank=True, null=True, default="")
     claim_author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='lottery_claimer', blank=True, null=True)
-    points = models.PositiveIntegerField(blank=True, null=True, default=0)
     participants = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, null=True)
 
     def check_valid(self):
@@ -644,6 +650,8 @@ class Bid(models.Model):
                 self.claim_author = user
                 user.lock_funds(self.bet.referee_escrow)
                 user.save()
+                self.bet.resolved_at = timezone.now()
+                self.bet.save()
             else:
                 raise BetException("Invalid claim")
         else:

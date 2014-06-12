@@ -1,22 +1,27 @@
-<div ng-show="loaded" class="bets-list">
-  <div ng-if="(bets|filter:{'bet_state':'bidding'}).length > 0"><span class="label label-primary">Bidding</span></div>
-  <div ng-repeat="bet in bets | filter:{'bet_state':'bidding'}" class="row bet-row">
-    <dy-bet-list-item bet="bet"></dy-bet-list-item>
+<div class="timeline-by-state">
+  <div ng-show="loaded" class="bets-list">
+    <div ng-if="(bets|filter:{'bet_state':'bidding'}).length > 0" class="bet-row-label">Abiertas</div>
+    <div ng-repeat="bet in bets | filter:{'bet_state':'bidding'}" class="row bet-row">
+      <dy-bet-list-item bet="bet"></dy-bet-list-item>
+    </div>
+    <div ng-if="(bets|filter:{'bet_state':'event'}).length > 0" class="bet-row-label">Evento</div>
+    <div ng-repeat="bet in bets | filter:{'bet_state':'event'}" class="row bet-row">
+      <dy-bet-list-item bet="bet"></dy-bet-list-item>
+    </div>
+    <div ng-if="(bets|filter:{'bet_state':'resolving'}).length > 0" class="bet-row-label">Esperando resolución</div>
+    <div ng-repeat="bet in bets | filter:{'bet_state':'resolving'}" class="row bet-row">
+      <dy-bet-list-item bet="bet"></dy-bet-list-item>
+    </div>
+    <div ng-if="(bets|filter:{'bet_state':'complaining'}).length > 0" class="bet-row-label">En periodo de reclamaciones</div>
+    <div ng-repeat="bet in bets | filter:{'bet_state':'complaining'}" class="row bet-row">
+      <dy-bet-list-item bet="bet"></dy-bet-list-item>
+    </div>
+    <div ng-if="(bets|filter:{'bet_state':'arbitrating'}).length > 0" class="bet-row-label">En conflicto. Esperando arbitraje</div>
+    <div ng-repeat="bet in bets | filter:{'bet_state':'arbitrating'}" class="row bet-row">
+      <dy-bet-list-item bet="bet"></dy-bet-list-item>
+    </div>
   </div>
-  <div ng-if="(bets|filter:{'bet_state':'event'}).length > 0"><span class="label label-primary">Event</span></div>
-  <div ng-repeat="bet in bets | filter:{'bet_state':'event'}" class="row bet-row">
-    <dy-bet-list-item bet="bet"></dy-bet-list-item>
-  </div>
-  <div ng-if="(bets|filter:{'bet_state':'resolving'}).length > 0"><span class="label label-primary">Awaiting resolution</span></div>
-  <div ng-repeat="bet in bets | filter:{'bet_state':'resolving'}" class="row bet-row">
-    <dy-bet-list-item bet="bet"></dy-bet-list-item>
-  </div>
-  <div ng-if="(bets|filter:{'bet_state':'complaining'}).length > 0"><span class="label label-primary">Complaining period</span></div>
-  <div ng-repeat="bet in bets | filter:{'bet_state':'complaining'}" class="row bet-row">
-    <dy-bet-list-item bet="bet"></dy-bet-list-item>
-  </div>
-  <div ng-if="(bets|filter:{'bet_state':'arbitrating'}).length > 0"><span class="label label-primary">Conflict. Awaiting arbitration</span></div>
-  <div ng-repeat="bet in bets | filter:{'bet_state':'arbitrating'}" class="row bet-row">
-    <dy-bet-list-item bet="bet"></dy-bet-list-item>
+  <div ng-show="bets.length == 0" class="empty-bets-list">
+      <p>No tienes apuestas abiertas en este momento.</p>
   </div>
 </div>

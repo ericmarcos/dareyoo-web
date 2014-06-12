@@ -34,14 +34,33 @@ class DareyooUserPointsShortSerializer(DareyooUserFullSerializer):
         fields = DareyooUserShortSerializer.Meta.fields + ('fair_play', 'level',)
 
 
-class BetPointsSerializer(BetSerializer):
+class BidPointsSerializer(BidSerializer):
     author = DareyooUserPointsShortSerializer(read_only=True)
+    claim_author = DareyooUserPointsShortSerializer(read_only=True)
     points = serializers.SerializerMethodField('get_points')
 
     def get_points(self, obj):
-        user = self.context['request'].user
-        if user.is_authenticated() and obj.is_participant(user):
-            return sum([up.points for up in obj.points.filter(user=user)])
+        p = obj.points.first()
+        if p:
+            return p.points
+        return 0
+
+    class Meta:
+        model = BidSerializer.Meta.model
+
+
+class BetPointsSerializer(BetSerializer):
+    author = DareyooUserPointsShortSerializer(read_only=True)
+    points = serializers.SerializerMethodField('get_points')
+    bids = BidPointsSerializer(many=True, read_only=True)
+    accepted_bid = BidPointsSerializer(read_only=True)
+    claim_lottery_winner = BidPointsSerializer(read_only=True)
+    referee_lottery_winner = BidPointsSerializer(read_only=True)
+
+    def get_points(self, obj):
+        p = obj.points.filter(user=obj.author, bid__isnull=True)
+        if len(p) > 0:
+            return p[0].points
         return 0
     
     class Meta:
@@ -66,4 +85,4 @@ class TournamentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Tournament
         fields = ('url', 'id', 'author', 'public', 'tag', 'start', 'end',
-             'pic', 'title', 'description', 'upload_pic_url')
+             'pic', 'title', 'description', 'upload_pic_url', 'only_author')

@@ -44,7 +44,7 @@ def bet_tournament(sender, **kwargs):
 @receiver(m2m_changed, sender=Bid.participants.through)
 def bid_participants_changed(sender, **kwargs):
     bid = kwargs.get('instance')
-    acion = kwargs.get('action')
+    action = kwargs.get('action')
     if action == "post_add":
         for user_id in kwargs.get('pk_set', []):
             Tournament.check_bet_participant_tournaments(bid.bet, user_id)

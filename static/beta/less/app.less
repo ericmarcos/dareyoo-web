@@ -31,39 +31,17 @@ img.grayscale{
     filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 10+, Firefox on Android */
 }
 
-
-/****************** OLD HOME *********************/
 /* Explanation of the following line: http://angular-ui.github.io/bootstrap/ */
-    .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
 
-    .container {
-      max-width: 1000px;
-    }
-    body {
-        background-color: #ddd;
-        padding-bottom: 20px;
-    }
-    .new-bet-tips{width:300px;max-width:300px;}
-    //.bet-list { border: 1px solid black; }
-    //.bet-row { border-bottom: 1px solid #CCC; margin: 2px; padding:5px; }
-    //.bet-image { padding: 10px; }
-    //.bet-text { padding: 10px; max-width: 65%; }
-    //.bet-username { font-family: Tahoma, Geneva, sans-serif; font-weight: bold; font-size: 1em; padding-right: 10px; }
-    //.bet-title { font-family: Tahoma, Geneva, sans-serif; font-size: 1.3em; }
-    //.bet-closing { color:red; font-family: Tahoma, Geneva, sans-serif; font-size: 0.8em; margin-bottom: 0px; }
-    //.user-profile-link { color: black; text-align: center; }
-    //.profile-image { display:block; margin: auto; }
-    .view-profile { color: gray; font-size: 0.8em; }
-    .coins-available { color: green; font-family: Tahoma, Geneva, sans-serif; font-weight: bold; font-size: 1.2em; }
-    .coins-locked { color: orange; font-family: Tahoma, Geneva, sans-serif; font-weight: bold; font-size: 1em; }
-    .points { color: black; font-family: Tahoma, Geneva, sans-serif; font-weight: bold; font-size: 0.9em; margin-top: 20px; }
-    .num-points { font-size: 4em; }
-    .text-points { color: #999; padding-top: 10px; }
-    .sidebar-nav { margin-top: 20px; }
-    .new_notifications_num { padding: 5px; text-align: center; }
-    /*.dropdown-menu>li.unread>a{ background-color: #EEBBFF; }
-    .dropdown-menu>li.unread>a:hover{ background-color: #DD99FF; }
-    .dropdown-menu>li>a:hover{ background-color: #DDDDDD; }*/
+.container {
+  max-width: 1000px;
+}
+body {
+    background-color: #ddd;
+    padding-bottom: 20px;
+}
+
 
 /****************** SMALL GUTTER GRID *****************/
 
@@ -92,6 +70,37 @@ img.grayscale{
 .col-small-10 { .make-xs-column(10, @small-gutter); }
 .col-small-11 { .make-xs-column(11, @small-gutter); }
 .col-small-12 { .make-xs-column(12, @small-gutter); }
+
+/******************* MAIN MENU ***********************/
+
+.main-menu {
+    .btn-group-vertical {
+        .dy-pill();
+        display: block;
+    }
+    margin-top: 15px;
+}
+
+.btn-white {
+    .button-variant(@brand-primary, white, white);
+    text-align: left;
+    padding: 12px 12px;
+    &:hover {
+        background-color: @brand-primary;
+        color: #fff;
+        border-color: @brand-primary;
+    }
+    &:active {
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+    }
+}
+.btn-white-active {
+    background-color: @brand-primary;
+    color: #fff;
+    border-color: @brand-primary;
+}
 
 
 /******************  EDIT PROFILE *********************/
@@ -225,6 +234,7 @@ img.grayscale{
         //line-height: 1.5;
     }
     .remove-invite {
+        cursor: pointer;
         position: absolute;
         font-size: 21px;
         font-weight: bold;
@@ -238,6 +248,16 @@ img.grayscale{
 }
 
 /***************** BET LIST ITEM *********************/
+
+.empty-bets-list {
+    padding: 15px;
+}
+
+.bet-row-label {
+    margin: 0px;
+    padding: 5px;
+    background-color: #f1e34d;
+}
 
 .bet-row {
     position: relative;
@@ -585,6 +605,12 @@ dy-level-star {
 
 /****************** TIMELINE ********************/
 
+.timeline-by-state {
+    .dy-pill();
+    margin-top: 15px;
+    padding: 15px 0px;
+}
+
 .timeline {
     .dy-pill();
     margin-top: 15px;
@@ -595,6 +621,210 @@ dy-level-star {
     }
 }
 
+/********************BET DETAIL ********************/
+
+.bet-cell(@bg-color) {
+    padding: 20px;
+    text-align: center;
+    background-color: @bg-color;
+}
+
+.label-success-basic { .label-variant(@basic-color); }
+.label-success-auction { .label-variant(@auction-color); }
+.label-success-lottery { .label-variant(@lottery-color); }
+
+.bet-detail {
+    .dy-pill();
+    margin-top: 22px;
+    padding: 0px @small-gutter/2 @small-gutter @small-gutter/2;
+    .bet-header {
+        .border-top-radius(@border-radius);
+        margin: -@small-gutter -@small-gutter/2 0 -@small-gutter/2;
+        padding: 15px 15px 4px 15px;
+        color: #fff;
+        font-weight: @regular;
+        font-size: 16px;
+    }
+    .bet-row {
+        border: none;
+        .bet-points {
+            float: right;
+            font-size: 16px;
+        }
+        .bet-winner {
+            background-color: @brand-primary;
+        }
+    }
+    .against-separator {
+        padding: 0px 20px;
+        .separator-line {
+            width: -moz-calc(~"50% - 70px");
+            width: -o-calc(~"50% - 70px");
+            width: -webkit-calc(~"50% - 70px");
+            width: calc(~"50% - 70px");
+            float: left;
+            border-top: 1px #ddd solid;
+            margin-top: 10px;
+        }
+        .separator-text {
+            float: left;
+            width: 140px;
+            margin: 0px auto;
+            text-align: center;
+            font-weight: @light;
+            color: #888;
+        }
+    }
+    .accepted-bid-row {
+        position: relative;
+        padding: 16px 16px 6px 0px;
+        background-color: white;
+        text-align: right;
+        .right {
+            width: 140px;
+            float: right;
+        }
+        .left {
+            margin-right: 140px;
+            margin-bottom: 40px;
+        }
+    }
+    .bet-description {
+        padding: 15px 30px;
+        margin-bottom: @small-gutter;
+    }
+    .bidding-cell { .bet-cell(#B1E36D); }
+    .event-cell { .bet-cell(#eee); }
+    .closed-cell { .bet-cell(#F1E34D); }
+    .bid-input { padding-top: @small-gutter; }
+    .bet-btn {
+        .border-top-radius(0);
+        .border-bottom-radius(@border-radius);
+        margin-top: @small-gutter;
+        font-size: 16px;
+        font-weight: @light;
+        padding: 20px;
+    }
+    .resolving-bet {
+        .row-small { margin-top: @small-gutter; }
+        .resolving-btn {
+            button { border-radius: 0px; }
+            &:first-child { button { border-bottom-left-radius: @border-radius; }}
+            &:last-child { button { border-bottom-right-radius: @border-radius; }}
+        }
+    }
+    .complaining-bet {
+        .row-small { margin-top: @small-gutter; }
+        .complaining-btn {
+            button { border-radius: 0px; }
+            &:first-child { button { border-bottom-left-radius: @border-radius; }}
+            &:last-child { button { border-bottom-right-radius: @border-radius; }}
+        }
+    }
+    .arbitrating-bet {
+        .row-small { margin-top: @small-gutter; }
+        .arbitrating-btn {
+            button { border-radius: 0px; padding: 20px;}
+            &:first-child { button { border-bottom-left-radius: @border-radius; }}
+            &:last-child { button { border-bottom-right-radius: @border-radius; }}
+        }
+    }
+}
+
+.bid-list {
+    .dy-pill();
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding-top: 4px;
+    padding-bottom: 15px;
+    h3 { text-align: center; }
+    .bid-list-row {
+        position: relative;
+        margin: 0px;
+        padding: 12px;
+        border-top: 1px #ddd solid;
+        background-color: #f9f9f9;
+        &:nth-child(2n+0) { background-color: #fff; }
+        &:last-child { border-bottom: 1px #ddd solid; }
+        .bid-author { width: 100px; float: left; }
+        .bid-title { width: 60%; font-weight: @light; font-size: 16px; margin: auto;}
+        .bid-participants { padding-top: 8px; font-weight: @light; font-size: 16px; margin-right: 8px;}
+        button { padding: 6px; }
+    }
+}
+
+#bid-participants-modal {
+    .modal-header {
+        border-bottom: 0px;
+    }
+    .modal-body {
+        padding: 0px;
+    }
+    .modal-footer {
+        margin-top: 0px;
+        border-top: 0px; 
+    }
+}
+
+/******************** TOURNAMENTS *******************/
+
+.tournaments-list {
+    .dy-pill();
+    margin-top: 30px;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    .tournaments-list-header {
+        margin: -15px -15px 0px -15px;
+        .border-top-radius(@border-radius);
+        background-color: @brand-primary;
+        color: #fff;
+        text-align: center;
+        font-size: 30px;
+        font-weight: @regular;
+        padding: 8px;
+    }
+    .tournament-row {
+        padding: @small-gutter;
+        background-color: #fff;
+        &:nth-child(2n+0) { background-color: #eee; }
+        .tournament-img {
+            float: left;
+            width: 120px;
+            height: 100%;
+            margin-right: 15px;
+            img {
+                width: 100%;
+            }
+        }
+        .tournament-info {
+            a { color: #000; &:hover { color: #000; } }
+            float: left;
+            width: -moz-calc(~"100% - 135px");
+            width: -o-calc(~"100% - 135px");
+            width: -webkit-calc(~"100% - 135px");
+            width: calc(~"100% - 135px");
+            p {
+                font-weight: @light;
+                font-size: 18px;
+            }
+        }
+        .tournament-small-info {
+            color: #666;
+            margin-right: 20px;
+        }
+    }
+}
+
+.tournament-detail {
+    .dy-pill();
+    margin-top: 30px;
+    margin-bottom: 15px;
+    .tournament-top {
+        margin: -15px -15px 0px -15px;
+        background-color: @brand-primary;
+        padding: 20px;
+    }
+}
 
 /******************** LOADER ************************/
 

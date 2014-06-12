@@ -1,0 +1,37 @@
+<div class="row">
+    <div class="col-sm-8 col-sm-offset-2 tournaments-list">
+        <div class="tournaments-list-header">
+            <span>Torneos y premios</span>
+        </div>
+        <div class="row tournament-row">
+            <div class="col-sm-12">
+                <div class="tournament-img">
+                    <img class="img-rounded" ng-src="kjgk">
+                </div>
+                <div class="tournament-info">
+                    <h3><a href="" ui-sref="tournament-detail({tournamentId:0})">Clasificación Global</a></h3>
+                    <p></p>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+        <div class="row tournament-row" ng-repeat="t in tournaments">
+            <div class="col-sm-12">
+                <div class="tournament-img">
+                    <img class="img-rounded" ng-src="t.pic">
+                </div>
+                <div class="tournament-info">
+                    <h3><a href="" ui-sref="tournament-detail({tournamentId:t.id})">[[t.title]]</a></h3>
+                    <p>[[t.description]]</p>
+                    <div class="tournament-small-info"><small>Del [[getStartDate(t)]] al [[getEndDate(t)]]</small></div>
+                    <span class="tournament-small-info" ng-if="t.only_author">
+                        <small ng-if="t.tag">Entra participando en apuestas de [[t.author.username]] que lleven el hashtag [[t.tag]]</small>
+                        <small ng-if="!t.tag">Entra participando en apuestas de [[t.author.username]]</small>
+                    </span>
+                    <span class="tournament-small-info" ng-if="!t.only_author && t.tag"><small>Entra creando apuestas con el hashtag [[t.tag]]</small></span>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div>

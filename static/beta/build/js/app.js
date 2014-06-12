@@ -42,26 +42,6 @@ config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'config', f
           templateUrl: config.static_url + "beta/build/partials/bet.html",
           controller: 'BetCtrl'
         })
-        .state('main.new-bet', {
-          url: "/new-bet",
-          templateUrl: config.static_url + "beta/build/partials/new-bet.html",
-          controller: 'NewBetCtrl'
-        })
-        .state('main.new-bet-simple', {
-          url: "/new-bet-simple",
-          templateUrl: config.static_url + "beta/build/partials/new-bet-simple.html",
-          controller: 'NewBetCtrl'
-        })
-        .state('main.new-bet-auction', {
-          url: "/new-bet-auction",
-          templateUrl: config.static_url + "beta/build/partials/new-bet-auction.html",
-          controller: 'NewBetCtrl'
-        })
-        .state('main.new-bet-lottery', {
-          url: "/new-bet-lottery",
-          templateUrl: config.static_url + "beta/build/partials/new-bet-lottery.html",
-          controller: 'NewBetCtrl'
-        })
         .state('main.timeline', {
           url: "/timeline",
           templateUrl: config.static_url + "beta/build/partials/timeline.html",
@@ -112,6 +92,16 @@ config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'config', f
           templateUrl: config.static_url + "beta/build/partials/rankings.html",
           controller: 'RankingCtrl'
         })
+        .state('tournaments', {
+          url: "/tournaments",
+          templateUrl: config.static_url + "beta/build/partials/tournaments.html",
+          controller: 'TournamentsCtrl'
+        })
+        .state('tournament-detail', {
+          url: "/tournament/:tournamentId",
+          templateUrl: config.static_url + "beta/build/partials/tournament-detail.html",
+          controller: 'TournamentCtrl'
+        })
         .state('edit-profile', {
           url: "/edit-profile",
           templateUrl: config.static_url + "beta/build/partials/edit-profile.html",
@@ -135,6 +125,8 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
     $rootScope.user = null;
+    $rootScope.followers = [];
+    $rootScope.followers_names = {};
     $rootScope.new_notifications = 0;
     $rootScope.notifications = [];
     $rootScope.q = {'query': ""};
@@ -143,7 +135,17 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
       $http.get("/api/v1/me/").success(function(response) {
           $rootScope.user = response;
       });
-      //$timeout($rootScope.getMe, 5000);
+      $timeout($rootScope.getMe, 5000);
+    };
+    $rootScope.getMyFollowers = function() {
+      $http.get("/api/v1/me/followers").success(function(response) {
+        if(response && response.length > 0) {
+          $rootScope.followers = response;
+          for (var i = $rootScope.followers.length - 1; i >= 0; i--) {
+            $rootScope.followers_names[$rootScope.followers[i].username] = '';
+          };
+        }
+      });
     };
 
     $rootScope.getNotifications = function() {
@@ -156,7 +158,7 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
           $rootScope.new_notifications = not.filter(function(elem) {return elem && elem.is_new;}).length;
         }
       });
-      //$timeout($rootScope.getNotifications, 5000);
+      $timeout($rootScope.getNotifications, 5000);
     };
 
     $rootScope.notificationsClick = function() {
@@ -180,6 +182,7 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
     }
 
     $rootScope.getMe();
+    $rootScope.getMyFollowers();
     $rootScope.getNotifications();
 
 }]).
