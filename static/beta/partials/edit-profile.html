@@ -7,7 +7,8 @@
             <div class="col-md-2">
                 <div id="pic_preview">
                     <!-- <dy-user-pic user="user" size="big"></dy-user-pic> -->
-                    <img id="old_pic_preview" ng-src="[[user.pic]]" class="img-circle" width="60" height="60">
+                    <img ng-if="!user.pic" id="old_pic_preview" ng-src="//s3-eu-west-1.amazonaws.com/dareyoo/beta/build/img/default_profile_pics/profile_[[user.id%10]].png" class="img-circle" width="60" height="60">
+                    <img ng-if="user.pic" id="old_pic_preview" ng-src="[[user.pic]]" class="img-circle" width="60" height="60">
                     <img id="new_pic_preview" ng-show="upload_state=='file_processed'" ng-src="[[new_pic]]" class="img-circle" width="60" height="60">
                 </div>
             </div>
