@@ -140,10 +140,10 @@ AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
 
 ### Coins ###
 
-INITIAL_COINS = 10
-MAX_FREE_COINS = 10
-FREE_COINS_INTERVAL = 60*60*2.4 # In seconds. 1 coin every 2.4 hours are 10 coins every 24h
-FREE_COINS_INTERVAL_AMOUNT = 1 # 1 coin in every interval
+INITIAL_COINS = 100
+MAX_FREE_COINS = 100
+FREE_COINS_INTERVAL = 60*60*2.4 # In seconds. 10 coin every 2.4 hours are 10 coins every 24h
+FREE_COINS_INTERVAL_AMOUNT = 10 # 10 coin in every interval
 MIN_FREE_REFILL_PERIOD = timedelta(days=7)
 FREE_REFILL_AMOUNT = 50
 WINNING_FEES_RATIO = 0.02
@@ -201,7 +201,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 #http://python-social-auth.readthedocs.org/en/latest/configuration/settings.html#urls-options
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/app/main/timeline'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/app/main/timeline-global'
 SOCIAL_AUTH_LOGIN_URL = '/login/'
 SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/app/edit-profile?new'
 SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/new-association-redirect-url/'
