@@ -48,7 +48,6 @@ class BetSerializer(serializers.HyperlinkedModelSerializer):
             return instance
 
         # Create new instance
-        print "ja!!!!!!!", attrs
         return BetFactory.create(**attrs)
 
 
