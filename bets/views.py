@@ -37,12 +37,15 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
     
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-
         if serializer.is_valid():
             try:
                 self.pre_save(serializer.object)
                 self.object = serializer.save(force_insert=True)
                 self.post_save(self.object, created=True)
+                invites = request.DATA.get('invites')
+                if invites and len(invites) > 0 and not self.object.public:
+                    recipients = DareyooUser.objects.filter(username__in=invites)
+                    self.object.recipients = list(recipients)
                 headers = self.get_success_headers(serializer.data)
                 return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
             except (BetException, DareyooUserException) as e:
@@ -206,6 +209,8 @@ class SearchBetsList(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         query = self.request.QUERY_PARAMS.get('q')
+        order = self.request.QUERY_PARAMS.get('order', '-created_at')
+
         sqs = Bet.objects.all()
         sqs = sqs.bidding()
         if user.is_authenticated():
@@ -213,8 +218,8 @@ class SearchBetsList(generics.ListAPIView):
         else:
             sqs = sqs.public()
         if query:
-            sqs.search(query)
-        sqs = sqs.order_by('bidding_deadline')
+            sqs = sqs.search(query)
+        sqs = sqs.order_by(order)
         return sqs.distinct()
 
 
@@ -242,7 +247,7 @@ class TimelineList(generics.ListAPIView):
             qs = qs.type(bet_type)
         if not order in ('-created_at', 'bidding_deadline'):
             order = '-created_at'
-        return qs.distinct('id')
+        return qs.distinct().order_by(order)
 
 
 class OpenBetsList(generics.ListAPIView):
@@ -257,6 +262,7 @@ class OpenBetsList(generics.ListAPIView):
 
 class DareyooUserBetViewSet(DareyooUserViewSet):
     bets_serializer_class = BetSerializer
+
     @link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
     def bets(self, request, *args, **kwargs):
         user = self.get_object()
@@ -275,7 +281,28 @@ class DareyooUserBetViewSet(DareyooUserViewSet):
             qs = qs.public()
         elif user != request.user:
             qs = qs.public() | qs.sent_to(request.user)
-        qs.order_by('-created_at').distinct()
+        qs = qs.order_by('-created_at').distinct()
+
+        serializer = self.bets_serializer_class(qs, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
+    def open_bets(self, request, *args, **kwargs):
+        user = self.get_object()
+        bet_state = request.QUERY_PARAMS.get('state', None)
+        bet_type = request.QUERY_PARAMS.get('type', None)
+
+        qs = Bet.objects.open(user)
+        if bet_state:
+            qs = qs.state(bet_state)
+        if bet_type:
+            qs = qs.type(bet_type)
+        if not request.user.is_authenticated():
+            qs = qs.public()
+        elif user != request.user:
+            qs = qs.public() | qs.sent_to(request.user)
+
+        qs = qs.distinct().order_by('-created_at')
 
         serializer = self.bets_serializer_class(qs, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)

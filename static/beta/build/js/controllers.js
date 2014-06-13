@@ -5,18 +5,22 @@
 
 angular.module('dareyoo.controllers', []).
   controller('EditProfileCtrl', ['$scope', '$http', '$location', '$routeParams', 'config', 'blob', function($scope, $http, $location, $routeParams, config, blob) {
-    $scope.new_user = $location.search('new');
+    $scope.new_user = $location.search()['new'];
     $scope.upload_state = 'initial';
+    $scope.usernameError = '';
+    var initial_load = true;
     if($scope.user) {
       $scope.new_email = $scope.user.email;
       $scope.new_username = $scope.user.username;
       $scope.new_description = $scope.user.description;
+      initial_load = false;
     } else {
       $scope.$watch('user', function() {
-        if($scope.user) {
+        if($scope.user && initial_load) {
           $scope.new_email = $scope.user.email;
           $scope.new_username = $scope.user.username;
           $scope.new_description = $scope.user.description;
+          initial_load = false;
         }
       });
     }
@@ -50,6 +54,9 @@ angular.module('dareyoo.controllers', []).
         $('#old_pic_preview').animate({opacity:0.5});
       }
     });
+    $scope.emptyUsername = function() {
+      return $('#username').val().length == 0;
+    }
     $scope.cancelFile = function() {
       $scope.upload_state = 'initial';
       $('#new_pic_preview').animate({left:0, opacity:0});
@@ -74,18 +81,21 @@ angular.module('dareyoo.controllers', []).
       });
     };
     $scope.save = function() {
-      console.log("desc: " + $scope.new_description);
-      $http.put("/api/v1/users/" + $scope.user.id + "/", {
-          email: $scope.new_email,
-          username: $scope.new_username,
-          description: $scope.new_description
-      }).success(function(response){
-        if($scope.new_user) {
-          $scope.$state.go("who-to-follow");
-        }
-      }).error(function(response){
-        console.log(response);
-      });
+      if(!$scope.emptyUsername()) {
+        $http.put("/api/v1/users/" + $scope.user.id + "/", {
+            email: $scope.new_email,
+            username: $scope.new_username,
+            description: $scope.new_description
+        }).success(function(response){
+          if($scope.new_user) {
+            $scope.$state.go("who-to-follow");
+          }
+        }).error(function(response){
+          console.log(response);
+        });
+      } else {
+        $scope.usernameError = 'Introduce un nombre de usuario válido';
+      }
     };
   }]).
   controller('WhoToFollowCtrl', ['$scope', '$http', '$location', '$filter', function($scope, $http, $location, $filter) {
@@ -136,14 +146,46 @@ angular.module('dareyoo.controllers', []).
   }]).
   controller('TournamentCtrl', ['$scope', '$http', '$location', '$filter', '$stateParams', function($scope, $http, $location, $filter, $stateParams) {
     $scope.tournament = {};
+    $scope.leaderboard = {};
+    $scope.global = $stateParams.tournamentId == 0;
     $scope.getTournament = function(id) {
       $http.get("/api/v1/tournaments/" + id).success(function(response) {
         if(response.results) $scope.tournament = response.results;
         else $scope.tournament = response;
       });
     };
-
-    $scope.getTournament($stateParams.tournamentId);
+    $scope.getLeaderboard = function(id) {
+      $http.get("/api/v1/tournaments/" + id + "/leaderboard").success(function(response) {
+        if(response.results) $scope.leaderboard = response.results;
+        else $scope.leaderboard = response;
+      });
+    };
+    $scope.getGlobalRanking = function() {
+      $http.get("/api/v1/ranking").success(function(response) {
+        if(response.results) $scope.leaderboard = response.results;
+        else $scope.leaderboard = response;
+      });
+    };
+    $scope.getStartDate = function() {
+      if($scope.tournament.start) {
+        var t = moment($scope.tournament.start).format('D/M/YYYY');
+        return t;
+      }
+      return null
+    };
+    $scope.getEndDate = function() {
+      if($scope.tournament.end) {
+        var t = moment($scope.tournament.end).format('D/M/YYYY');
+        return t;
+      }
+      return null;
+    };
+    if($scope.global) {
+      $scope.getGlobalRanking();
+    } else {
+      $scope.getTournament($stateParams.tournamentId);
+      $scope.getLeaderboard($stateParams.tournamentId);
+    }
   }]).
   controller('TimelineCtrl', ['$scope', '$http', '$location', '$filter', function($scope, $http, $location, $filter) {
     $scope.bets = [];
@@ -194,7 +236,14 @@ angular.module('dareyoo.controllers', []).
     //$rootScope.q = "Euro";
     $scope.search = function() {
       $rootScope.$state.go("main.timeline-search", {}, {"reload": true});
-    }
+    };
+    $scope.onSearchEnter = function(event) {
+      if (event && event.which && event.which == 13) {
+        $rootScope.$state.go("main.timeline-search", {}, {"reload": true});
+        //$rootScope.q.query = $('#search').val();
+        //$('#search').val('');
+      }
+    };
   }]).
   controller('TimelineSearchCtrl', ['$scope', '$rootScope', '$http', '$location', '$filter', function($scope, $rootScope, $http, $location, $filter) {
     $scope.bets = [];
@@ -218,7 +267,7 @@ angular.module('dareyoo.controllers', []).
 
     $scope.getOpenBets = function(order) {
       $scope.order_by = order || $scope.order_by;
-      $http.get("/api/v1/me/bets/").success(function(response) {
+      $http.get("/api/v1/me/open_bets/").success(function(response) {
         if(response.results) $scope.bets = response.results;
         else $scope.bets = response;
         $scope.loaded = true;
@@ -689,6 +738,9 @@ angular.module('dareyoo.controllers', []).
         postData.bidding_deadline = $scope.relToAbsTime(postData.bidding_deadline_simple);
       if($scope.timeRelativeEvent)
         postData.event_deadline = $scope.relToAbsTime(postData.event_deadline_simple);
+      if(!postData.public) {
+        postData['invites'] = $scope.invites;
+      }
       
       delete postData.against;
       delete postData.bidding_deadline_simple;

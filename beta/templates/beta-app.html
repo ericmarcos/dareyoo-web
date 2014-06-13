@@ -36,14 +36,14 @@
           <li ng-class="{ active: $state.includes('profile') }" ng-if="user"><a href="#" ui-sref="profile.bets({userId:user.id})">PERFIL</a></li>
           <li ng-class="{ active: $state.includes('rankings') }"><a href="#" ui-sref="tournaments">TORNEOS Y PREMIOS</a></li>
         </ul>
-        <div class="navbar-form navbar-left" role="search" ng-controllerkk="SearchCtrl">
+        <div class="navbar-form navbar-left" role="search" ng-controller="SearchCtrl">
           <div class="form-group">
-            <input type="text" class="form-control" placeholder="Search" ng-model="q.query">
+            <input id="search" type="text" class="form-control" placeholder="Buscar..." ng-model="q.query" ng-click="onSearchEnter()">
           </div>
           <button type="button" class="btn btn-default" ng-click="search()"><span class="glyphicon glyphicon-search"></span></button>
         </div>
         <ul class="nav navbar-nav navbar-right">
-          <li class="dropdown" ng-if="user">
+          <!-- <li class="dropdown" ng-if="user">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" ng-click="notificationsClick()">
               <span class="badge alert-danger">[[new_notifications || ""]]</span>
               <span> Mensajes</span>
@@ -54,7 +54,7 @@
                 <a ng-if="!note.bet" href="#" ui-sref="profile.bets({userId:note.user})" ng-click="notificationClick(note)"><span ng-if="!note.readed" class="glyphicon glyphicon-envelope"></span> [[note.subject]]</a>
               </li>
             </ul>
-          </li>
+          </li> -->
           <li ng-if="user"><a href="{% url "beta-logout" %}">Logout</a></li>
           <li ng-if="!user"><a href="{% url "beta-login" %}">Login</a></li>
         </ul>

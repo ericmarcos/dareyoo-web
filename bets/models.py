@@ -353,7 +353,7 @@ class Bet(models.Model):
                 bid = self.referee_lottery_winner or self.claim_lottery_winner
                 return [user for b in self.bids.all() for user in b.participants.all() if b != bid]
             else:
-                claim = self.referee_claim or self.claim_author
+                claim = self.referee_claim or self.claim
                 if claim == Bet.CLAIM_NULL:
                     return None
                 elif claim == Bet.CLAIM_LOST:

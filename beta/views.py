@@ -1,5 +1,7 @@
 import re
 from django.core.urlresolvers import reverse
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.http import *
 from django.shortcuts import render_to_response,redirect
@@ -19,11 +21,17 @@ def register_view(request):
         context = {'errors':[]}
         if request.POST:
             email = request.POST.get('email', '')
+            valid_email = True
             password = request.POST.get('password', '')
             password2 = request.POST.get('password2', '')
             user = DareyooUser.objects.filter(email=email)
-            print email, password, password2
-            if len(user) > 0 and user[0].registered == True:
+            try:
+                validate_email(email)
+            except ValidationError as e:
+                valid_email = False
+            if not valid_email:
+                context['errors'].append('Please, introduce a valid email')
+            elif len(user) > 0 and user[0].registered == True:
                 context['errors'].append('This email is already registered')
             elif password != password2:
                 context['errors'].append('Wrong password')

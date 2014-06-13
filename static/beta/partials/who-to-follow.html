@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-md-8 col-md-offset-2">
+    <div class="col-sm-8 col-sm-offset-2">
         <div class="who-to-follow">
             <h1>¡Mejor acompañado!</h1>
             <h4>Te ayudamos a encontrar usuarios a seguir para que tu experiencia en Dareyoo sea más provechosa desde el primer momento:</h4>
@@ -19,7 +19,7 @@
             <p class="empty-list-msg" ng-if="friends_list.length == 0">No hemos podido encontrar usuarios</p>
             <dy-user-list users="friends_list" logged-in-id="user.id"></dy-user-list>
             <div class="finish-btn">
-                <a type="button" ng-show="new_user" class="btn btn-default pull-right" ui-sref="main.timeline()">
+                <a type="button" ng-show="new_user" class="btn btn-default pull-right" ui-sref="main.timeline-global()">
                 Continuar <small><span class="glyphicon glyphicon-chevron-right"></span></small>
                 </a>
                 <div class="clearfix"></div>

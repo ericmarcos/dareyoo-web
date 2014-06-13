@@ -52,6 +52,13 @@ class TournamentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.R
     serializer_class = TournamentSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly)
 
+    def get_queryset(self):
+        if self.request.user.is_authenticated():
+            user = self.request.user
+            return Tournament.objects.is_allowed(user).active().distinct()
+        else:
+            return Tournament.objects.all().public().active().distinct()
+
     @action(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
     def pic_upload(self, request, *args, **kwargs):
         tournament = self.get_object()
@@ -61,6 +68,17 @@ class TournamentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.R
         tournament.save()
         return Response({'status': 'Profile pic uploaded successfully.', 'url': tournament.pic._get_url()})
 
+    @link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
+    def leaderboard(self, request, *args, **kwargs):
+        tournament = self.get_object()
+        ranking = tournament.leaderboard()
+        serializer = RankingSerializer(ranking, context={'request': request}, many=True)
+        return response.Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class TimelinePointsList(TimelineList):
+    serializer_class = BetPointsSerializer
+
+class SearchBetsPointsList(SearchBetsList):
+    model = Bet
     serializer_class = BetPointsSerializer

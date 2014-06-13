@@ -159,7 +159,7 @@
             <div class="col-small-12">
                 <div class="closed-cell">
                     <span ng-if="user.id != bet.author.id">Pendiente de resolución.</span>
-                    <span ng-if="user.id == bet.author.id">Ya puedes elegir el ganador.<br>Si no decides <time relative datetime="[[getResolvingDeadline()]]"></time> se resolverá como apuesta nula.</span>
+                    <span ng-if="user.id == bet.author.id">Ya puedes elegir el ganador.<br>Si no decides <time relative datetime="[[getResolvingDeadline()]]"></time> se resolverá que has perdido la apuesta.</span>
                 </div>
             </div>
         </div>
@@ -350,10 +350,10 @@
     <div class="bid-list-row" ng-show="bet.bet_state=='resolving' && bet.bet_type==3 && user.id == bet.author.id">
         <button id="null_bid" type="button" class="btn btn-primary btn-block" ng-click="resolveLottery(0, 3)">Nadie ha ganado</button>
     </div>
-    <div class="bid-list-row" ng-show="bet.bet_state=='complaining' && bet.bet_type==3 && isParticipant(user.id) && user.id != bet.author.id">
+    <div class="bid-list-row" ng-show="bet.bet_state=='complaining' && bet.bet_type==3 && isParticipant(user.id) && user.id != bet.author.id && bet.claim != 3">
         <button id="null_bid" type="button" class="btn btn-primary btn-block" ng-click="complainBet(isParticipant(user.id).id, 3)">Reclamar que nadie ha ganado</button>
     </div>
-    <div class="bid-list-row" ng-show="bet.bet_state=='arbitrating' && bet.bet_type==3 && user.id != bet.author.id && !isParticipant(user.id) && bet.claim != 3 && dialogs.arbitrating">
+    <div class="bid-list-row" ng-show="bet.bet_state=='arbitrating' && bet.bet_type==3 && user.id != bet.author.id && !isParticipant(user.id) && dialogs.arbitrating">
         <button id="null_bid" type="button" class="btn btn-primary btn-block" ng-click="arbitrateLottery(0, 3)">Nadie ha ganado</button>
     </div>
 </div>

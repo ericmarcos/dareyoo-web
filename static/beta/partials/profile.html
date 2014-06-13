@@ -1,8 +1,8 @@
 <div class="row">
-    <div class="col-xs-8 col-xs-offset-2 user-profile">
+    <div class="col-sm-8 col-sm-offset-2 user-profile">
         <div class="user-profile-top">
             <div class="row">
-                <div class="col-xs-12">
+                <div class="col-sm-12">
                     <a ng-if="user && profile_user.id==user.id" type="button" class="btn btn-primary edit-profile-btn" ui-sref="edit-profile()">
                         <span class="glyphicon glyphicon-cog"></span>
                     </a>
@@ -14,7 +14,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-xs-8 col-xs-offset-2">
+                <div class="col-sm-8 col-sm-offset-2">
                     <dy-experience-level-bar experience="profile_user.experience"></dy-experience-level-bar>
                     <div class="profile-badges">
                         <div class="profile-badge" ng-repeat="(badge, level) in profile_user.badges">
@@ -24,7 +24,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-xs-8 col-xs-offset-2">
+                <div class="col-sm-8 col-sm-offset-2">
                     <p class="profile-description">[[profile_user.description]]</p>
                 </div>
             </div>
@@ -50,7 +50,7 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-xs-8 col-xs-offset-2 user-profile">
+    <div class="col-sm-8 col-sm-offset-2 user-profile">
         <div ui-view></div>
     </div>
 </div>

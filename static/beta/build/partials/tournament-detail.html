@@ -1,11 +1,31 @@
 <div class="row">
-    <div class="col-xs-8 col-xs-offset-2 tournament-detail">
-        <div class="tournament-top">
-            <div class="row">
-                <div class="col-xs-12">
-                    [[tournament.title]]
+    <div class="col-sm-8 col-sm-offset-2 tournament-detail">
+        <div class="row">
+            <div class="col-sm-12 tournament-top">
+                <div class="tournament-dates" ng-if="getStartDate()">Del [[getStartDate()]]<br>al [[getEndDate()]]</div>
+                <div class="tournament-title" ng-if="!tournament.title">Clasificación Global</div>
+                <div class="tournament-title" ng-if="tournament.title">[[tournament.title]]</div>
+                <div class="tournament-img" ng-if="!tournament.pic"><img class="img-rounded" ng-src="jhjkh"></div>
+                <div class="tournament-img" ng-if="tournament.pic"><img class="img-rounded" ng-src="tournament.pic"></div>
+                <div class="tournament-desc" ng-if="!tournament.description">
+                    
+                </div>
+                <div class="tournament-desc" ng-if="tournament.description">
+                    [[tournament.description]]
+                    <br><br>
+                    <span ng-if="t.only_author">
+                        <span ng-if="tournament.tag">Entra participando en apuestas de [[tournament.username]] que lleven el hashtag [[tournament.tag]]</span>
+                        <span ng-if="!tournament.tag">Entra participando en apuestas de [[tournament.username]]</span>
+                    </span>
+                    <span ng-if="!tournament.only_author && tournament.tag"><span>Entra creando apuestas con el hashtag [[tournament.tag]]</span></span>
                 </div>
             </div>
+        </div>
+        <div class="leaderboard-row" ng-repeat="l in leaderboard">
+            <div class="leaderboard-pos">#[[$index + 1]]</div>
+            <div class="leaderboard-user"><dy-user-pic-name user="l.user" size="'small'" horizontal='true' badges='false'></dy-user-pic-name></div>
+            <div class="leaderboard-points">[[l.points]] <span class="puntos">PUNTOS</span></div>
+            <div class="clearfix"></div>
         </div>
     </div>
 </div>

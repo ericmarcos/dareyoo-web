@@ -1,6 +1,6 @@
 <div class="container-fluid-small">
   <div class="summary-pic-name">
-    <dy-user-pic-name user="user" size="'big'" badges="true" big="true"></dy-user-pic-name>
+    <dy-user-pic-name user="user" size="'xl'" badges="false" big="true"></dy-user-pic-name>
   </div>
   <div class="summary-exp-bar">
     <dy-experience-level-bar experience="user.experience"></dy-experience-level-bar>
@@ -9,8 +9,14 @@
     </div>
   </div>
   <div class="row-small">
-    <div class="col-small-4"><div class="yoos-info">[[user.coins_available]]<br>Y</div></div>
+    <!-- <div class="col-small-4"><div class="yoos-info">[[user.coins_available]]<br>Y</div></div>
     <div class="col-small-4"><div class="yoos-info"><div>[[user.coins_locked]]<br>Y</div></div></div>
-    <div class="col-small-4"><div class="yoos-info"><div>+ Y<br>&nbsp;</div></div></div>
+    <div class="col-small-4"><div class="yoos-info"><div>+ Y<br>&nbsp;</div></div></div> -->
+    <div class="col-small-6"><div class="profile-cell"><span class="profile-number">[[user.coins_available]]</span> YOOS</div></div>
+    <div class="col-small-6"><div class="profile-cell"><span class="profile-number">[[user.coins_locked]]</span> <small><span class="glyphicon glyphicon-lock"></span></small> YOOS</div></div>
+  </div>
+  <div class="row-small">
+    <div class="col-small-6"><div class="profile-cell"><a href="#" ui-sref="profile.followers({userId:user.id})"><span class="profile-number">[[user.followers]]</span> SEGUIDORES</a></div></div>
+    <div class="col-small-6"><div class="profile-cell"><a href="#" ui-sref="profile.following({userId:user.id})"><span class="profile-number">[[user.following]]</span> SIGUIENDO</div></a></div>
   </div>
 </div>

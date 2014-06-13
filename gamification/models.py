@@ -51,6 +51,12 @@ class UserPointsQuerySet(TimeRangeQuerySet, TagQuerySet):
         ie: user.points.week().sum() '''
         return self.aggregate(total_points=Sum('points')).get('total_points', 0) or 0
 
+    def ranking(self):
+        qs = self.values('user')
+        qs = qs.annotate(total_points=Sum('points'))
+        qs = qs.order_by('-total_points')
+        return qs
+
 
 class UserPointsManager(models.Manager):
     use_for_related_fields = True
@@ -134,6 +140,7 @@ class UserPointsFactory:
                     u.bet = bet
                     u.user = p
                     u.calculatePointsFromBet(bid)
+
                     u.save()
             #TODO: the creator of the lottery should get some extra points
             #u = UserPoints()
@@ -384,6 +391,10 @@ class TournamentQuerySet(QuerySet):
     def is_allowed(self, user):
         return self.public() | self.is_author(user) | self.is_participant(user)
 
+    def active(self):
+        now = timezone.now()
+        return self.filter(start__lte=now, end__gte=now)
+
 
 class TournamentManager(models.Manager):
     use_for_related_fields = True
@@ -422,17 +433,17 @@ class Tournament(models.Model):
 
     @staticmethod
     def check_bet_all_tournaments(bet):
-        for t in Tournament.objects.is_allowed(bet.author):
+        for t in Tournament.objects.is_allowed(bet.author).active():
             t.check_bet(bet)
 
     @staticmethod
     def check_bet_bidder_tournaments(bet):
-        for t in bet.tournaments.all():
+        for t in bet.tournaments.all().active():
             t.add_participant(bet.accepted_bid.author)
 
     @staticmethod
     def check_bet_participant_tournaments(bet, participant=None):
-        for t in bet.tournaments.all():
+        for t in bet.tournaments.all().active():
             if participant:
                 t.add_participant(participant)
             else:
@@ -459,6 +470,15 @@ class Tournament(models.Model):
 
     def add_participant(self, user):
         self.participants.add(user)
+
+    def leaderboard(self):
+        return UserPoints.objects.filter(bet__tournaments=self).ranking()
+
+    def get_pic_url(self):
+        if self.pic:
+            return self.pic._get_url()
+        else:
+            return ""
 
 
 import gamification.signals

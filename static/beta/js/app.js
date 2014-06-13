@@ -29,7 +29,7 @@ config(['$sceDelegateProvider', function($sceDelegateProvider) {
      FacebookProvider.init(config.fb_key);
 }]).*/
 config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'config', function($stateProvider, $urlRouterProvider, $locationProvider, config) {
-    $urlRouterProvider.otherwise("/main/timeline");
+    $urlRouterProvider.otherwise("/main/timeline-global");
     $locationProvider.html5Mode(true).hashPrefix('!'); // enable pushState
     $stateProvider
         .state('main', {
@@ -183,7 +183,7 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
 
     $rootScope.getMe();
     $rootScope.getMyFollowers();
-    $rootScope.getNotifications();
+    //$rootScope.getNotifications();
 
 }]).
 constant('moment', moment);

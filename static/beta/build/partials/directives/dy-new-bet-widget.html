@@ -76,7 +76,7 @@
                     <input type="number" id="against" name="against" class="form-control text-center" value="10" ng-model="newBetFormData.against">
                     <span class="input-group-addon">Y</span>
                 </div>
-                <span class="pull-right" ng-hide="show_comissions"><a ng-click="show_comissions=true">comisiones y ganancias</a></span>
+                <!-- <span class="pull-right" ng-hide="show_comissions"><a ng-click="show_comissions=true">comisiones y ganancias</a></span> -->
                 <div class="input-group new-bet-widget-input" ng-show="show_comissions">
                     <span class="input-group-addon input-grout-wide">Comisión arbitraje [<a href="#">?</a>]</span>
                     <input type="text" id="comission" name="comission" class="form-control text-center" value="[[getRefereeFees()]]" disabled>
@@ -182,10 +182,11 @@
             <div class="col-small-12">
                 <div class="input-group">
                     <!-- https://coderwall.com/p/0lms3g -->
-                    <input id="invite_name" type="text" placeholder="username o email" class="form-control new-bet-widget-input" list="_friends" ng-keypress="onInviteEnter($event)">
-                    <datalist id="_friends">
+                    <input id="invite_name" type="text" placeholder="username o email" class="form-control new-bet-widget-input" ng-keypress="onInviteEnter($event)">
+                    <!-- <input id="invite_name" type="text" placeholder="username o email" class="form-control new-bet-widget-input" list="_friends" ng-keypress="onInviteEnter($event)"> -->
+                    <!-- <datalist id="_friends">
                         <select style="display: none;" id="_select" name="_select" ng-model='selectedFriend' ng-options='k as v for (k,v) in friends'></select>
-                    </datalist>
+                    </datalist> -->
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="button" ng-click="onInviteEnter()">Añadir</button>
                     </span>
@@ -215,15 +216,15 @@
     <div class="container-fluid-small" ng-show="step==5">
         <div class="row-small" ng-show="newBetFormData.public">
             <div class="col-small-12">
-                <span class="new-bet-label">Tu apuesta se ha publicado correctamente. Puedes verla <a ui-sref="main.bet({betId:new_bet.id})">aqui</a> o compartirla con tus amigos:</span>
+                <span class="new-bet-label">Tu apuesta se ha publicado correctamente. Puedes verla <a ui-sref="main.bet({betId:new_bet.id})">aqui</a></span><!--  o compartirla con tus amigos:</span> -->
                 <!-- http://stackoverflow.com/questions/6138780/facebook-share-button-and-custom-text -->
-                <div><span><a href="http://www.facebook.com/sharer.php?s=100&p[title]=[[new_bet.title]]&p[summary]=YOUR_SUMMARY&p[url]=http://dareyoo.com/app/main/bet/[[new_bet.id]]&p[images][0]=YOUR_IMAGE_TO_SHARE_OBJECT"
-  target="_blank">Facebook</a></span><span><a>Twitter</a></span></div>
+                <!-- <div><span><a href="http://www.facebook.com/sharer.php?s=100&p[title]=[[new_bet.title]]&p[summary]=YOUR_SUMMARY&p[url]=http://dareyoo.com/app/main/bet/[[new_bet.id]]&p[images][0]=YOUR_IMAGE_TO_SHARE_OBJECT"
+  target="_blank">Facebook</a></span><span><a>Twitter</a></span></div> -->
             </div>
         </div>
         <div class="row-small" ng-hide="newBetFormData.public">
             <div class="col-small-12">
-                <span class="new-bet-label">Tu apuesta se ha enviado correctamente. Puedes verla <a ui-sref="main.bet({betId:new_bet.id})">aqui</a>.
+                <span class="new-bet-label">Tu apuesta se ha enviado correctamente. Puedes verla <a ui-sref="main.bet({betId:new_bet.id})">aqui</a>.</span>
             </div>
         </div>
         <div class="row-small">
