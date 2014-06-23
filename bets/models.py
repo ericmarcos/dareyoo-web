@@ -72,7 +72,8 @@ class BetFactory:
                 amount=kwargs.get('amount', 1),
                 bidding_deadline=kwargs.get('bidding_deadline', timezone.now() + datetime.timedelta(minutes=10)),
                 event_deadline=kwargs.get('event_deadline', timezone.now() + datetime.timedelta(minutes=30)),
-                public=kwargs.get('public', True))
+                public=kwargs.get('public', True),
+                open_lottery=kwargs.get('open_lottery', True))
         #        recipients=kwargs.get('recipients', []))
         b.check_valid()
         b.referee_escrow = b.referee_fees()
@@ -219,6 +220,7 @@ class Bet(models.Model):
     amount = models.FloatField(blank=True, null=True, default=0)
     referee_escrow = models.FloatField(blank=True, null=True, default=0)
     bet_type = models.PositiveSmallIntegerField(blank=True, null=True, choices=BET_TYPE_CHOICES, default=TYPE_SIMPLE)
+    open_lottery = models.BooleanField(blank=True, default=True)
     bet_state = FSMField(default='bidding')
     odds = models.FloatField(blank=True, null=True, default=2)
     accepted_bid = models.ForeignKey("Bid", blank=True, null=True, related_name='accepted')
@@ -390,8 +392,14 @@ class Bet(models.Model):
             #I'm not doing it now because of the lottery use case: a singe user
             #(for example, the bet creator) can add many bids
             # UPDATE: currently set at 3 bids per user
-            if self.is_auction() and len([b.author for b in self.bids.all() if b.author == user]) >= auction_bid_limit:
+            if self.is_auction() and self.bids.all().created_by(user).count() >= auction_bid_limit:
                 raise BetException("Can't post more than %s bids per bet per user" % auction_bid_limit)
+            if self.is_lottery() and self.open_lottery and user.id != self.author.id and self.bids.all().created_by(user).count() >= 1:
+                raise BetException("Can't post more than result bet per user")
+            if self.is_lottery() and not self.open_lottery and user.id != self.author.id:
+                raise BetException("Only the bet author can post results in a closed lottery")
+            if not self.is_lottery() and self.author.id == user.id:
+                raise BetException("Can't play against yourself!")
             bid.bet = self
             bid.set_author(user)
             if self.is_simple():
@@ -610,7 +618,44 @@ class Bet(models.Model):
         return unicode(self.title) or unicode(self.id) or u"Bet object"
 
 
+class BidQuerySet(QuerySet):
+    def tag(self, tag=None):
+        if tag:
+            return self.filter(title__icontains=tag)
+        else:
+            return self
+
+    def created_by(self, user):
+        return self.filter(author=user)
+
+    def participated_by(self, user):
+        return self.filter(participants=user)
+
+    def involved(self, user):
+        ''' Make sure to add distinct() at the end of your query if you
+        use this function '''
+        return self.created_by(user) | self.participated_by(user)
+
+    def search_title(self, query):
+        return self.filter(title__icontains=query)
+
+    def search(self, query):
+        return self.search_title(query)
+
+
+class BidsManager(models.Manager):
+    use_for_related_fields = True
+
+    def get_queryset(self):
+        return BidQuerySet(self.model, using=self._db)
+
+    def get_clean_queryset(self):
+        return BidQuerySet(self.model, using=self._db)
+
+
 class Bid(models.Model):
+    objects = BidsManager()
+
     author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='bids', blank=True, null=True)
     bet = models.ForeignKey(Bet, related_name='bids', blank=True, null=True)
     title = models.CharField(max_length=255, blank=True, null=True)

@@ -22,7 +22,9 @@ config(['$sceDelegateProvider', function($sceDelegateProvider) {
     // Allow same origin resource loads.
     'self',
     // Allow loading from outer templates domain.
-    'http://s3-eu-west-1.amazonaws.com/dareyoo/**'
+    'http://s3-eu-west-1.amazonaws.com/dareyoo/**',
+    'http://s3-eu-west-1.amazonaws.com/dareyoo-pro/**',
+    'http://s3-eu-west-1.amazonaws.com/dareyoo-pre/**'
   ]); 
 }]).
 /*config(['FacebookProvider', 'config', function(FacebookProvider, config) {

@@ -407,6 +407,10 @@ angular.module('dareyoo.controllers', []).
       $http.post("/api/v1/bets/" + $scope.bet.id + "/bids/", {title: title, amount: amount}).success(function(response) {
         $scope.getBet($stateParams.betId);
         $scope.dialogs.bid = false;
+        if($scope.user.id != $scope.bet.author.id && $scope.bet.bet_type == 3) {
+          //Automatically participating in a result that you just created
+          $scope.participateBid(response.id);
+        }
       }).error($scope.betAPIError);
     };
     $scope.acceptBid = function(bidId) {
@@ -485,24 +489,36 @@ angular.module('dareyoo.controllers', []).
       return t;
     };
     $scope.getResolvedDate = function() {
-      var t = moment($scope.bet.resolved_at).format('D/M/YYYY - HH:mm:ss');
-      return t;
+      if($scope.bet.resolved_at) {
+        var t = moment($scope.bet.resolved_at).format('D/M/YYYY - HH:mm:ss');
+        return t;
+      } else {
+        return false;
+      }
     }
     $scope.getComplainingDeadline = function() {
       var t = moment($scope.bet.resolved_at).add('days', 1).format();
       return t;
     };
     $scope.getComplainedDate = function() {
-      var t = moment($scope.bet.complained_at).format('D/M/YYYY - HH:mm:ss');
-      return t;
+      if($scope.bet.complained_at) {
+        var t = moment($scope.bet.complained_at).format('D/M/YYYY - HH:mm:ss');
+        return t;
+      } else {
+        return false;
+      }
     }
     $scope.getArbitratingDeadline = function() {
       var t = moment($scope.bet.arbitrated_at).add('days', 1).format();
       return t;
     };
     $scope.getArbitratedDate = function() {
-      var t = moment($scope.bet.arbitrated_at).format('D/M/YYYY - HH:mm:ss');
-      return t;
+      if($scope.bet.arbitrated_at) {
+        var t = moment($scope.bet.arbitrated_at).format('D/M/YYYY - HH:mm:ss');
+        return t;
+      } else {
+        return false;
+      }
     }
     $scope.bidComplained = function() {
       var i=0, len=$scope.bet.bids.length;
@@ -589,7 +605,8 @@ angular.module('dareyoo.controllers', []).
                         bidding_deadline_simple: '10 minutos',
                         event_deadline: new Date(),
                         event_deadline_simple: '2 horas',
-                        public: true};
+                        public: true,
+                        open_lottery: true};
       $scope.timeRelativeBidding = true;
       $scope.timeRelativeEvent = true;
       $scope.minBiddingDeadline = new Date();
@@ -674,6 +691,9 @@ angular.module('dareyoo.controllers', []).
     }
     $scope.setPublic = function(pub) {
       $scope.newBetFormData.public = pub;
+    }
+    $scope.setOpenLottery = function(pub) {
+      $scope.newBetFormData.open_lottery = pub;
     }
 
     $scope.biddingDeadlineCalendarOpened = false;

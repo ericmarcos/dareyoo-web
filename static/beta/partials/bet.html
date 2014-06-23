@@ -89,7 +89,7 @@
                 </div>
             </div>
         </div>
-        <div ng-if="bet.bet_state=='complaining' || bet.bet_state=='arbitrating' || bet.bet_state=='closed'" class="row-small">
+        <div ng-if="(bet.bet_state=='complaining' || bet.bet_state=='arbitrating' || bet.bet_state=='closed') && getResolvedDate()" class="row-small">
             <div class="col-small-12">
                 <div ng-if="bet.bet_type != 3" class="well well-sm bet-description">
                     <strong>[[getResolvedDate()]]: </strong>
@@ -106,7 +106,14 @@
                 </div>
             </div>
         </div>
-        <div ng-if="(bet.bet_state=='arbitrating' || bet.bet_state=='closed') && (bet.accepted_bid.claim || bidComplained())" class="row-small"><!-- TODO: how to know which bid has been reclaimed in a lottery? -->
+        <div ng-if="bet.bet_state=='closed' && !getResolvedDate()">
+            <div class="col-small-12">
+                <div class="well well-sm bet-description">
+                    <span>La apuesta quedó desierta</span>
+                </div>
+            </div>
+        </div>
+        <div ng-if="(bet.bet_state=='arbitrating' || bet.bet_state=='closed') && bidComplained()" class="row-small">
             <div class="col-small-12">
                 <div ng-if="bet.bet_type != 3" class="well well-sm bet-description">
                     <strong>[[getComplainedDate()]]: </strong>
@@ -123,7 +130,7 @@
                 </div>
             </div>
         </div>
-        <div ng-if="bet.bet_state=='closed' && bet.referee" class="row-small"><!-- TODO: how to know which bid has been reclaimed in a lottery? -->
+        <div ng-if="bet.bet_state=='closed' && bet.referee" class="row-small">
             <div class="col-small-12">
                 <div ng-if="bet.bet_type != 3" class="well well-sm bet-description">
                     <strong>[[getArbitratedDate()]]: </strong>
@@ -205,7 +212,7 @@
                 </div>
             </div>
         </div>
-        <div ng-show="bet.bet_state=='bidding' && bet.bet_type==3 && dialogs.bid">
+        <div ng-show="bet.bet_state=='bidding' && bet.bet_type==3 && bet.open_lottery && dialogs.bid">
             <div class="row-small bid-input">
                 <div class="col-small-6">
                     <input id="bidTitle" type="text" name="bidTitle" class="form-control" placeholder="Resultado" ng-model="bidTitle" maxlength="140"></input>
@@ -215,7 +222,7 @@
                 </div>
             </div>
         </div>
-        <div class="row-small" ng-if="bet.bet_state=='bidding' && bet.bet_type==1">
+        <div class="row-small" ng-if="bet.bet_state=='bidding' && bet.bet_type==1 && user.id != bet.author.id">
             <div class="col-small-12">
                 <button type="button" class="btn btn-primary btn-lg btn-block bet-btn" ng-click="acceptBet()">Apostar en contra por [[bet.amount*bet.odds - bet.amount]] Yoos!</button>
             </div>
@@ -225,7 +232,7 @@
                 <button type="button" class="btn btn-primary btn-lg btn-block bet-btn" ng-click="dialogs.bid=true">Hacer oferta!</button>
             </div>
         </div>
-        <div class="row-small" ng-show="bet.bet_state=='bidding' && bet.bet_type==3 && !dialogs.bid">
+        <div class="row-small" ng-show="bet.bet_state=='bidding' && bet.bet_type==3 && bet.open_lottery && !dialogs.bid">
             <div class="col-small-12">
                 <button type="button" class="btn btn-primary btn-lg btn-block bet-btn" ng-click="dialogs.bid=true">Añadir resultado</button>
             </div>

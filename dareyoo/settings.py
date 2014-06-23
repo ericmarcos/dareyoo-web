@@ -32,7 +32,7 @@ TEMPLATE_DEBUG = DEBUG
 
 PROJECT_NAME = os.environ.get('PROJECT_NAME', 'django_template')
 
-ALLOWED_HOSTS = ['dareyoo.herokuapp.com', 'dareyoo-pre.herokuapp.com', '.dareyoo.com', '.dareyoo.net', '.dareyoo.es']
+ALLOWED_HOSTS = ['dareyoo.herokuapp.com', 'dareyoo-pro.herokuapp.com', 'dareyoo-pre.herokuapp.com', '.dareyoo.com', '.dareyoo.net', '.dareyoo.es']
 
 
 # Application definition
@@ -50,7 +50,7 @@ INSTALLED_APPS = (
     'storages',
     'rest_framework',
     'djcelery',
-    'kombu.transport.django',
+#    'kombu.transport.django',
 #    'haystack',
     'provider',
     'provider.oauth2',
@@ -151,9 +151,20 @@ REFEREE_FEES_RATIO = 0.02
 LOTTERY_REFEREE_FEES = 6
 
 ######### CELERY SETUP ###########
+BROKER_POOL_LIMIT = 3
+
 djcelery.setup_loader()
 
-BROKER_URL = 'django://'
+#BROKER_URL = 'django://'
+BROKER_URL = os.environ.get('CLOUDAMQP_URL', 'django://')
+
+CELERY_ACCEPT_CONTENT = ['json']
+
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
+CELERY_BEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
 #RANKING_PERIOD = crontab(hour=1, minute=30, day_of_week=1) # deprecated
 RESOLVING_COUNTDOWN = 60*60*24
@@ -173,7 +184,8 @@ CELERYBEAT_SCHEDULE = {
     #},
 }
 
-CELERY_TIMEZONE = 'UTC'
+#this is the default already
+#CELERY_TIMEZONE = 'UTC'
 
 # Not using migrations for the following apps. (strange errors)
 SOUTH_MIGRATION_MODULES = {

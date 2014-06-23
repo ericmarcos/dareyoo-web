@@ -155,7 +155,19 @@
                 </button>
             </div>
         </div>
-
+        <div class="row-small" ng-show="newBetFormData.bet_type == 3">
+            <div class="col-small-12">
+                <div class="btn-group new-bet-widget-input" data-toggle="buttons">
+                    <label class="btn btn-default" ng-class="{active:newBetFormData.open_lottery}" ng-click="setOpenLottery(true)">
+                    <input type="radio"><small><span class="glyphicon glyphicon-globe"></span></small>
+                    </label>
+                    <label class="btn btn-default" ng-class="{active:!newBetFormData.open_lottery}" ng-click="setOpenLottery(false)">
+                    <input type="radio"><small><span class="glyphicon glyphicon-lock"></span></small>
+                    </label>
+                </div>
+                <span class="new-bet-label" ng-click="setOpenLottery(!newBetFormData.open_lottery)">[[newBetFormData.open_lottery && "Porra abierta" || "Porra cerrada"]] [<a href="#">?</a>]</span>
+            </div>
+        </div>
         <div class="row-small action-row">
             <div class="col-small-3">
                 <button class="btn btn-default btn-sm btn-block" ng-click="prevStep()"><small><span class="glyphicon glyphicon-chevron-left"></span></small></button>
