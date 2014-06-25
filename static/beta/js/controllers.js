@@ -82,11 +82,16 @@ angular.module('dareyoo.controllers', []).
     };
     $scope.save = function() {
       if(!$scope.emptyUsername()) {
-        $http.put("/api/v1/users/" + $scope.user.id + "/", {
+        var user_data = {
             email: $scope.new_email,
             username: $scope.new_username,
             description: $scope.new_description
-        }).success(function(response){
+        };
+        var url = "/api/v1/users/" + $scope.user.id + "/";
+        if($scope.new_user) {
+          url += "/new=true";
+        }
+        $http.put(url, user_data).success(function(response){
           if($scope.new_user) {
             $scope.$state.go("who-to-follow");
           }

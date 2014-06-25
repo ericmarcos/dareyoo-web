@@ -13,6 +13,7 @@ from django.core import validators
 from django.db import models
 from django.conf import settings
 from django.db import IntegrityError, transaction
+from celery.execute import send_task
 from custom_user.models import AbstractEmailUser
 from avatar.util import get_primary_avatar, force_bytes
 from rest_framework.exceptions import APIException
@@ -25,10 +26,12 @@ class DareyooUserException(APIException):
     def detail(self):
         return str(self)
 
+
 REFILL_TYPE_CHOICES = (
     ("free", "Free"),
     ("paying", "Paying"),
     )
+
 
 class DareyooUser(AbstractEmailUser):
     username = models.CharField(_('username'), max_length=30, blank=True, null=True,
@@ -38,6 +41,7 @@ class DareyooUser(AbstractEmailUser):
             validators.RegexValidator(re.compile('^[\w.@+-]+$'), _('Enter a valid username.'), 'invalid')
         ])
     reference_user = models.ForeignKey('self', blank=True, null=True, related_name='invited_users')
+    reference_campaign = models.CharField(max_length=255, blank=True, null=True)
     registered = models.BooleanField(default=False)
     following = models.ManyToManyField('self', blank=True, null=True, symmetrical=False, related_name='followers')
     profile_pic = models.ImageField(upload_to='profiles', null=True, blank=True)
@@ -46,6 +50,7 @@ class DareyooUser(AbstractEmailUser):
     coins_locked = models.FloatField(blank=True, null=True, default=0)
     is_pro = models.BooleanField(default=False)
     is_vip = models.BooleanField(default=False)
+    email_notifications = models.BooleanField(default=True)
 
     def n_following(self):
         return self.following.all().count()
@@ -145,18 +150,23 @@ class DareyooUser(AbstractEmailUser):
             return in_app_friends
         return []
 
+    def send_welcome_email(self):
+        if self.email:
+            kwargs = {
+                'from_addr': "josep@dareyoo.com",
+                'to_addr': self.email,
+                'subject_template': "email/signup/subject.txt",
+                'text_body_template': "email/signup/body.txt",
+                'html_body_template': "email/signup/body.html",
+                'template_data': {
+                    'username': self.username,
+                }
+            }
+            
+            send_task('send_email', kwargs=kwargs)
+
     def __unicode__(self):
         return "%s - %s" % (self.email, self.username)
-
-
-class UserRanking(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='rankings', blank=True, null=True)
-    date = models.DateField(blank=True, null=True)
-    points = models.FloatField(blank=True, null=True, default=0)
-    position = models.IntegerField(blank=True, null=True, default=0)
-
-    def __unicode__(self):
-        return "%s - %s [%s]" % (self.date, self.position, self.user)
 
 
 class UserRefill(models.Model):

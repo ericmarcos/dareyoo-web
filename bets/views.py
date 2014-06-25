@@ -43,9 +43,7 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
                 self.object = serializer.save(force_insert=True)
                 self.post_save(self.object, created=True)
                 invites = request.DATA.get('invites')
-                if invites and len(invites) > 0 and not self.object.public:
-                    recipients = DareyooUser.objects.filter(username__in=invites)
-                    self.object.recipients = list(recipients)
+                self.object.invite(invites)
                 headers = self.get_success_headers(serializer.data)
                 return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
             except (BetException, DareyooUserException) as e:

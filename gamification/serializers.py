@@ -21,7 +21,7 @@ class DareyooUserPointsFullSerializer(DareyooUserBetsFullSerializer):
 
     class Meta:
         model = DareyooUserBetsFullSerializer.Meta.model
-        fields = DareyooUserBetsFullSerializer.Meta.fields + ('fair_play', 'experience', 'level', 'tournaments', 'tournaments_url')
+        fields = DareyooUserBetsFullSerializer.Meta.fields + ('fair_play', 'experience', 'level', 'tournaments', 'tournaments_url', 'badges')
         read_only_fields = DareyooUserBetsFullSerializer.Meta.read_only_fields
 
 

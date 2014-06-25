@@ -38,6 +38,13 @@ class DareyooUserViewSet(viewsets.ModelViewSet):
     short_serializer_class = DareyooUserShortSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsSelfOrReadOnly)
 
+    def update(self, request, pk=None):
+        super(DareyooUserViewSet, self).update(request, pk)
+        new_user = request.DATA.get('new')
+        if new_user:
+            user = self.get_object()
+            user.send_welcome_email()
+
     @link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
     def followers(self, request, *args, **kwargs):
         user = self.get_object()

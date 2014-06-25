@@ -27,15 +27,17 @@ def bet_recipients_notifications(sender, **kwargs):
 def bid_posted_notification(sender, **kwargs):
     if kwargs.get('created', False) and settings.GENERATE_NOTIFICATIONS:
         bid = kwargs.get('instance')
-        n = NotificationFactory.bid_posted(bid)
-        n.save()
+        if bid.author != bid.bet.author:
+            n = NotificationFactory.bid_posted(bid)
+            n.save()
 
 @receiver(pre_delete, sender=Bid)
 def bid_deleted_notification(sender, **kwargs):
     if kwargs.get('created', False) and settings.GENERATE_NOTIFICATIONS:
         bid = kwargs.get('instance')
-        n = NotificationFactory.bid_deleted(bid)
-        n.save()
+        if bid.author != bid.bet.author:
+            n = NotificationFactory.bid_deleted(bid)
+            n.save()
 
 @receiver(post_transition, sender=Bet)
 def bet_change_state_notifications(sender, **kwargs):

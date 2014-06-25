@@ -58,6 +58,7 @@ INSTALLED_APPS = (
     'social.apps.django_app.default',
 #    'social.apps.django_app.me',
     'avatar',
+    'djrill',
     'dareyoo',
     'bets',
     'users',
@@ -267,3 +268,10 @@ REST_FRAMEWORK = {
     ),
     'PAGINATE_BY': 10
 }
+
+### DJRILL ###
+
+MANDRILL_API_KEY = os.environ.get('MANDRILL_APIKEY')
+EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
+
+DEFAULT_FROM_ADDR = 'no-reply@dareyoo.com'

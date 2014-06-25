@@ -6,6 +6,7 @@ from django.db import models
 from django.conf import settings
 from django.db.models.query import QuerySet
 from django.db.models import Sum, Q
+from django.core.validators import validate_email
 from django_fsm.db.fields import FSMField, transition
 from rest_framework.exceptions import APIException
 
@@ -305,6 +306,26 @@ class Bet(models.Model):
 
     def is_participant(self, user):
         return user in self.participants()
+
+    def invite(self, invites):
+        if invites and len(invites) > 0 and not self.public:
+            recipients = []
+            for invite in invites:
+                u = DareyooUser.objects.filter(username=invite)
+                if len(u) == 0:
+                    u = DareyooUser.objects.filter(email=invite)
+                if len(u) == 0:
+                    try:
+                        validate_email(email)
+                        user = DareyooUser(email=email)
+                        user.reference_user = self.author
+                        user.reference_campaign = 'direct'
+                        user.save()
+                        u = list(user)
+                    except ValidationError as e:
+                        pass
+                if len(u) > 0:
+                    recipients.append(u[0])
 
     def participants(self):
         if self.is_simple() or self.is_auction():
