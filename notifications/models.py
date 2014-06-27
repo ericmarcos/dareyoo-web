@@ -44,9 +44,9 @@ class NotificationFactory:
         n.recipient = bid.bet.author
         n.notification_type = Notification.TYPE_BID_POSTED
         if bid.bet.is_auction():
-            n.subject = "%s ha añadido una oferta: \"%s\"" % (bid.author.username, bid.title)
+            n.subject = u"%s ha añadido una oferta: \"%s\"" % (bid.author.username, bid.title)
         elif bid.bet.is_lottery():
-            n.subject = "%s ha añadido un resultado: \"%s\"" % (bid.author.username, bid.title)
+            n.subject = u"%s ha añadido un resultado: \"%s\"" % (bid.author.username, bid.title)
         n.bet = bid.bet
         n.user = bid.author
         return n
@@ -133,13 +133,13 @@ class NotificationFactory:
         n.notification_type = Notification.TYPE_BET_COMPLAINING_FINISHED_CONFLICT
         if bet.is_simple() or bet.is_auction():
             n.recipient = bet.author
-            n.subject = "%s ha reclamado tu resolución en la apuesta \"%s\". Otro usuario arbitrará este conflicto." % (bet.accepted_bid.author.username, bet.title)
+            n.subject = u"%s ha reclamado tu resolución en la apuesta \"%s\". Otro usuario arbitrará este conflicto." % (bet.accepted_bid.author.username, bet.title)
         elif bet.is_lottery():
             n.recipient = recipient
             if bet.author == recipient:
-                n.subject = "Tu resolución en la porra \"%s\" ha sido reclamada y será arbitrada por otro usuario" % bet.title
+                n.subject = u"Tu resolución en la porra \"%s\" ha sido reclamada y será arbitrada por otro usuario" % bet.title
             else:
-                n.subject = "La porra de %s \"%s\" está bajo conflicto y será arbitrada por otro usuario." % (bet.author.username, bet.title)
+                n.subject = u"La porra de %s \"%s\" está bajo conflicto y será arbitrada por otro usuario." % (bet.author.username, bet.title)
         n.bet = bet
         return n
 
