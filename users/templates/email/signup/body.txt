@@ -1,8 +1,10 @@
-{% if username %}Hola {{ username }},
+{% if username %}Estimado {{ username }},
 {% else %}
 Hola,
 {% endif %}
 
-Gracias por registrarte en Dareyoo!
+Gracias por elegir Dareyoo como tu plataforma de apuestas libre y social. Has dado el primer paso para cambiar las reglas del juego.
+
+Empieza a crear apuestas sobre lo que a ti te gusta. En Dareyoo no eres un apostador más, eres lo que tu quieras ser.  Encuentra a rivales que supongan un reto, demuestrales a todos que tu si sabes apostar y sobretodo, ¡diviértete!
 
 www.dareyoo.com
