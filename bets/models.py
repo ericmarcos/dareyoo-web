@@ -7,8 +7,11 @@ from django.conf import settings
 from django.db.models.query import QuerySet
 from django.db.models import Sum, Q
 from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from django_fsm.db.fields import FSMField, transition
 from rest_framework.exceptions import APIException
+from celery.execute import send_task
+from users.models import *
 
 
 class BetException(APIException):
@@ -304,6 +307,12 @@ class Bet(models.Model):
     def is_closed(self):
         return self.bet_state == self.get_state_name(Bet.STATE_CLOSED)
 
+    def is_desert(self):
+        if self.is_lottery():
+            return len(self.participants()) > 0
+        elif self.is_simple() or self.is_auction():
+            return bool(self.accepted_bid)
+
     def is_participant(self, user):
         return user in self.participants()
 
@@ -311,21 +320,24 @@ class Bet(models.Model):
         if invites and len(invites) > 0 and not self.public:
             recipients = []
             for invite in invites:
-                u = DareyooUser.objects.filter(username=invite)
+                u = DareyooUser.objects.filter(username=invite, following=self.author)
                 if len(u) == 0:
                     u = DareyooUser.objects.filter(email=invite)
                 if len(u) == 0:
                     try:
-                        validate_email(email)
-                        user = DareyooUser(email=email)
+                        validate_email(invite)
+                        user = DareyooUser(email=invite)
                         user.reference_user = self.author
                         user.reference_campaign = 'direct'
                         user.save()
-                        u = list(user)
+                        u = [user]
                     except ValidationError as e:
                         pass
                 if len(u) > 0:
                     recipients.append(u[0])
+            self.recipients = recipients
+            #TODO: remove dependency of notifications app using a signal
+            send_task('send_invite_notifications', [self.id])
 
     def participants(self):
         if self.is_simple() or self.is_auction():
@@ -355,7 +367,7 @@ class Bet(models.Model):
         return pot
 
     def winners(self):
-        if self.is_closed():
+        if self.is_closed() and not self.is_desert():
             claim = self.referee_claim or self.claim
             if self.is_lottery():
                 if claim != Bet.CLAIM_NULL:
@@ -371,7 +383,7 @@ class Bet(models.Model):
         return None
 
     def losers(self):
-        if self.is_closed():
+        if self.is_closed() and not self.is_desert():
             if self.is_lottery():
                 bid = self.referee_lottery_winner or self.claim_lottery_winner
                 return [user for b in self.bids.all() for user in b.participants.all() if b != bid]
@@ -421,6 +433,8 @@ class Bet(models.Model):
                 raise BetException("Only the bet author can post results in a closed lottery")
             if not self.is_lottery() and self.author.id == user.id:
                 raise BetException("Can't play against yourself!")
+            if not self.public and self.recipients.filter(id=user.id).count() == 0 and user != self.author:
+                raise BetException("Can't bid on a private bet if you're not invited.")
             bid.bet = self
             bid.set_author(user)
             if self.is_simple():
@@ -698,6 +712,8 @@ class Bid(models.Model):
 
     def add_participant(self, p):
         if self.bet.is_lottery():
+            if not self.bet.public and self.bet.recipients.filter(id=p.id).count() == 0 and p != self.bet.author:
+                raise BetException("Can't participate on a private bet if you're not invited.")
             if p in self.bet.participants():
                 raise BetException("Can't participate in more than one option in a lottery")
             p.lock_funds(self.amount)

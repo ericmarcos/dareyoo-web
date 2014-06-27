@@ -43,7 +43,7 @@
           <button type="button" class="btn btn-default" ng-click="search()"><span class="glyphicon glyphicon-search"></span></button>
         </div>
         <ul class="nav navbar-nav navbar-right">
-          <!-- <li class="dropdown" ng-if="user">
+          <li class="dropdown" ng-if="user">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" ng-click="notificationsClick()">
               <span class="badge alert-danger">[[new_notifications || ""]]</span>
               <span> Mensajes</span>
@@ -54,7 +54,7 @@
                 <a ng-if="!note.bet" href="#" ui-sref="profile.bets({userId:note.user})" ng-click="notificationClick(note)"><span ng-if="!note.readed" class="glyphicon glyphicon-envelope"></span> [[note.subject]]</a>
               </li>
             </ul>
-          </li> -->
+          </li>
           <li ng-if="user"><a href="{% url "beta-logout" %}">Logout</a></li>
           <li ng-if="!user"><a href="{% url "beta-login" %}">Login</a></li>
         </ul>

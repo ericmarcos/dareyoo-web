@@ -1,5 +1,9 @@
-Hola {{ username }},
+{% if username %}Hola {{ username }},
+{% else %}
+Hola,
+{% endif %}
 
 {{ subject }}
+{% if link %}{{link}}{% endif %}
 
 www.dareyoo.com

@@ -82,11 +82,16 @@ angular.module('dareyoo.controllers', []).
     };
     $scope.save = function() {
       if(!$scope.emptyUsername()) {
-        $http.put("/api/v1/users/" + $scope.user.id + "/", {
+        var user_data = {
             email: $scope.new_email,
             username: $scope.new_username,
             description: $scope.new_description
-        }).success(function(response){
+        };
+        var url = "/api/v1/users/" + $scope.user.id + "/";
+        if($scope.new_user) {
+          url += "?new=true";
+        }
+        $http.put(url, user_data).success(function(response){
           if($scope.new_user) {
             $scope.$state.go("who-to-follow");
           }
@@ -584,10 +589,7 @@ angular.module('dareyoo.controllers', []).
                                             '12 horas',
                                             '24 horas'];
 
-    $scope.friends = $rootScope.followers_names;
-    $rootScope.$watch('followers_names', function() {
-      $scope.friends = $rootScope.followers_names;
-    });
+    $scope.inviteSelected = null;
     $scope.invites = [];
 
     $scope.noFocusStyles = {"height": "46px", "max-height": "46px", "overflow": "hidden", "min-height":"initial"};
@@ -729,16 +731,30 @@ angular.module('dareyoo.controllers', []).
       return now;
     }
 
+    $scope.onSelectInvite = function($item, $model, $label) {
+      if($model.id) {
+        $scope.addInvite($model);
+        $scope.inviteSelected = null;
+      }
+    }
+
     $scope.onInviteEnter = function(event) {
       if (!event || event.which == 13) {
-        $scope.addInvite($('#invite_name').val());
-        $('#invite_name').val('');
+        var usernames = $.map($rootScope.followers, function(element) { return element.username; });
+        var i = usernames.indexOf($scope.inviteSelected);
+        if(i != -1) {
+          $scope.addInvite($rootScope.followers[i]);
+        } else {
+          $scope.addInvite($scope.inviteSelected);
+        }
+        $scope.inviteSelected = null;
       }
     }
 
     $scope.addInvite = function(inv) {
       if(inv && $scope.invites.indexOf(inv) == -1) {
         $scope.invites.push(inv);
+        console.log($scope.invites);
       }
     }
 
@@ -759,7 +775,7 @@ angular.module('dareyoo.controllers', []).
       if($scope.timeRelativeEvent)
         postData.event_deadline = $scope.relToAbsTime(postData.event_deadline_simple);
       if(!postData.public) {
-        postData['invites'] = $scope.invites;
+        postData['invites'] = $.map($scope.invites, function(element) { return element.username || element; });
       }
       
       delete postData.against;
@@ -769,10 +785,12 @@ angular.module('dareyoo.controllers', []).
       .success(function(response, status, headers, config) {
         $scope.new_bet = response;
         $scope.step = 5;
+        $scope.invites = [];
       })
       .error(function(response, status, headers, config) {
         $scope.new_bet = response;
         $scope.step = 5;
+        $scope.invites = [];
       });
     };
   }])

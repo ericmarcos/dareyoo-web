@@ -1,4 +1,7 @@
-Hola {{ username }},
+{% if username %}Hola {{ username }},
+{% else %}
+Hola,
+{% endif %}
 
 Gracias por registrarte en Dareyoo!
 

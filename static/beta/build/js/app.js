@@ -128,7 +128,7 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
     $rootScope.$stateParams = $stateParams;
     $rootScope.user = null;
     $rootScope.followers = [];
-    $rootScope.followers_names = {};
+    $rootScope.followers_names = [];
     $rootScope.new_notifications = 0;
     $rootScope.notifications = [];
     $rootScope.q = {'query': ""};
@@ -143,8 +143,11 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
       $http.get("/api/v1/me/followers").success(function(response) {
         if(response && response.length > 0) {
           $rootScope.followers = response;
+          $rootScope.followers_names = [];
           for (var i = $rootScope.followers.length - 1; i >= 0; i--) {
-            $rootScope.followers_names[$rootScope.followers[i].username] = '';
+            if($rootScope.followers[i].username) {
+              $rootScope.followers_names.push($rootScope.followers[i].username);
+            }
           };
         }
       });
@@ -185,7 +188,7 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
 
     $rootScope.getMe();
     $rootScope.getMyFollowers();
-    //$rootScope.getNotifications();
+    $rootScope.getNotifications();
 
 }]).
 constant('moment', moment);

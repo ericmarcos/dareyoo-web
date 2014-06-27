@@ -7,6 +7,15 @@
     </div>
 </script>
 
+<!-- http://angularcode.com/how-to-create-a-facebook-style-autocomplete-using-angularjs/ -->
+<script type="text/ng-template" id="invitesAutocomplete.html">
+    <a>
+        <img ng-if="match.model.pic" ng-src="[[match.model.pic]]" width="20" height="20" class="img-circle">
+        <img ng-if="!match.model.pic" ng-src="//s3-eu-west-1.amazonaws.com/dareyoo/beta/build/img/default_profile_pics/profile_[[match.model.id%10]].png" width="20" height="20" class="img-circle">
+        <span bind-html-unsafe="match.model.username | typeaheadHighlight:query"></span>
+    </a>
+</script>
+
 <div class="new-bet-widget" ng-controller="NewBetCtrl">
     <div class="new-bet-widget-header" ng-class="{'basic-bg':newBetFormData.bet_type==1, 'auction-bg':newBetFormData.bet_type==2, 'lottery-bg':newBetFormData.bet_type==3 }" ng-if="step != 1">
         <span class="header-title"><small><span class="glyphicon glyphicon-[[newBetFormData.public && 'globe' || 'lock']]"></span></small><strong> [[getTypeName()]]:</strong> [[newBetFormData.title]]</span>
@@ -187,18 +196,18 @@
         </div>
         <div class="row-small">
             <div class="col-small-12">
-                <div ng-repeat="inv in invites" class="label-invites"><span class="text-invite">[[inv]]</span><span class="remove-invite" ng-click="removeInvite(inv)">&times;</span></div>
+                <div ng-repeat="inv in invites" class="label-invites">
+                    <span ng-if="inv.id" class="text-invite">[[inv.username]]</span>
+                    <span ng-if="!inv.id" class="text-invite">[[inv]]</span>
+                    <span class="remove-invite" ng-click="removeInvite(inv)">&times;</span>
+                </div>
             </div>
         </div>
         <div class="row-small">
             <div class="col-small-12">
                 <div class="input-group">
-                    <!-- https://coderwall.com/p/0lms3g -->
-                    <input id="invite_name" type="text" placeholder="username o email" class="form-control new-bet-widget-input" ng-keypress="onInviteEnter($event)">
-                    <!-- <input id="invite_name" type="text" placeholder="username o email" class="form-control new-bet-widget-input" list="_friends" ng-keypress="onInviteEnter($event)"> -->
-                    <!-- <datalist id="_friends">
-                        <select style="display: none;" id="_select" name="_select" ng-model='selectedFriend' ng-options='k as v for (k,v) in friends'></select>
-                    </datalist> -->
+                    <input type="text" ng-model="inviteSelected" placeholder="username o email" typeahead="f as f.username for f in $root.followers | filter:{'username': $viewValue}" typeahead-template-url="invitesAutocomplete.html" typeahead-on-select='onSelectInvite($item, $model, $label)' ng-keypress="onInviteEnter($event)" class="form-control new-bet-widget-input">
+
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="button" ng-click="onInviteEnter()">Añadir</button>
                     </span>

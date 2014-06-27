@@ -212,7 +212,7 @@
                 </div>
             </div>
         </div>
-        <div ng-show="bet.bet_state=='bidding' && bet.bet_type==3 && bet.open_lottery && dialogs.bid">
+        <div ng-show="bet.bet_state=='bidding' && bet.bet_type==3 && (bet.open_lottery || user.id == bet.author.id) && dialogs.bid">
             <div class="row-small bid-input">
                 <div class="col-small-6">
                     <input id="bidTitle" type="text" name="bidTitle" class="form-control" placeholder="Resultado" ng-model="bidTitle" maxlength="140"></input>
@@ -232,7 +232,7 @@
                 <button type="button" class="btn btn-primary btn-lg btn-block bet-btn" ng-click="dialogs.bid=true">Hacer oferta!</button>
             </div>
         </div>
-        <div class="row-small" ng-show="bet.bet_state=='bidding' && bet.bet_type==3 && bet.open_lottery && !dialogs.bid">
+        <div class="row-small" ng-show="bet.bet_state=='bidding' && bet.bet_type==3 && (bet.open_lottery || user.id == bet.author.id) && !dialogs.bid">
             <div class="col-small-12">
                 <button type="button" class="btn btn-primary btn-lg btn-block bet-btn" ng-click="dialogs.bid=true">Añadir resultado</button>
             </div>
@@ -315,13 +315,13 @@
     </div>
 </div>
 
-<div class="bid-list" ng-if="bet.bet_type != 1 && bet.bids.length > 0">
+<div class="bid-list" ng-if="(bet.bet_type == 2 && (bet.bids.length > 1 && bet.accepted_bid || bet.bids.length > 0 && !bet.accepted_bid)) || (bet.bet_type == 3 && bet.bids.length > 0)">
     <h3 ng-if="bet.bet_type==2 && !bet.accepted_bid">Ofertas</h3>
     <h3 ng-if="bet.bet_type==2 && bet.accepted_bid">Ofertas desestimadas</h3>
     <h3 ng-if="bet.bet_type==3">Resultados</h3>
     <div class="bid-list-row" ng-repeat="bid in bet.bids" ng-if="bid.id != bet.accepted_bid.id">
         <!-- <div class="col-xs-12"> -->
-            <div class="bid-author">
+            <div ng-if="bet.bet_type == 2" class="bid-author">
                 <dy-user-pic-name user="bid.author" size="'micro'" horizontal="true" badges="false"></dy-user-pic-name>
             </div>
             <div ng-if="bet.bet_state=='closed' && bet.bet_type == 3" class="bet-points">
@@ -345,7 +345,7 @@
                 <button type="button" ng-if="user.id == bet.author.id && bet.bet_state=='bidding' && bet.bet_type==2" class="btn btn-primary btn-block" ng-click="acceptBid(bid.id)">Aceptar</button>
             </div>
             <div class="pull-right">
-                <button type="button" ng-if="bet.bet_type == 3 && bet.bet_state=='bidding'" class="btn btn-primary btn-block" ng-click="participateBid(bid.id)">Participar</button>
+                <button type="button" ng-if="bet.bet_type == 3 && bet.bet_state=='bidding' && !isParticipant(user.id)" class="btn btn-primary btn-block" ng-click="participateBid(bid.id)">Participar</button>
             </div>
             <div class="pull-right bid-participants" ng-if="bet.bet_type==3">
                 <span><a href ng-click="showParticipants(bid)">([[bid.participants.length]] participantes)</a></span>

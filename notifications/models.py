@@ -3,7 +3,9 @@
 
 from django.db import models
 from django.conf import settings
+from celery.execute import send_task
 from bets.models import Bet
+from .models import *
 
 
 class NotificationFactory:
@@ -76,7 +78,7 @@ class NotificationFactory:
         n = Notification()
         n.recipient = bet.author
         n.notification_type = Notification.TYPE_BET_EVENT_FINISHED
-        n.subject = "Tu apuesta \"%s\" ha finalizado! Tienes 24h para resolverla."
+        n.subject = "Tu apuesta \"%s\" ha finalizado! Tienes 24h para resolverla." % bet.title
         n.bet = bet
         return n
 
@@ -223,6 +225,10 @@ class Notification(models.Model):
 
     def send_notification_email(self):
         if self.recipient.email and self.recipient.email_notifications:
+            if self.bet:
+                link = 'http://www.dareyoo.com/app/main/bet/%s' % self.bet.id
+            elif self.user:
+                link = 'http://www.dareyoo.com/app/profile/%s/bets' % self.user.id
             kwargs = {
                 'from_addr': "no-reply@dareyoo.com",
                 'to_addr': self.recipient.email,
@@ -231,6 +237,8 @@ class Notification(models.Model):
                 'html_body_template': "email/notification/body.html",
                 'template_data': {
                     'username': self.recipient.username,
+                    'subject': self.subject,
+                    'link': link
                 }
             }
             

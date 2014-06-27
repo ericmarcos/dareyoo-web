@@ -1,5 +1,9 @@
-Hola {{ username }},
-
-Gracias por registrarte en Dareyoo!
-
-www.dareyoo.com
+{% if username %}<p>Hola {{ username }},</p>
+{% else %}
+<p>Hola,</p>
+{% endif %}
+<br>
+<p>Gracias por registrarte en Dareyoo!</p>
+<br>
+<br>
+<a href="http://www.dareyoo.com">www.dareyoo.com</a>

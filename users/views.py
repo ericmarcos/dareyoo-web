@@ -39,11 +39,12 @@ class DareyooUserViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsSelfOrReadOnly)
 
     def update(self, request, pk=None):
-        super(DareyooUserViewSet, self).update(request, pk)
-        new_user = request.DATA.get('new')
+        ret = super(DareyooUserViewSet, self).update(request, pk)
+        new_user = request.QUERY_PARAMS.get('new')
         if new_user:
             user = self.get_object()
             user.send_welcome_email()
+        return ret
 
     @link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
     def followers(self, request, *args, **kwargs):
