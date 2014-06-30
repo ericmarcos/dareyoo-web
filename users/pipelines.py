@@ -21,7 +21,7 @@ def save_profile_picture(strategy, user, response, details,
     if is_new:
         if strategy and strategy.backend and strategy.backend.name == 'facebook':
             url = 'http://graph.facebook.com/{0}/picture'.format(response['id'])
-            params={'type': 'square'}
+            params={'type': 'normal', 'height': 200, 'width': 200}
         else:
             default_avatar = urljoin(settings.STATIC_URL, "beta/build/img/default_profile_pics/profile_{0}.png".format(user.id or 1 % 10))
             params = {'s': str(settings.AVATAR_DEFAULT_SIZE), 'd': default_avatar}
