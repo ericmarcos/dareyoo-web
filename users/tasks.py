@@ -53,4 +53,4 @@ def send_email(**kwargs):
     msg = EmailMultiAlternatives(subject=subject, from_email=from_addr,
                                 to=[to_addr], body=text_body)
     msg.attach_alternative(html_body, "text/html")
-    msg.send()
+    msg.send(fail_silently=True)

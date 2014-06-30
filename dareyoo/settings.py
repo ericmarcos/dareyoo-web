@@ -160,11 +160,11 @@ djcelery.setup_loader()
 
 #BROKER_URL = 'django://'
 BROKER_URL = os.environ.get('CLOUDAMQP_URL', 'django://')
+CELERY_IGNORE_RESULT = True
+#CELERY_ACCEPT_CONTENT = ['json']
 
-CELERY_ACCEPT_CONTENT = ['json']
-
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
+#CELERY_TASK_SERIALIZER = 'json'
+#CELERY_RESULT_SERIALIZER = 'json'
 
 #CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 #CELERY_RESULT_BACKEND = 'database'
@@ -173,7 +173,7 @@ db_url = os.environ.get('DATABASE_URL')
 
 'postgresql+psycopg2://scott:tiger@localhost/mydatabase'
 #CELERY_RESULT_BACKEND = 'db+postgresql' + db_url[8:]
-CELERY_TASK_RESULT_EXPIRES = 14400
+#CELERY_TASK_RESULT_EXPIRES = 14400
 
 
 #RANKING_PERIOD = crontab(hour=1, minute=30, day_of_week=1) # deprecated
