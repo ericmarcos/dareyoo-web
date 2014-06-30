@@ -734,7 +734,7 @@ class Bid(models.Model):
                 self.claim_author = user
                 user.lock_funds(self.bet.referee_escrow)
                 user.save()
-                self.bet.resolved_at = timezone.now()
+                self.bet.complained_at = timezone.now()
                 self.bet.save()
             else:
                 raise BetException("Invalid claim")

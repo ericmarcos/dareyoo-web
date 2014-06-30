@@ -153,7 +153,8 @@ class NotificationFactory:
         n.recipient = recipient
         if bet.is_simple() or bet.is_auction():
             if recipient == bet.author:
-                winner = dict(enumerate(bet.winners())).get(0)
+                winners = bet.winners()
+                winner = winners[0] if winners else None
                 if winner == recipient:
                     n.subject = "%s ha arbitrado tu apuesta \"%s\" y ha decidido que has ganado." % (bet.referee.username, bet.title)
                 elif winner == None:
@@ -161,7 +162,8 @@ class NotificationFactory:
                 else:
                     n.subject = "%s ha arbitrado tu apuesta \"%s\" y ha decidido que has perdido." % (bet.referee.username, bet.title)
             elif recipient == bet.accepted_bid.author:
-                winner = dict(enumerate(bet.winners())).get(0)
+                winners = bet.winners()
+                winner = winners[0] if winners else None
                 if winner == recipient:
                     n.subject = "%s ha arbitrado la apuesta de %s \"%s\" y ha decidido que has ganado." % (bet.referee.username, bet.author.username, bet.title)
                 elif winner == None:
