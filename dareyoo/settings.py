@@ -153,8 +153,8 @@ LOTTERY_REFEREE_FEES = 6
 
 ######### CELERY SETUP ###########
 BROKER_POOL_LIMIT = 3
-BROKER_TRANSPORT = 'amqplib'
-BROKER_CONNECTION_MAX_RETRIES = 0
+#BROKER_TRANSPORT = 'amqplib'
+#BROKER_CONNECTION_MAX_RETRIES = 0
 
 djcelery.setup_loader()
 
@@ -166,9 +166,13 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
-CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
+#CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 #CELERY_RESULT_BACKEND = 'database'
-CELERY_BEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+#CELERY_BEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+db_url = os.environ.get('DATABASE_URL')
+
+'postgresql+psycopg2://scott:tiger@localhost/mydatabase'
+CELERY_RESULT_BACKEND = 'db+postgresql' + db_url[8:]
 CELERY_TASK_RESULT_EXPIRES = 14400
 
 
