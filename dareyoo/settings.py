@@ -161,9 +161,9 @@ djcelery.setup_loader()
 #BROKER_URL = 'django://'
 BROKER_URL = os.environ.get('CLOUDAMQP_URL', 'django://')
 CELERY_IGNORE_RESULT = True
-#CELERY_ACCEPT_CONTENT = ['json']
+CELERY_ACCEPT_CONTENT = ['json']
 
-#CELERY_TASK_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
 #CELERY_RESULT_SERIALIZER = 'json'
 
 #CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
