@@ -153,6 +153,8 @@ LOTTERY_REFEREE_FEES = 6
 
 ######### CELERY SETUP ###########
 BROKER_POOL_LIMIT = 3
+BROKER_TRANSPORT = 'amqplib'
+BROKER_CONNECTION_MAX_RETRIES = 0
 
 djcelery.setup_loader()
 
@@ -164,8 +166,11 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
-CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
+#CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
+CELERY_RESULT_BACKEND = 'database'
 CELERY_BEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+CELERY_TASK_RESULT_EXPIRES = 14400
+
 
 #RANKING_PERIOD = crontab(hour=1, minute=30, day_of_week=1) # deprecated
 RESOLVING_COUNTDOWN = 60*60*24
