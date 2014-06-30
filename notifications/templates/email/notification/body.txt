@@ -1,7 +1,4 @@
-{% if username %}Hola {{ username }},
-{% else %}
-Hola,
-{% endif %}
+{% if username %}Hola {{ username }},{% else %}Hola,{% endif %}
 
 {{ subject }}
 {% if link %}{{link}}{% endif %}

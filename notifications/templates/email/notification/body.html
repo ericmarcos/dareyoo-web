@@ -1,7 +1,4 @@
-{% if username %}<p>Hola {{ username }},</p>
-{% else %}
-<p>Hola,</p>
-{% endif %}
+{% if username %}<p>Hola {{ username }},</p>{% else %}<p>Hola,</p>{% endif %}
 <br>
 <p>{{ subject }}</p>
 {% if link %}<a href="{{link}}">{{link}}</a>{% endif %}

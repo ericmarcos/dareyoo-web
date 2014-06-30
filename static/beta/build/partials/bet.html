@@ -36,7 +36,7 @@
     <div class="bet-header" ng-class="{'basic-bg': bet.bet_type == 1, 'auction-bg': bet.bet_type == 2, 'lottery-bg': bet.bet_type == 3}">
         <p ng-if="bet.bet_type == 1">Apuesta básica</p>
         <p ng-if="bet.bet_type == 2">Subasta</p>
-        <p ng-if="bet.bet_type == 3">Porra</p>
+        <p ng-if="bet.bet_type == 3">Porra <span ng-if="bet.open_lottery">Abierta</span><span ng-if="!bet.open_lottery">Cerrada</span></p>
     </div>
     <div class="container-fluid-small">
         <div class="bet-row">
@@ -218,7 +218,7 @@
                 </div>
             </div>
         </div>
-        <div ng-show="bet.bet_state=='bidding' && bet.bet_type==3 && (bet.open_lottery || user.id == bet.author.id) && dialogs.bid">
+        <div ng-show="bet.bet_state=='bidding' && bet.bet_type==3 && (bet.open_lottery || user.id == bet.author.id) && dialogs.bid && (!isParticipant(user.id) || user.id == bet.author.id)">
             <div class="row-small bid-input">
                 <div class="col-small-6">
                     <input id="bidTitle" type="text" name="bidTitle" class="form-control" placeholder="Resultado" ng-model="bidTitle" maxlength="140"></input>
@@ -238,7 +238,7 @@
                 <button type="button" class="btn btn-primary btn-lg btn-block bet-btn" ng-click="dialogs.bid=true">Hacer oferta!</button>
             </div>
         </div>
-        <div class="row-small" ng-show="bet.bet_state=='bidding' && bet.bet_type==3 && (bet.open_lottery || user.id == bet.author.id) && !dialogs.bid">
+        <div class="row-small" ng-show="bet.bet_state=='bidding' && bet.bet_type==3 && (bet.open_lottery || user.id == bet.author.id) && !dialogs.bid && (!isParticipant(user.id) || user.id == bet.author.id)">
             <div class="col-small-12">
                 <button type="button" class="btn btn-primary btn-lg btn-block bet-btn" ng-click="dialogs.bid=true">Añadir resultado</button>
             </div>
