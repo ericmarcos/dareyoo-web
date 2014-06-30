@@ -199,7 +199,8 @@ class UserPoints(models.Model):
 
     def calculatePointsFromBet(self, bid=None):
         #TODO: this code is soooo ugly...
-        winners = self.bet.winners() if self.bet else None
+        winners = self.bet.winners() if self.bet else []
+        winners = winners or []
         ref = self.bet.referee if self.bet else None
         self.bid = bid
         if ref:
@@ -223,8 +224,8 @@ class UserPoints(models.Model):
                 else:
                     self.points = self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.user in winners)
             else:
-                points = self.pointsFromAmount(self.bet.amount, self.bet.accepted_bid.amount, self.bet.author == winners[0])
-                if winners[0] == self.user:
+                points = self.pointsFromAmount(self.bet.amount, self.bet.accepted_bid.amount, winners and self.bet.author == winners[0])
+                if winners and winners[0] == self.user:
                     self.points = points[0]
                     self.points += self.conflictWinnerPoints()
                 elif ref == self.user:
@@ -235,8 +236,8 @@ class UserPoints(models.Model):
             if self.bet.is_lottery():
                 self.points = self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.user in winners)
             else:
-                points = self.pointsFromAmount(self.bet.amount, self.bet.accepted_bid.amount, self.bet.author == winners[0])
-                if winners[0] == self.user:
+                points = self.pointsFromAmount(self.bet.amount, self.bet.accepted_bid.amount, winners and self.bet.author == winners[0])
+                if winners and winners[0] == self.user:
                     self.points = points[0]
                 else:
                     self.points = points[1]
