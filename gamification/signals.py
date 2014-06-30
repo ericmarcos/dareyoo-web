@@ -24,7 +24,7 @@ def bet_closing_points(sender, **kwargs):
     bet = kwargs.get('instance')
     transition = kwargs.get('name')
 
-    if transition == 'closed_ok' or transition == 'closed_arbitrating':
+    if transition == 'closed_ok' or transition == 'closed_conflict':
         #Calculate points for this bet
         UserPointsFactory.fromBet(bet)
 

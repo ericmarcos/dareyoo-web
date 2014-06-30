@@ -191,8 +191,8 @@ class UserPoints(models.Model):
     def conflictLoserPoints(self):
         return -3*self.bet.pot()
 
-    def refereePoints():
-        return 5*self.bet.pot(self)
+    def refereePoints(self):
+        return 5*self.bet.pot()
 
     def lotteryCreatorPoints(self):
         return math.floor(0.5*self.bet.pot())
@@ -203,6 +203,7 @@ class UserPoints(models.Model):
         winners = winners or []
         ref = self.bet.referee if self.bet else None
         self.bid = bid
+        print ref
         if ref:
             if self.bet.is_lottery():
                 if ref == self.user:
@@ -225,6 +226,7 @@ class UserPoints(models.Model):
                     self.points = self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.user in winners)
             else:
                 points = self.pointsFromAmount(self.bet.amount, self.bet.accepted_bid.amount, winners and self.bet.author == winners[0])
+                print "conflict: %s" % points
                 if winners and winners[0] == self.user:
                     self.points = points[0]
                     self.points += self.conflictWinnerPoints()
@@ -237,6 +239,7 @@ class UserPoints(models.Model):
                 self.points = self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.user in winners)
             else:
                 points = self.pointsFromAmount(self.bet.amount, self.bet.accepted_bid.amount, winners and self.bet.author == winners[0])
+                print "ok: %s" % points
                 if winners and winners[0] == self.user:
                     self.points = points[0]
                 else:
