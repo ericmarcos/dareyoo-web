@@ -137,13 +137,13 @@
                     <strong ng-if="bet.referee_claim==1">[[bet.referee.username]] ha actuado de árbitro y ha declarado a [[bet.author.username]] ganador de la apuesta.</strong>
                     <strong ng-if="bet.referee_claim==2">[[bet.referee.username]] ha actuado de árbitro y ha declarado a [[bet.accepted_bid.author.username]] ganador de la apuesta.</strong>
                     <strong ng-if="bet.referee_claim==3">[[bet.referee.username]] ha actuado de árbitro y ha declarado la apuesta nula.</strong>
-                    <span ng-if="bet.accepted_bid.claim_message"><br>[[bet.accepted_bid.referee_message]]</span>
+                    <span ng-if="bet.referee_message"><br>[[bet.referee_message]]</span>
                 </div>
                 <div ng-if="bet.bet_type == 3" class="well well-sm bet-description">
                     <strong>[[getArbitratedDate()]]: </strong>
                     <strong ng-if="bet.referee_claim==3">[[bet.referee.username]] ha actuado de árbitro y ha declarado que la porra es nula.</strong>
                     <strong ng-if="bet.referee_claim!=3">[[bet.referee.username]] ha actuado de árbitro y ha declarado que el resultado [[bet.referee_lottery_winner.title]] ha ganado la porra.</strong>
-                    <span ng-if="bet.accepted_bid.claim_message"><br>[[bet.referee_message]]</span>
+                    <span ng-if="bet.referee_message"><br>[[bet.referee_message]]</span>
                 </div>
             </div>
         </div>
