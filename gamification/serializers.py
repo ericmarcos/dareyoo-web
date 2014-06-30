@@ -52,6 +52,7 @@ class BidPointsSerializer(BidSerializer):
 class BetPointsSerializer(BetSerializer):
     author = DareyooUserPointsShortSerializer(read_only=True)
     points = serializers.SerializerMethodField('get_points')
+    referee_points = serializers.SerializerMethodField('get_referee_points')
     bids = BidPointsSerializer(many=True, read_only=True)
     accepted_bid = BidPointsSerializer(read_only=True)
     claim_lottery_winner = BidPointsSerializer(read_only=True)
@@ -62,10 +63,16 @@ class BetPointsSerializer(BetSerializer):
         if len(p) > 0:
             return p[0].points
         return 0
+
+    def get_referee_points(self, obj):
+        p = obj.points.filter(user=obj.referee, bid__isnull=True)
+        if len(p) > 0:
+            return p[0].points
+        return 0
     
     class Meta:
         model = BetSerializer.Meta.model
-        fields = BetSerializer.Meta.fields + ('points',)
+        fields = BetSerializer.Meta.fields + ('points', 'referee_points')
 
 class UserField(DareyooUserPointsShortSerializer):
     def to_native(self, obj):

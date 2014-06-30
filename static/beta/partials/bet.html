@@ -133,6 +133,9 @@
         <div ng-if="bet.bet_state=='closed' && bet.referee" class="row-small">
             <div class="col-small-12">
                 <div ng-if="bet.bet_type != 3" class="well well-sm bet-description">
+                    <h4 class="pull-right"><span class="label" ng-class="{'label-success-basic': bet.bet_type == 1, 'label-success-auction': bet.bet_type == 2, 'label-success-lottery': bet.bet_type == 3}">
+                        [[bet.referee_points]] puntos&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-ok-circle"></span></span>
+                    </span>&nbsp;</h4>
                     <strong>[[getArbitratedDate()]]: </strong>
                     <strong ng-if="bet.referee_claim==1">[[bet.referee.username]] ha actuado de árbitro y ha declarado a [[bet.author.username]] ganador de la apuesta.</strong>
                     <strong ng-if="bet.referee_claim==2">[[bet.referee.username]] ha actuado de árbitro y ha declarado a [[bet.accepted_bid.author.username]] ganador de la apuesta.</strong>
@@ -140,6 +143,9 @@
                     <span ng-if="bet.referee_message"><br>[[bet.referee_message]]</span>
                 </div>
                 <div ng-if="bet.bet_type == 3" class="well well-sm bet-description">
+                    <h4 class="pull-right"><span class="label" ng-class="{'label-success-basic': bet.bet_type == 1, 'label-success-auction': bet.bet_type == 2, 'label-success-lottery': bet.bet_type == 3}">
+                        [[bet.referee_points]] puntos&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-ok-circle"></span></span>
+                    </span>&nbsp;</h4>
                     <strong>[[getArbitratedDate()]]: </strong>
                     <strong ng-if="bet.referee_claim==3">[[bet.referee.username]] ha actuado de árbitro y ha declarado que la porra es nula.</strong>
                     <strong ng-if="bet.referee_claim!=3">[[bet.referee.username]] ha actuado de árbitro y ha declarado que el resultado [[bet.referee_lottery_winner.title]] ha ganado la porra.</strong>
