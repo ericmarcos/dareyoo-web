@@ -172,7 +172,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 db_url = os.environ.get('DATABASE_URL')
 
 'postgresql+psycopg2://scott:tiger@localhost/mydatabase'
-CELERY_RESULT_BACKEND = 'db+postgresql' + db_url[8:]
+#CELERY_RESULT_BACKEND = 'db+postgresql' + db_url[8:]
 CELERY_TASK_RESULT_EXPIRES = 14400
 
 
