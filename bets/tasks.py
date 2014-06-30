@@ -8,16 +8,10 @@ from bets.models import *
 def bidding_deadline(bet_id=None, **kwargs):
     b = Bet.objects.get(pk=bet_id)
     if not b.is_event():
-        if b.is_lottery():
-            if len(b.partipants()) > 0:
-                b.event()
-            else:
-                b.closed_desert()
+        if b.is_desert():
+            b.closed_desert()
         else:
-            if b.has_bid():
-                b.event()
-            else:
-                b.closed_desert()
+            b.event()
 
 @shared_task(name='event_deadline')
 def event_deadline(bet_id=None, **kwargs):

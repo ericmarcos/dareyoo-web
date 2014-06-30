@@ -309,9 +309,9 @@ class Bet(models.Model):
 
     def is_desert(self):
         if self.is_lottery():
-            return len(self.participants()) > 0
+            return len(self.participants()) == 0
         elif self.is_simple() or self.is_auction():
-            return bool(self.accepted_bid)
+            return not bool(self.accepted_bid)
 
     def is_participant(self, user):
         return user in self.participants()
@@ -530,8 +530,10 @@ class Bet(models.Model):
             raise BetException("Can't arbitrate on a bet that is not in arbitrating state (current state: %s)" % self.bet_state)
 
     def close(self, arbitrating=False):
-        if self.bids.count() == 0:
-            self.author.unlock_funds(self.amount + self.referee_escrow)
+        if self.is_desert():
+            if self.is_simple() or self.is_auction():
+                self.author.unlock_funds(self.amount)
+            self.author.unlock_funds(self.referee_escrow)
             self.author.save()
         else:
             if self.is_simple():
