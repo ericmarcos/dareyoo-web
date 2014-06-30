@@ -184,17 +184,17 @@ class UserPoints(models.Model):
         return (int(math.floor((level - 1)**1.6*1000)),
                 int(math.floor(level**1.6*1000)))
 
-    def conflictWinnerPoints():
+    def conflictWinnerPoints(self):
         ''' Extra points for winning a conflict (even if the user loses the bet) '''
         return self.bet.pot()
 
-    def conflictLoserPoints():
+    def conflictLoserPoints(self):
         return -3*self.bet.pot()
 
     def refereePoints():
-        return 5*self.bet.pot()
+        return 5*self.bet.pot(self)
 
-    def lotteryCreatorPoints():
+    def lotteryCreatorPoints(self):
         return math.floor(0.5*self.bet.pot())
 
     def calculatePointsFromBet(self, bid=None):
