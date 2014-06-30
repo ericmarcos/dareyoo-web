@@ -278,7 +278,7 @@ class Bet(models.Model):
         if self.is_simple() or self.is_auction():
             return self.accepted_bid != None
         elif self.is_lottery():
-            return sum([len(bid.participants.all()) for bid in self.bids.all()]) > 1
+            return sum([len(bid.participants.all()) for bid in self.bids.all()]) >= 1
 
     def has_conflict(self):
         return self.referee != None
