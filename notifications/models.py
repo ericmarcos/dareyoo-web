@@ -244,7 +244,7 @@ class Notification(models.Model):
                 }
             }
             
-            #send_task('send_email', kwargs=kwargs)
+            send_task('send_email', kwargs=kwargs)
 
     def __unicode__(self):
         return "%s - %s [%s]" % (self.date, self.recipient, self.subject)
