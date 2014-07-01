@@ -8,11 +8,18 @@ angular.module('dareyoo.controllers', []).
     $scope.new_user = $location.search()['new'];
     $scope.upload_state = 'initial';
     $scope.usernameError = '';
+    
+    $scope.userAPIError = function(response, status, headers, config) {
+      $('#user-fail-message').text(JSON.stringify(response));
+      $('#user-fail-modal').modal('show');
+    };
+
     var initial_load = true;
     if($scope.user) {
       $scope.new_email = $scope.user.email;
       $scope.new_username = $scope.user.username;
       $scope.new_description = $scope.user.description;
+      $scope.new_email_notifications = $scope.user.email_notifications;
       initial_load = false;
     } else {
       $scope.$watch('user', function() {
@@ -20,6 +27,7 @@ angular.module('dareyoo.controllers', []).
           $scope.new_email = $scope.user.email;
           $scope.new_username = $scope.user.username;
           $scope.new_description = $scope.user.description;
+          $scope.new_email_notifications = $scope.user.email_notifications;
           initial_load = false;
         }
       });
@@ -85,7 +93,8 @@ angular.module('dareyoo.controllers', []).
         var user_data = {
             email: $scope.new_email,
             username: $scope.new_username,
-            description: $scope.new_description
+            description: $scope.new_description,
+            email_notifications: $scope.new_email_notifications
         };
         var url = "/api/v1/users/" + $scope.user.id + "/";
         if($scope.new_user) {
@@ -94,10 +103,10 @@ angular.module('dareyoo.controllers', []).
         $http.put(url, user_data).success(function(response){
           if($scope.new_user) {
             $scope.$state.go("who-to-follow");
+          } else {
+            $('#user-ok-modal').modal('show');
           }
-        }).error(function(response){
-          console.log(response);
-        });
+        }).error($scope.userAPIError);
       } else {
         $scope.usernameError = 'Introduce un nombre de usuario válido';
       }
@@ -186,7 +195,8 @@ angular.module('dareyoo.controllers', []).
       return null;
     };
     if($scope.global) {
-      $scope.getGlobalRanking();
+      //$scope.getGlobalRanking();
+      $scope.getLeaderboard(0);
     } else {
       $scope.getTournament($stateParams.tournamentId);
       $scope.getLeaderboard($stateParams.tournamentId);
@@ -570,6 +580,10 @@ angular.module('dareyoo.controllers', []).
     $scope.popover("input#title", "eg: Messi will score a hat-trick tonight.");
     $scope.popover("textarea#description", "eg: If the game is cancelled I will declare this bet null");
     */
+    $scope.betAPIError = function(response, status, headers, config) {
+      $('#new-bet-fail-message').text(JSON.stringify(response));
+      $('#new-bet-fail-modal').modal('show');
+    };
 
     $scope.simpleBetBiddingDeadlineOptions = ['10 minutos',
                                               '20 minutos',
@@ -601,6 +615,7 @@ angular.module('dareyoo.controllers', []).
 
     $scope.resetWidget = function(new_bet) {
       $scope.newBetFormData = { bet_type: 1,
+                        title: "",
                         amount: 10,
                         against: 10,
                         bidding_deadline: new Date(),
@@ -681,14 +696,16 @@ angular.module('dareyoo.controllers', []).
         $scope.step = 2;
       } else if($scope.step == 2) {
         if($scope.newBetFormData.public) {
-          $scope.step = 4;
-          $scope.postNewBet();
+          if($scope.postNewBet()) {
+            $scope.step = 4;
+          }
         } else {
           $scope.step = 3;
         }
       } else if($scope.step == 3) {
-        $scope.step = 4;
-        $scope.postNewBet();
+        if($scope.postNewBet()) {
+          $scope.step = 4;
+        }
       }
     }
     $scope.setPublic = function(pub) {
@@ -766,6 +783,14 @@ angular.module('dareyoo.controllers', []).
     }
 
     $scope.postNewBet = function() {
+      if(!$scope.newBetFormData['public'] && $scope.invites.length == 0) {
+        $scope.betAPIError("En una apuesta privada tienes que invitar almenos una persona.");
+        return false;
+      }
+      if($scope.newBetFormData['title'].length <= 0) {
+        $scope.betAPIError("La apuesta es demasiado corta, por favor, pon un título más descriptivo.");
+        return false;
+      }
       var postData = jQuery.extend({}, $scope.newBetFormData);
       if (postData.bet_type == 1) {
         postData.odds = (postData.amount + postData.against) / postData.amount;
@@ -788,10 +813,12 @@ angular.module('dareyoo.controllers', []).
         $scope.invites = [];
       })
       .error(function(response, status, headers, config) {
-        $scope.new_bet = response;
-        $scope.step = 5;
-        $scope.invites = [];
+        $scope.betAPIError(response, status, headers, config);
+        //$scope.new_bet = response;
+        //$scope.step = 5;
+        //$scope.invites = [];
       });
+      return true;
     };
   }])
   .controller('MainCtrl', ['$scope', '$http', function($scope, $http) {

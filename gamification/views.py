@@ -70,8 +70,11 @@ class TournamentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.R
 
     @link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
     def leaderboard(self, request, *args, **kwargs):
-        tournament = self.get_object()
-        ranking = tournament.leaderboard()
+        if kwargs.get('pk') == '0':
+            ranking = UserPoints.objects.all().ranking()
+        else:
+            tournament = self.get_object()
+            ranking = tournament.leaderboard()
         serializer = RankingSerializer(ranking, context={'request': request}, many=True)
         return response.Response(serializer.data, status=status.HTTP_200_OK)
 

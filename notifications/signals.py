@@ -36,7 +36,7 @@ def bid_posted_notification(sender, **kwargs):
 
 @receiver(pre_delete, sender=Bid)
 def bid_deleted_notification(sender, **kwargs):
-    if kwargs.get('created', False) and settings.GENERATE_NOTIFICATIONS:
+    if settings.GENERATE_NOTIFICATIONS:
         bid = kwargs.get('instance')
         if bid.author != bid.bet.author:
             n = NotificationFactory.bid_deleted(bid)

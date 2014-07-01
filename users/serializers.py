@@ -19,7 +19,8 @@ class DareyooUserFullSerializer(serializers.HyperlinkedModelSerializer):
         model = DareyooUser
         fields = ('url', 'id', 'email', 'username', 'description', 'pic', 'upload_pic_url',
              'following', 'followers','coins_available', 'coins_locked', 'followers_url',
-             'following_url', 'follow_url', 'unfollow_url', 'im_following', 'following_me')
+             'following_url', 'follow_url', 'unfollow_url', 'im_following', 'following_me',
+             'email_notifications')
         read_only_fields = ('coins_available', 'coins_locked',)
 
     def get_im_following(self, obj):
@@ -42,6 +43,7 @@ class DareyooUserFullSerializer(serializers.HyperlinkedModelSerializer):
             self.fields.pop('coins_available', None)
             self.fields.pop('coins_locked', None)
             self.fields.pop('upload_pic', None)
+            self.fields.pop('email_notifications', None)
         elif authenticated: # me!
             self.fields.pop('im_following', None)
             self.fields.pop('following_me', None)
@@ -52,6 +54,7 @@ class DareyooUserFullSerializer(serializers.HyperlinkedModelSerializer):
             self.fields.pop('following_me', None)
             self.fields.pop('follow', None)
             self.fields.pop('unfollow', None)
+            self.fields.pop('email_notifications', None)
         return super(DareyooUserFullSerializer, self).to_native(obj)
 
 

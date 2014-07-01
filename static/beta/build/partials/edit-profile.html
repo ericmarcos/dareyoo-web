@@ -1,3 +1,37 @@
+<div id="user-fail-modal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
+        <h4 class="modal-title">Ooops!</h4>
+      </div>
+      <div class="modal-body">
+        <p id="user-fail-message"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id="user-ok-modal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
+        <h4 class="modal-title">Bien!</h4>
+      </div>
+      <div class="modal-body">
+        <p id="user-ok-message">Tu perfil actualizado correctamente.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <div class="row">
     <div class="col-md-8 col-md-offset-2">
         <h1 ng-if="!new_user">Editar perfil</h1>
@@ -68,7 +102,7 @@
                 <textarea id="description" ng-model="new_description" name="description" class="form-control" rows="3"></textarea>
             </div>
         </div>
-        <!-- <h3>Notificaciones</h3>
+        <h3>Notificaciones</h3>
         <div class="row">
             <div class="col-md-6">
                 <div class="checkbox">
@@ -78,7 +112,7 @@
                     </label>
                 </div>
             </div>
-        </div> -->
+        </div>
         <div class="row">
             <div class="col-md-12">
                 <button type="button" ng-show="!new_user" class="btn btn-default" ng-click="save()">

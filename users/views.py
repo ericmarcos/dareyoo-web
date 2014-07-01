@@ -11,6 +11,7 @@ from rest_framework import viewsets, permissions, renderers, status, generics
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import link, action, api_view
 from rest_framework.response import Response
+from rest_framework.exceptions import MethodNotAllowed
 from .models import *
 from .serializers import *
 
@@ -39,9 +40,11 @@ class DareyooUserViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsSelfOrReadOnly)
 
     def update(self, request, pk=None):
+        username = request.DATA.get('username')
+        if request.user.username != username and DareyooUser.objects.filter(username=username).exists():
+            raise MethodNotAllowed("This username already exists.")
         ret = super(DareyooUserViewSet, self).update(request, pk)
-        new_user = request.QUERY_PARAMS.get('new')
-        if new_user:
+        if request.QUERY_PARAMS.get('new'):
             user = self.get_object()
             user.send_welcome_email()
         return ret

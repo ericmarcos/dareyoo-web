@@ -16,6 +16,23 @@
     </a>
 </script>
 
+<div id="new-bet-fail-modal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
+        <h4 class="modal-title">Ooops!</h4>
+      </div>
+      <div class="modal-body">
+        <p id="new-bet-fail-message"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <div class="new-bet-widget" ng-controller="NewBetCtrl">
     <div class="new-bet-widget-header" ng-class="{'basic-bg':newBetFormData.bet_type==1, 'auction-bg':newBetFormData.bet_type==2, 'lottery-bg':newBetFormData.bet_type==3 }" ng-if="step != 1">
         <span class="header-title"><small><span class="glyphicon glyphicon-[[newBetFormData.public && 'globe' || 'lock']]"></span></small><strong> [[getTypeName()]]:</strong> [[newBetFormData.title]]</span>
