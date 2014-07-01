@@ -66,10 +66,16 @@
       <li {% if request.resolver_match.url_name == "beta-quienes" %}class="active"{% endif %}><a href="#">QUIÉNES SOMOS</a></li>
       <li {% if request.resolver_match.url_name == "beta-faq" %}class="active"{% endif %}><a href="#">FAQ</a></li>
     </ul>
+    {% if user.is_authenticated %}
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="{% url 'beta-home' %}">APP</a></li>
+    </ul>
+    {% else %}
     <ul class="nav navbar-nav navbar-right">
       <li {% if request.resolver_match.url_name == "beta-register" %}class="active"{% endif %}><a href="{% url 'beta-register' %}">Registrar</a></li>
       <li {% if request.resolver_match.url_name == "beta-login" %}class="active"{% endif %}><a href="{% url 'beta-login' %}">Login</a></li>
     </ul>
+    {% endif %}
   </div><!-- /.navbar-collapse -->
   </div>
 </nav>

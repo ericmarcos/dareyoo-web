@@ -46,6 +46,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     (r'^avatar/', include('avatar.urls')),
-    url('', include('social.apps.django_app.urls', namespace='social'))
+    url('', include('social.apps.django_app.urls', namespace='social')),
+    url('', include('password_reset.urls')),
 )
 urlpatterns += staticfiles_urlpatterns()

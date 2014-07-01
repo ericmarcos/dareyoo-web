@@ -13,9 +13,9 @@
     <div class="row">
         <div class="col-md-3 col-md-offset-3 right-divider">
             <p>Iniciar sesión:</p><br>
-            {% for error in errors %}
-            <div class="alert alert-danger">{{error}}</div>
-            {% endfor %}
+            {% if form.errors %}
+            <div class="alert alert-danger">Email o password incorrectos</div>
+            {% endif %}
 
             <form method="post" role="form" name="LoginForm" action="{% url 'django.contrib.auth.views.login' %}">
             {% csrf_token %}
@@ -40,7 +40,7 @@
     </div>
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
-            <!-- <p><br><br><a href="/recover-password">Olvidaste tu password?</a></p> -->
+            <p><br><br><a href="{% url 'password_reset_recover' %}">Olvidaste tu password?</a></p>
             <p><br>¿Aún no has creado una cuenta? <a href="{% url 'beta-register' %}">Regístrate aquí</a>.</p>
         </div>
     </div>

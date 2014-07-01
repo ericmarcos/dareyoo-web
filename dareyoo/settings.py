@@ -66,6 +66,7 @@ INSTALLED_APPS = (
     'gamification',
     #'alpha',
     'beta',
+    'password_reset',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -284,3 +285,4 @@ MANDRILL_API_KEY = os.environ.get('MANDRILL_APIKEY')
 EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
 
 DEFAULT_FROM_ADDR = 'no-reply@dareyoo.com'
+DEFAULT_FROM_EMAIL = 'no-reply@dareyoo.com'

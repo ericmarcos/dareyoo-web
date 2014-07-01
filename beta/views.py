@@ -56,7 +56,8 @@ def register_view(request):
                 login(request, user)
                 return HttpResponseRedirect(reverse('beta-home') + '/edit-profile?new')
         return render_to_response('beta-register.html', context_instance=RequestContext(request, context))
- 
+
+
 def app(request):
     context = {'fb_key': settings.SOCIAL_AUTH_FACEBOOK_KEY}
     #Setting 'from' session, to measure virality

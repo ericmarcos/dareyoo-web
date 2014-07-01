@@ -1,0 +1,21 @@
+{% extends "beta-base.html" %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/landing.all.min.css">
+<style type="text/css">
+    html, body { height: 100%; }
+</style>
+{% endblock %}
+
+{% block content %}
+{{ block.super }}
+<div class="vertical-center text-center">
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <h3>El email se ha enviado correctamente. Haz click en el link para recuperar tu password.</h3>
+        </div>
+    </div>
+</div>
+{% endblock %}

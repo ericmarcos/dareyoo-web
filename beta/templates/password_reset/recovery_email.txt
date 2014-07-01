@@ -1,0 +1,13 @@
+Hola {{ username }},
+
+Hemos recibido una solicitud de recuperación de password para {{ domain }}.
+
+Puedes restablecer tu password en el siguiente link:
+
+http{% if secure %}s{% endif %}://{{ site.domain }}{% url "password_reset_reset" token %}
+
+Si no quieres cambiar tu password, simplemente ignora este email.
+
+Gracias,
+
+El equipo de Dareyoo
