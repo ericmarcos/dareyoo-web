@@ -5,7 +5,7 @@
                 <div class="tournament-dates" ng-if="getStartDate()">Del [[getStartDate()]]<br>al [[getEndDate()]]</div>
                 <div class="tournament-title" ng-if="!tournament.title">Clasificación Global</div>
                 <div class="tournament-title" ng-if="tournament.title">[[tournament.title]]</div>
-                <div class="tournament-img" ng-if="!tournament.pic"><img class="img-rounded" ng-src="[[$root.config.static_url + '/tournaments/global.jpg']]"></div>
+                <div class="tournament-img" ng-if="!tournament.pic"><img class="img-rounded" ng-src="[[$root.config.static_url + 'tournaments/global.jpg']]"></div>
                 <div class="tournament-img" ng-if="tournament.pic"><img class="img-rounded" ng-src="[[tournament.pic]]"></div>
                 <div class="tournament-desc" ng-if="!tournament.description">
                     
