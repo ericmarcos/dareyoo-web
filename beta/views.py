@@ -66,7 +66,7 @@ def app(request):
         bet = Bet.objects.get(id=r.group('id'))
         request.session['from'] = bet.author_id
         fb_useragent = "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)"
-        if fb_useragent in request.meta['HTTP_USER_AGENT']:
+        if fb_useragent in request.META['HTTP_USER_AGENT']:
             context['bet'] = bet
             return render_to_response('beta-app-bet-fb.html', context_instance=RequestContext(request, context)) 
     return render_to_response('beta-app.html', context_instance=RequestContext(request, context))
