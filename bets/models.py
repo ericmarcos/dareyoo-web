@@ -520,7 +520,7 @@ class Bet(models.Model):
                     raise BetException("Invalid claim")
             if self.is_lottery():
                 if claim == None and self.bids.filter(id=claim_lottery_winner).exists():
-                    self.refree_lottery_winner_id = int(claim_lottery_winner)
+                    self.referee_lottery_winner_id = int(claim_lottery_winner)
                 elif claim == Bet.CLAIM_NULL:
                     self.referee_claim = Bet.CLAIM_NULL
                 else:
