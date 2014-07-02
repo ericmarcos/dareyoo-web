@@ -118,7 +118,7 @@ angular.module('dareyoo.controllers', []).
     $scope.friends_list = [];
     $scope.search_friends = function(provider) {
       $scope.provider = provider;
-      var url = "/api/v1/search-dareyoo-suggested/";
+      var url = "/api/v1/search-dareyoo-suggested/?description=true";
       if(provider == 'facebook')
         url = "/api/v1/search-facebook-friends/";
       $http.get(url).success(function(response) {

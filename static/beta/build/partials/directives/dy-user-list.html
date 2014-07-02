@@ -1,11 +1,12 @@
 <div class="row user-list-row" ng-repeat="user in users">
-    <div class="col-xs-4">
+    <div class="col-xs-3">
         <dy-user-pic-name user="user" size="'micro'" horizontal="true" badges="false"></dy-user-pic-name>
     </div>
-    <div class="col-xs-8">
-        <div class="pull-right">
+    <div class="col-xs-9">
+        <div class="pull-right" style="margin-left:28px">
             <button ng-if="user && user.id!=loggedInId && user.im_following" type="button" class="btn btn-default" ng-click="unfollowUser(user)">Dejar de seguir</button>
             <button ng-if="user && user.id!=loggedInId && !user.im_following" type="button" class="btn btn-default" ng-click="followUser(user)">Seguir</button>
         </div>
+        <span ng-if="user.description">[[user.description]]</span>
     </div>
 </div>

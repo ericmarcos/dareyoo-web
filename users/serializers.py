@@ -74,7 +74,13 @@ class DareyooUserShortSerializer(serializers.HyperlinkedModelSerializer):
         if user.is_authenticated() and user != obj:
             return obj.is_following(user.id)
         return False
+
+    def to_native(self, obj):
+        req = self.context.get('request')
+        if not req.QUERY_PARAMS.get('description'):
+            self.fields.pop('description', None)
+        return super(DareyooUserShortSerializer, self).to_native(obj)
         
     class Meta:
         model = DareyooUser
-        fields = ('id', 'url', 'username', 'pic', 'im_following', 'following_me')
+        fields = ('id', 'url', 'username', 'pic', 'im_following', 'following_me', 'description')
