@@ -204,17 +204,27 @@ angular.module('dareyoo.controllers', []).
   }]).
   controller('TimelineCtrl', ['$scope', '$http', '$location', '$filter', function($scope, $http, $location, $filter) {
     $scope.bets = [];
-    $scope.more_bets_link = "";
+    $scope.more_bets_link = null;
     $scope.order_by = "-created_at";
     $scope.getTimeline = function(order) {
       $scope.order_by = order || $scope.order_by;
       $http.get("/api/v1/timeline/", {'params': {'order': $scope.order_by}}).success(function(response) {
-        if(response.results) $scope.bets = response.results;
+        if(response.results) {
+          $scope.bets = response.results;
+          $scope.more_bets_link = response.next;
+        }
         else $scope.bets = response;
         $scope.loaded = true;
       });
     }
-
+    $scope.moreBets = function() {
+      $http.get($scope.more_bets_link).success(function(response) {
+        if(response.results) {
+          $scope.bets.push.apply($scope.bets, response.results);
+          $scope.more_bets_link = response.next;
+        }
+      });
+    }
     $scope.getTimeline();
   }]).
   controller('TimelineGlobalCtrl', ['$scope', '$http', '$location', '$filter', function($scope, $http, $location, $filter) {

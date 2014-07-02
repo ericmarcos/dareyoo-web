@@ -18,6 +18,9 @@
     </div>
     <div ng-show="loaded && bets.length > 0" class="bets-list">
         <dy-bet-list-item ng-repeat="bet in bets" bet="bet"></dy-bet-list-item>
+        <div ng-show="more_bets_link" class="more-bets">
+            <button type="button" class="btn btn-primary btn-block" ng-click="moreBets()">Cargar más apuestas...</button>
+        </div>
     </div>
     <div ng-show="bets.length == 0" class="empty-bets-list">
         <p>No hay apuestas disponibles. Anímate a crear una o <a href="" ui-sref="who-to-follow">encuentra a más usuarios</a> para seguir.</p>
