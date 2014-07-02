@@ -2,6 +2,13 @@
 <html>
 <head>
     <title>{{bet.title}}</title>
+    <meta property="og:title" content="{{bet.title}}" />
+    <meta property="og:site_name" content="Dareyoo"/>
+    <meta property="og:description" content="Dareyoo es una plataforma de apuestas social y gratuita, donde los jugadores crean y resuelven libremente sus apuestas o porras. Los usuarios compiten con una moneda virtual, el Yoo, y obtienen premios según se posicionen en los ránkings. En Dareyoo convergen las apuestas tradicionales, las redes sociales y la gamificación." />
+    <meta property="og:image" content="{{ STATIC_URL }}tournaments/global.jpg" />
+    <meta property="fb:app_id" content="{{fb_id}}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:locale" content="es_ES" />
 </head>
 <body>
     <h1>{{bet.title}}</h1>
