@@ -17,10 +17,10 @@
             <form method="post" role="form" action="{{ url }}">
                 {% csrf_token %}
                 <div class="form-group">
-                    <label for="id_username_or_email">Introduce tu email o username y te enviaremos un link para resetear tu password:</label>
-                    <input id="id_username_or_email" name="username_or_email" type="text" placeholder="email o username" class="form-control"/>
+                    <label for="id_username_or_email">Introduce tu email y te enviaremos un link para resetear tu password:</label>
+                    <input id="id_username_or_email" name="username_or_email" type="text" placeholder="email" class="form-control"/>
                     {% if form.errors %}
-                    <div class="alert alert-danger">No hemos encontrado este email o nombre de usuario.</div>
+                    <div class="alert alert-danger">No hemos encontrado este email.</div>
                     {% endif %}
                 </div>
                 <button type="submit" class="btn btn-primary">Recuperar password</button>
