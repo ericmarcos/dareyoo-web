@@ -1,7 +1,4 @@
-{% if username %}Estimado {{ username }},
-{% else %}
-Hola,
-{% endif %}
+{% if username %}Hola {{ username }},{% else %}Hola,{% endif %}
 
 Gracias por elegir Dareyoo como tu plataforma de apuestas libre y social. Has dado el primer paso para cambiar las reglas del juego.
 

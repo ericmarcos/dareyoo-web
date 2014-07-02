@@ -41,8 +41,8 @@ class BetFactory:
         b = Bet(bet_type=Bet.TYPE_SIMPLE,
                 title=kwargs.get('title', ""),
                 description=kwargs.get('description', ""),
-                amount=int(kwargs.get('amount', 1)),
-                odds=int(kwargs.get('odds', 2)),
+                amount=float(kwargs.get('amount', 1)),
+                odds=float(kwargs.get('odds', 2)),
                 bidding_deadline=kwargs.get('bidding_deadline', timezone.now() + datetime.timedelta(minutes=10)),
                 event_deadline=kwargs.get('event_deadline', timezone.now() + datetime.timedelta(minutes=30)),
                 public=kwargs.get('public', True))
@@ -474,10 +474,11 @@ class Bet(models.Model):
         if self.is_bidding():
             if self.is_lottery():
                 raise BetException("Can't accept bid: operation not permited for lotteries")
-            if not bid_id in [b.id for b in self.bids.all()]:
+            if not self.bids.filter(id=bid_id).exists():
                 raise BetException("Can't accept bid: invalid id")
             self.accepted_bid_id = bid_id
             if self.is_auction():
+                self.odds = float(self.amount + self.accepted_bid.amount) / self.amount
                 self.referee_escrow = self.referee_fees()
                 self.author.lock_funds(self.referee_escrow)
                 self.author.save()
