@@ -284,5 +284,5 @@ REST_FRAMEWORK = {
 MANDRILL_API_KEY = os.environ.get('MANDRILL_APIKEY')
 EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
 
-DEFAULT_FROM_ADDR = 'no-reply@dareyoo.com'
-DEFAULT_FROM_EMAIL = 'no-reply@dareyoo.com'
+DEFAULT_FROM_ADDR = 'Dareyoo <no-reply@dareyoo.com>'
+DEFAULT_FROM_EMAIL = 'Dareyoo <no-reply@dareyoo.com>'
