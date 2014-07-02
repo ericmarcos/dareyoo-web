@@ -7,6 +7,7 @@ var dareyooApp = angular.module('dareyoo', [
   'ngRoute',
   'ui.router',
   'ui.bootstrap',
+  'ui.keypress',
   'timeRelative',
   'dareyoo.services',
   'dareyoo.controllers',

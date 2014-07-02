@@ -38,7 +38,7 @@
         </ul>
         <div class="navbar-form navbar-left" role="search" ng-controller="SearchCtrl">
           <div class="form-group">
-            <input id="search" type="text" class="form-control" placeholder="Buscar..." ng-model="q.query" ng-click="onSearchEnter()">
+            <input id="search" type="text" class="form-control" placeholder="Buscar..." ng-model="q.query" ui-keypress="{13:'onSearchEnter($event)'}">
           </div>
           <button type="button" class="btn btn-default" ng-click="search()"><span class="glyphicon glyphicon-search"></span></button>
         </div>

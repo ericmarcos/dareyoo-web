@@ -20,10 +20,10 @@
                 <h3>Hola, <strong>{{ username }}</strong>. Por favor, introduce tu nuevo password</h3>
                 <form method="post" action="{% url "password_reset_reset" token %}">
                     {% csrf_token %}
-                    <label for="id_password1">Nevo password:</label>
-                    <input id="id_password1" name="id_password1" type="password" class="form-control"/>
-                    <label for="id_password2">Nevo password (confirmar):</label>
-                    <input id="id_password2" name="id_password2" type="password" class="form-control"/>
+                    <label for="id_password1">Nuevo password:</label>
+                    <input id="id_password1" name="password1" type="password" class="form-control"/>
+                    <label for="id_password2">Nuevo password (confirmar):</label>
+                    <input id="id_password2" name="password2" type="password" class="form-control"/>
                     {% if form.errors %}
                     <div class="alert alert-danger">Los passwords introducidos no coinciden.</div>
                     {% endif %}
