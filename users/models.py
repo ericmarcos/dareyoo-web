@@ -153,7 +153,7 @@ class DareyooUser(AbstractEmailUser):
     def send_welcome_email(self):
         if self.email:
             kwargs = {
-                'from_addr': "josep@dareyoo.com",
+                'from_addr': settings.DEFAULT_FROM_EMAIL,
                 'to_addr': self.email,
                 'subject_template': "email/signup/subject.txt",
                 'text_body_template': "email/signup/body.txt",
