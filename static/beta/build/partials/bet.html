@@ -23,7 +23,8 @@
         <h4 class="modal-title">Registrate ahora, es gratis!</h4>
       </div>
       <div class="modal-body">
-        <p id="message">Necesitas ser usuario de Dareyoo para poder participar en ésta apuesta.<br><strong><a href="/register">Regístrate aquí</a></strong> y en menos de un minuto ya podrás divertirte apostando con tus amigos.</p>
+        <p ng-show="public_bet" id="message">Necesitas ser usuario de Dareyoo para poder participar en ésta apuesta.<br><strong><a href="/register">Regístrate aquí</a></strong> y en menos de un minuto ya podrás divertirte apostando con tus amigos.</p>
+        <p ng-hide="public_bet" id="message">Ésta es una apuesta privada, necesitas ser usuario de Dareyoo para poder poder verla.<br><strong><a href="/register">Regístrate aquí</a></strong> y en menos de un minuto ya podrás divertirte apostando con tus amigos.</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>

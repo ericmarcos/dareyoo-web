@@ -401,6 +401,7 @@ angular.module('dareyoo.controllers', []).
     $scope.getBets($stateParams.userId, {'all':true});
   }])
   .controller('BetCtrl', ['$scope', '$http', '$stateParams', function($scope, $http, $stateParams) {
+    $scope.public_bet = true;
     $scope.loaded = false;
     $scope.bidTitle = "";
     $scope.bidAmount = 10;
@@ -420,6 +421,10 @@ angular.module('dareyoo.controllers', []).
 
     $scope.betAPIError = function(response, status, headers, config) {
       if(response && response['detail'] == "Authentication credentials were not provided.") {
+        $scope.public_bet = true;
+        $('#register-modal').modal('show');
+      } else if(response && response['detail'] == "Not found") {
+        $scope.public_bet = false;
         $('#register-modal').modal('show');
       } else {
         $('#bet-fail-message').text(JSON.stringify(response));
