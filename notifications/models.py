@@ -232,7 +232,7 @@ class Notification(models.Model):
             elif self.user:
                 link = 'http://www.dareyoo.com/app/profile/%s/bets' % self.user.id
             kwargs = {
-                'from_addr': "no-reply@dareyoo.com",
+                'from_addr': settings.DEFAULT_FROM_EMAIL,
                 'to_addr': self.recipient.email,
                 'subject_template': "email/notification/subject.txt",
                 'text_body_template': "email/notification/body.txt",
