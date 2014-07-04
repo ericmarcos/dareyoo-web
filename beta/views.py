@@ -4,7 +4,7 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.http import *
-from django.shortcuts import render_to_response,redirect
+from django.shortcuts import render_to_response,redirect, get_object_or_404
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
@@ -63,7 +63,7 @@ def app(request):
     #Setting 'from' session, to measure virality
     r = re.search(r'bet/(?P<id>\d*)', request.path)
     if r:
-        bet = Bet.objects.get(id=r.group('id'))
+        bet = get_object_or_404(Bet, r.group('id'))
         request.session['from'] = bet.author_id
         fb_useragent = "facebookexternalhit"
         if fb_useragent in request.META['HTTP_USER_AGENT']:
