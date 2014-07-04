@@ -298,7 +298,7 @@ class UserBadges(models.Model):
             UserBadges.check_week_points(user)
             UserBadges.check_loser(user)
             UserBadges.check_straight_wins(user)
-            if user in bet.winners():
+            if user in (bet.winners() or []):
                 user.badges.precal_total_wins += 1
                 user.badges.save()
             UserBadges.check_total_wins(user)
