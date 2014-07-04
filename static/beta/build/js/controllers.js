@@ -424,7 +424,7 @@ angular.module('dareyoo.controllers', []).
       if(response && response['detail'] == "Authentication credentials were not provided.") {
         $scope.public_bet = true;
         $('#register-modal').modal('show');
-      } else if(response && response['detail'] == "Not found") {
+      } else if(response && response['detail'] == "Not found" && !$scope.$root.user) {
         $scope.public_bet = false;
         $('#register-modal').modal('show');
       } else {
