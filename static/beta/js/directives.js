@@ -8,6 +8,7 @@ angular.module('dareyoo.directives', [])
   .directive('dyBetListItem', ['config', function(config) {
     return {
       restrict: 'E',
+      transclude: true,
       scope: {
         bet: '='
       },

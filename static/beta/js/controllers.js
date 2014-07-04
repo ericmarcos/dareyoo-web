@@ -225,13 +225,6 @@ angular.module('dareyoo.controllers', []).
         }
       });
     };
-    $scope.against = function(bet) {
-      if(bet) {
-        return Math.round(bet.amount*bet.odds - bet.amount);
-      } else {
-        return 0;
-      }
-    };
     $scope.getTimeline();
   }]).
   controller('TimelineGlobalCtrl', ['$scope', '$http', '$location', '$filter', function($scope, $http, $location, $filter) {
@@ -257,13 +250,6 @@ angular.module('dareyoo.controllers', []).
         }
       });
     };
-    $scope.against = function(bet) {
-      if(bet) {
-        return Math.round(bet.amount*bet.odds - bet.amount);
-      } else {
-        return 0;
-      }
-    };
     $scope.getTimeline();
   }]).
   controller('TimelineConflictsCtrl', ['$scope', '$http', '$location', '$filter', function($scope, $http, $location, $filter) {
@@ -278,13 +264,6 @@ angular.module('dareyoo.controllers', []).
         else $scope.bets = response;
         $scope.loaded = true;
       });
-    };
-    $scope.against = function(bet) {
-      if(bet) {
-        return Math.round(bet.amount*bet.odds - bet.amount);
-      } else {
-        return 0;
-      }
     };
 
     $scope.getTimeline();
@@ -301,13 +280,6 @@ angular.module('dareyoo.controllers', []).
         //$('#search').val('');
       }
     };
-    $scope.against = function(bet) {
-      if(bet) {
-        return Math.round(bet.amount*bet.odds - bet.amount);
-      } else {
-        return 0;
-      }
-    };
   }]).
   controller('TimelineSearchCtrl', ['$scope', '$rootScope', '$http', '$location', '$filter', function($scope, $rootScope, $http, $location, $filter) {
     $scope.bets = [];
@@ -320,13 +292,6 @@ angular.module('dareyoo.controllers', []).
         else $scope.bets = response;
         $scope.loaded = true;
       });
-    };
-    $scope.against = function(bet) {
-      if(bet) {
-        return Math.round(bet.amount*bet.odds - bet.amount);
-      } else {
-        return 0;
-      }
     };
 
     $scope.getTimeline();
@@ -344,13 +309,7 @@ angular.module('dareyoo.controllers', []).
         $scope.loaded = true;
       });
     };
-    $scope.against = function(bet) {
-      if(bet) {
-        return Math.round(bet.amount*bet.odds - bet.amount);
-      } else {
-        return 0;
-      }
-    };
+
     $scope.getOpenBets();
   }])
   .controller('UserCtrl', ['$scope', '$rootScope', '$http', '$stateParams', 'config', function($scope, $rootScope, $http, $stateParams, config) {
@@ -453,14 +412,6 @@ angular.module('dareyoo.controllers', []).
     $scope.current_bid_result = "";
     $scope.current_bid_participants = [];
 
-    $scope.against = function() {
-      if($scope.bet) {
-        return Math.round($scope.bet.amount*$scope.bet.odds - $scope.bet.amount);
-      } else {
-        return 0;
-      }
-    }
-
     $scope.betWinner = function() {
       if($scope.bet.bet_type == 3) {
         if($scope.bet.referee_claim == 3)
@@ -468,7 +419,7 @@ angular.module('dareyoo.controllers', []).
         return $scope.bet.referee_lottery_winner || $scope.bet.claim_lottery_winner;
       }
       return $scope.bet.referee_claim || $scope.bet.claim;
-    }
+    };
 
     $scope.betAPIError = function(response, status, headers, config) {
       if(response && response['detail'] == "Authentication credentials were not provided.") {
