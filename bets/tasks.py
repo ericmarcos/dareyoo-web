@@ -23,7 +23,10 @@ def resolving_deadline(bet_id=None, **kwargs):
     b = Bet.objects.get(pk=bet_id)
     if b.is_resolving():
         if not b.claim:
-            b.claim = Bet.CLAIM_LOST
+            if b.is_lottery():
+                b.claim = Bet.CLAIM_NULL
+            else:
+                b.claim = Bet.CLAIM_LOST
         b.complaining()
 
 @shared_task(name='complaining_deadline')
