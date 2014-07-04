@@ -63,7 +63,7 @@ def app(request):
     #Setting 'from' session, to measure virality
     r = re.search(r'bet/(?P<id>\d*)', request.path)
     if r:
-        bet = get_object_or_404(Bet, r.group('id'))
+        bet = get_object_or_404(Bet, id=r.group('id'))
         request.session['from'] = bet.author_id
         fb_useragent = "facebookexternalhit"
         if fb_useragent in request.META['HTTP_USER_AGENT']:
