@@ -63,11 +63,12 @@ def app(request):
     #Setting 'from' session, to measure virality
     r = re.search(r'bet/(?P<id>\d*)', request.path)
     if r:
-        bet = get_object_or_404(Bet, id=r.group('id'))
-        request.session['from'] = bet.author_id
+        b = Bet.objects.filter(id=r.group('id'))
+        if len(b) > 0: 
+            request.session['from'] = b[0].author_id
         fb_useragent = "facebookexternalhit"
         if fb_useragent in request.META['HTTP_USER_AGENT']:
-            context['bet'] = bet
+            context['bet'] = b[0] if len(b) > 0 else Bet()
             context['fb_id'] = settings.SOCIAL_AUTH_FACEBOOK_KEY
             return render_to_response('beta-app-bet-fb.html', context_instance=RequestContext(request, context)) 
     return render_to_response('beta-app.html', context_instance=RequestContext(request, context))
