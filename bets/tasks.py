@@ -30,7 +30,7 @@ def resolving_deadline(bet_id=None, **kwargs):
 def complaining_deadline(bet_id=None, **kwargs):
     b = Bet.objects.get(pk=bet_id)
     if b.is_complaining():
-        if not b.accepted_bid.claim:
+        if Bid.objects.filter(bet=b, claim__isnull=False).count() == 0:
             b.closed_ok()
         else:
             b.arbitrating()

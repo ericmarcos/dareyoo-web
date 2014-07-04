@@ -401,6 +401,7 @@ angular.module('dareyoo.controllers', []).
     $scope.getBets($stateParams.userId, {'all':true});
   }])
   .controller('BetCtrl', ['$scope', '$http', '$stateParams', function($scope, $http, $stateParams) {
+    $scope.bet = false;
     $scope.public_bet = true;
     $scope.loaded = false;
     $scope.bidTitle = "";

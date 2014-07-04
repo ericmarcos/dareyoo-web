@@ -50,7 +50,8 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<div class="bet-detail">
+<div ng-hide="bet" class="text-center"><h4>Apuesta no encontrada</h4></div>
+<div ng-show="bet" class="bet-detail">
     <div class="bet-header" ng-class="{'basic-bg': bet.bet_type == 1, 'auction-bg': bet.bet_type == 2, 'lottery-bg': bet.bet_type == 3}">
         <p ng-if="bet.bet_type == 1">Apuesta básica</p>
         <p ng-if="bet.bet_type == 2">Subasta</p>
