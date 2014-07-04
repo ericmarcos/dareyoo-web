@@ -69,7 +69,7 @@
                     </span></h4>
                 </div>
                 <p class="bet-title">[[bet.title]]</p>
-                <p ng-if="bet.bet_type==1 && !bet.accepted_bid" class="bet-title-basic">Por [[bet.amount]]Y contra [[bet.amount*bet.odds - bet.amount]]Y</p>
+                <p ng-if="bet.bet_type==1 && !bet.accepted_bid" class="bet-title-basic">Por [[bet.amount]]Y contra [[against()]]Y</p>
                 <p ng-if="bet.bet_type==1 && bet.accepted_bid" class="bet-title-basic">Por [[bet.amount]]Y</p>
                 <p ng-if="bet.bet_type==2" class="bet-title-auction">Por [[bet.amount]]Y</p>
                 <p ng-if="bet.bet_type==3" class="bet-title-lottery">[[bet.amount]]Y por barba</p>
@@ -249,7 +249,7 @@
         </div>
         <div class="row-small" ng-if="bet.bet_state=='bidding' && bet.bet_type==1 && user.id != bet.author.id">
             <div class="col-small-12">
-                <button type="button" class="btn btn-primary btn-lg btn-block bet-btn" ng-click="acceptBet()">Apostar en contra por [[bet.amount*bet.odds - bet.amount]] Yoos!</button>
+                <button type="button" class="btn btn-primary btn-lg btn-block bet-btn" ng-click="acceptBet()">Apostar en contra por [[against()]] Yoos!</button>
             </div>
         </div>
         <div class="row-small" ng-show="bet.bet_state=='bidding' && bet.bet_type==2 && bet.author.id != user.id && !dialogs.bid">

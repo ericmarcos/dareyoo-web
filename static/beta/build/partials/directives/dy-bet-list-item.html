@@ -7,7 +7,7 @@
     </div>
     <div class="right">
         <p class="bet-title"><a ui-sref="main.bet({betId:bet.id})">[[bet.title]]</a></p>
-        <p ng-if="bet.bet_type==1" class="bet-title-basic">Por [[bet.amount]]Y contra [[bet.amount*bet.odds - bet.amount]]Y</p>
+        <p ng-if="bet.bet_type==1" class="bet-title-basic">Por [[bet.amount]]Y contra [[against(bet)]]Y</p>
         <p ng-if="bet.bet_type==2" class="bet-title-auction">Por [[bet.amount]]Y</p>
         <p ng-if="bet.bet_type==3" class="bet-title-lottery">[[bet.amount]]Y por barba</p>
     </div>

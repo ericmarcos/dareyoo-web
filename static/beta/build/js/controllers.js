@@ -216,7 +216,7 @@ angular.module('dareyoo.controllers', []).
         else $scope.bets = response;
         $scope.loaded = true;
       });
-    }
+    };
     $scope.moreBets = function() {
       $http.get($scope.more_bets_link).success(function(response) {
         if(response.results) {
@@ -224,7 +224,14 @@ angular.module('dareyoo.controllers', []).
           $scope.more_bets_link = response.next;
         }
       });
-    }
+    };
+    $scope.against = function(bet) {
+      if(bet) {
+        return Math.round(bet.amount*bet.odds - bet.amount);
+      } else {
+        return 0;
+      }
+    };
     $scope.getTimeline();
   }]).
   controller('TimelineGlobalCtrl', ['$scope', '$http', '$location', '$filter', function($scope, $http, $location, $filter) {
@@ -241,7 +248,7 @@ angular.module('dareyoo.controllers', []).
         else $scope.bets = response;
         $scope.loaded = true;
       });
-    }
+    };
     $scope.moreBets = function() {
       $http.get($scope.more_bets_link).success(function(response) {
         if(response.results) {
@@ -249,7 +256,14 @@ angular.module('dareyoo.controllers', []).
           $scope.more_bets_link = response.next;
         }
       });
-    }
+    };
+    $scope.against = function(bet) {
+      if(bet) {
+        return Math.round(bet.amount*bet.odds - bet.amount);
+      } else {
+        return 0;
+      }
+    };
     $scope.getTimeline();
   }]).
   controller('TimelineConflictsCtrl', ['$scope', '$http', '$location', '$filter', function($scope, $http, $location, $filter) {
@@ -264,7 +278,14 @@ angular.module('dareyoo.controllers', []).
         else $scope.bets = response;
         $scope.loaded = true;
       });
-    }
+    };
+    $scope.against = function(bet) {
+      if(bet) {
+        return Math.round(bet.amount*bet.odds - bet.amount);
+      } else {
+        return 0;
+      }
+    };
 
     $scope.getTimeline();
   }]).
@@ -280,6 +301,13 @@ angular.module('dareyoo.controllers', []).
         //$('#search').val('');
       }
     };
+    $scope.against = function(bet) {
+      if(bet) {
+        return Math.round(bet.amount*bet.odds - bet.amount);
+      } else {
+        return 0;
+      }
+    };
   }]).
   controller('TimelineSearchCtrl', ['$scope', '$rootScope', '$http', '$location', '$filter', function($scope, $rootScope, $http, $location, $filter) {
     $scope.bets = [];
@@ -292,7 +320,14 @@ angular.module('dareyoo.controllers', []).
         else $scope.bets = response;
         $scope.loaded = true;
       });
-    }
+    };
+    $scope.against = function(bet) {
+      if(bet) {
+        return Math.round(bet.amount*bet.odds - bet.amount);
+      } else {
+        return 0;
+      }
+    };
 
     $scope.getTimeline();
   }]).
@@ -308,6 +343,13 @@ angular.module('dareyoo.controllers', []).
         else $scope.bets = response;
         $scope.loaded = true;
       });
+    };
+    $scope.against = function(bet) {
+      if(bet) {
+        return Math.round(bet.amount*bet.odds - bet.amount);
+      } else {
+        return 0;
+      }
     };
     $scope.getOpenBets();
   }])
@@ -410,6 +452,14 @@ angular.module('dareyoo.controllers', []).
     $scope.claims = {resolvingClaim: '', complainingClaim: '', arbitratingClaim: ''};
     $scope.current_bid_result = "";
     $scope.current_bid_participants = [];
+
+    $scope.against = function() {
+      if($scope.bet) {
+        return Math.round($scope.bet.amount*$scope.bet.odds - $scope.bet.amount);
+      } else {
+        return 0;
+      }
+    }
 
     $scope.betWinner = function() {
       if($scope.bet.bet_type == 3) {
