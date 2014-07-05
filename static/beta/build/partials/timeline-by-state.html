@@ -21,7 +21,7 @@
       <dy-bet-list-item bet="bet"></dy-bet-list-item>
     </div>
   </div>
-  <div ng-show="bets.length == 0" class="empty-bets-list">
+  <div ng-show="bets.length == 0 && loaded" class="empty-bets-list">
       <p>No tienes apuestas abiertas en este momento.</p>
   </div>
   <div ng-hide="loaded" class="container-fluid text-center"><h4>Cargando...</h4><br><dy-loader></dy-loader></div>
