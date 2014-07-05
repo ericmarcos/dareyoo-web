@@ -1,18 +1,18 @@
 {% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+{% block html %}<html lang="es">{% endblock %}
 <head>
 {% block head %}
   {% block meta %}
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="" />
+  <meta name="description" content="Dareyoo es una plataforma de apuestas social y gratuita, donde los jugadores crean y resuelven libremente sus apuestas o porras. Los usuarios compiten con una moneda virtual, el Yoo, y obtienen premios según se posicionen en los ránkings. En Dareyoo convergen las apuestas tradicionales, las redes sociales y la gamificación." />
   <meta name="keywords" content="">
   <meta name="author" content="">
   <link rel="shortcut icon" href="">
   {% endblock %}
-  <title>{% block title %}Dareyoo (beta){% endblock %}</title>
+  {% block title %}<title>Dareyoo (beta)</title>{% endblock %}
   {% block css %}
   {% endblock %}
   {% block heapanalytics %}

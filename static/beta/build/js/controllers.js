@@ -117,6 +117,7 @@ angular.module('dareyoo.controllers', []).
     $scope.provider = '';
     $scope.friends_list = [];
     $scope.search_friends = function(provider) {
+      $scope.loaded = false;
       $scope.provider = provider;
       var url = "/api/v1/search-dareyoo-suggested/?description=true";
       if(provider == 'facebook')
@@ -124,6 +125,7 @@ angular.module('dareyoo.controllers', []).
       $http.get(url).success(function(response) {
         if(response.results) $scope.friends_list = response.results;
         else $scope.friends_list = response;
+        $scope.loaded = true;
       });
     };
     $scope.search_friends('dareyoo');
@@ -162,20 +164,16 @@ angular.module('dareyoo.controllers', []).
     $scope.tournament = {};
     $scope.leaderboard = {};
     $scope.global = $stateParams.tournamentId == 0;
+    $scope.loaded = false;
     $scope.getTournament = function(id) {
       $http.get("/api/v1/tournaments/" + id).success(function(response) {
         if(response.results) $scope.tournament = response.results;
         else $scope.tournament = response;
+        $scope.loaded = true;
       });
     };
     $scope.getLeaderboard = function(id) {
       $http.get("/api/v1/tournaments/" + id + "/leaderboard").success(function(response) {
-        if(response.results) $scope.leaderboard = response.results;
-        else $scope.leaderboard = response;
-      });
-    };
-    $scope.getGlobalRanking = function() {
-      $http.get("/api/v1/ranking").success(function(response) {
         if(response.results) $scope.leaderboard = response.results;
         else $scope.leaderboard = response;
       });
@@ -195,7 +193,6 @@ angular.module('dareyoo.controllers', []).
       return null;
     };
     if($scope.global) {
-      //$scope.getGlobalRanking();
       $scope.getLeaderboard(0);
     } else {
       $scope.getTournament($stateParams.tournamentId);
@@ -206,6 +203,7 @@ angular.module('dareyoo.controllers', []).
     $scope.bets = [];
     $scope.more_bets_link = null;
     $scope.order_by = "-created_at";
+    $scope.loaded = false;
     $scope.getTimeline = function(order) {
       $scope.order_by = order || $scope.order_by;
       $http.get("/api/v1/timeline/", {'params': {'order': $scope.order_by}}).success(function(response) {
@@ -231,6 +229,7 @@ angular.module('dareyoo.controllers', []).
     $scope.bets = [];
     $scope.more_bets_link = null;
     $scope.order_by = "-created_at";
+    $scope.loaded = false;
     $scope.getTimeline = function(order) {
       $scope.order_by = order || $scope.order_by;
       $http.get("/api/v1/timeline/", {'params': {'order': $scope.order_by, 'global': true}}).success(function(response) {
@@ -257,6 +256,7 @@ angular.module('dareyoo.controllers', []).
     $scope.more_bets_link = "";
     $scope.order_by = "complained_at";
     $scope.hide_order = true;
+    $scope.loaded = false;
     $scope.getTimeline = function(order) {
       $scope.order_by = order || $scope.order_by;
       $http.get("/api/v1/timeline/", {'params': {'order': $scope.order_by, 'global': true, 'state': 'arbitrating'}}).success(function(response) {
@@ -285,6 +285,7 @@ angular.module('dareyoo.controllers', []).
     $scope.bets = [];
     $scope.more_bets_link = "";
     $scope.order_by = "-created_at";
+    $scope.loaded = false;
     $scope.getTimeline = function(order) {
       $scope.order_by = order || $scope.order_by;
       $http.get("/api/v1/bets/search/", {'params': {'q': $rootScope.q.query}}).success(function(response) {
@@ -300,6 +301,7 @@ angular.module('dareyoo.controllers', []).
     $scope.bets = [];
     $scope.more_bets_link = "";
     $scope.order_by = "-created_at";
+    $scope.loaded = false;
 
     $scope.getOpenBets = function(order) {
       $scope.order_by = order || $scope.order_by;
@@ -317,10 +319,13 @@ angular.module('dareyoo.controllers', []).
     $scope.i_follow_profile_user = false;
     $scope.followers = [];
     $scope.following = [];
+    $scope.loaded = false;
 
     $scope.getUser = function(id) {
       $http.get("/api/v1/users/" + id).success(function(response) {
         $scope.profile_user = response;
+        $scope.$root.title = $scope.profile_user.username;
+        $scope.loaded = true;
       });
     };
     /*$scope.getNBets = function(id, params, callback) {
@@ -438,6 +443,7 @@ angular.module('dareyoo.controllers', []).
       $http.get("/api/v1/bets/" + id).success(function(response) {
         $scope.bet = response;
         $scope.loaded = true;
+        $scope.$root.title = $scope.bet.title;
         //$scope.bet.bet_state = "resolving";
         //$scope.bet.bet_type = 2;
         //$scope.bet.accepted_bid.author.id=2;

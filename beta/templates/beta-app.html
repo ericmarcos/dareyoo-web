@@ -1,6 +1,7 @@
 {% extends "beta-base.html" %}
 {% load i18n %}
-{% block title %}Dareyoo (beta){% endblock %}
+{% block html %}<html ng-app="dareyoo">{% endblock %}
+{% block title %}<title ng-bind="getTitle()">Dareyoo (beta)</title>{% endblock %}
 {% block css %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/dareyoo_app.all.min.css">
@@ -11,8 +12,6 @@
     
     </style>
 {% endblock %}
-
-{% block body %}<body ng-app="dareyoo">{% endblock %}
 
 {% block navbar %}
 <base href="/app/"></base>

@@ -18,6 +18,7 @@
             </tr> -->
             <p class="empty-list-msg" ng-if="friends_list.length == 0">No hemos podido encontrar usuarios</p>
             <dy-user-list users="friends_list" logged-in-id="user.id"></dy-user-list>
+            <div ng-hide="loaded" class="container-fluid text-center"><h4>Cargando...</h4><br><dy-loader></dy-loader></div>
             <div class="finish-btn">
                 <a type="button" ng-show="new_user" class="btn btn-default pull-right" ui-sref="main.timeline-global()">
                 Continuar <small><span class="glyphicon glyphicon-chevron-right"></span></small>

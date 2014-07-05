@@ -128,6 +128,7 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
     $rootScope.config = config;
+    $rootScope.title = null;
     $rootScope.user = null;
     $rootScope.followers = [];
     $rootScope.followers_names = [];
@@ -141,8 +142,15 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
       $("[id$=modal]").modal('hide');
       $('body').removeClass('modal-open');
       $('.modal-backdrop').remove();
-      console.log("reload!");
+      $rootScope.title = null;
     });
+
+    $rootScope.getTitle = function() {
+      if($rootScope.title)
+        return 'Dareyoo (beta) | ' + $rootScope.title;
+      else
+        return 'Dareyoo (beta)';
+    }
 
     $rootScope.getMe = function() {
       $http.get("/api/v1/me/").success(function(response) {
