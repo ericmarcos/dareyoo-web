@@ -135,6 +135,15 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
     $rootScope.notifications = [];
     $rootScope.q = {'query': ""};
 
+    //Removing all modals when navigating to a new page
+    $rootScope.$on('$stateChangeStart', 
+    function(event, toState, toParams, fromState, fromParams){ 
+      $("[id$=modal]").modal('hide');
+      $('body').removeClass('modal-open');
+      $('.modal-backdrop').remove();
+      console.log("reload!");
+    });
+
     $rootScope.getMe = function() {
       $http.get("/api/v1/me/").success(function(response) {
           $rootScope.user = response;
