@@ -232,7 +232,7 @@ class Notification(models.Model):
             elif self.user:
                 link = 'http://www.dareyoo.com/app/profile/%s/bets' % self.user.id
             if self. notification_type == Notification.TYPE_BET_RECEIVED:
-                link = str(link) + "utm_source=invite_email&utm_medium=email&utm_campaign=initial"
+                link = str(link) + "?utm_source=invite_email&utm_medium=email&utm_campaign=initial"
             kwargs = {
                 'from_addr': settings.DEFAULT_FROM_EMAIL,
                 'to_addr': self.recipient.email,
