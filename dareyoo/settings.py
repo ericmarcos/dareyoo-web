@@ -251,6 +251,7 @@ SOCIAL_AUTH_PIPELINE = (
     'users.pipelines.save_username',
     'users.pipelines.save_reference_user',
     'users.pipelines.save_registered',
+    'users.pipelines.save_campaign',
 )
 
 ### Haystack ###

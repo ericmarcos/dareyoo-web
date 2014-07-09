@@ -12,9 +12,22 @@ from users.models import DareyooUser
 from users.pipelines import *
 from bets.models import Bet
 
+def handle_campaign(request):
+    #utm_source=google&utm_medium=cpc&utm_campaign=inicial
+    source = request.GET.get('utm_source')
+    if source:
+        request.session['utm_source'] = source
+    medium = request.GET.get('utm_medium')
+    if source:
+        request.session['utm_medium'] = medium
+    campaign = request.GET.get('utm_campaign')
+    if source:
+        request.session['utm_campaign'] = campaign
+
 #TODO: check this for mobile auth:
 #https://groups.google.com/forum/#!topic/django-social-auth/zxOVzuQdlDQ
 def register_view(request):
+    handle_campaign(request)
     if request.user.is_authenticated():
         return HttpResponseRedirect(reverse('beta-home'))
     else:
@@ -50,6 +63,7 @@ def register_view(request):
                 save_username(**pipeline_params)
                 save_reference_user(**pipeline_params)
                 save_registered(**pipeline_params)
+                save_campaign(**pipeline_params)
                 #This is kind of a hack... but it works
                 #http://stackoverflow.com/questions/15192808/django-automatic-login-after-user-registration-1-4
                 user.backend = "django.contrib.auth.backends.ModelBackend"
@@ -59,6 +73,7 @@ def register_view(request):
 
 
 def app(request):
+    handle_campaign(request)
     context = {'fb_key': settings.SOCIAL_AUTH_FACEBOOK_KEY}
     #Setting 'from' session, to measure virality
     r = re.search(r'bet/(?P<id>\d*)', request.path)
@@ -74,4 +89,5 @@ def app(request):
     return render_to_response('beta-app.html', context_instance=RequestContext(request, context))
 
 def landing_view(request):
+    handle_campaign(request)
     return render_to_response('beta-landing.html', context_instance=RequestContext(request))

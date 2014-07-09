@@ -89,10 +89,10 @@ class NotificationFactory:
             n.recipient = bet.accepted_bid.author
             if bet.claim == Bet.CLAIM_WON:
                 n.notification_type = Notification.TYPE_BET_RESOLVING_FINISHED_AUTHOR_WON
-                n.subject = "%s ha declarado que ha perdido su apuesta \"%s\". Tienes 24h para reclamar." % (bet.author.username, bet.title)
+                n.subject = "%s ha declarado que ha ganado su apuesta \"%s\". Tienes 24h para reclamar." % (bet.author.username, bet.title)
             elif bet.claim == Bet.CLAIM_LOST:
                 n.notification_type = Notification.TYPE_BET_RESOLVING_FINISHED_AUTHOR_LOST
-                n.subject = "%s ha declarado que ha ganado su apuesta \"%s\". Tienes 24h para reclamar." % (bet.author.username, bet.title)
+                n.subject = "%s ha declarado que ha perdido su apuesta \"%s\". Tienes 24h para reclamar." % (bet.author.username, bet.title)
             elif bet.claim == Bet.CLAIM_NULL:
                 n.notification_type = Notification.TYPE_BET_RESOLVING_FINISHED_NULL
                 n.subject = "%s ha declarado que nadie ha ganado su apuesta \"%s\". Tienes 24h para reclamar." % (bet.author.username, bet.title)
@@ -231,6 +231,8 @@ class Notification(models.Model):
                 link = 'http://www.dareyoo.com/app/main/bet/%s' % self.bet.id
             elif self.user:
                 link = 'http://www.dareyoo.com/app/profile/%s/bets' % self.user.id
+            if self. notification_type == Notification.TYPE_BET_RECEIVED:
+                link = str(link) + "utm_source=invite_email&utm_medium=email&utm_campaign=initial"
             kwargs = {
                 'from_addr': settings.DEFAULT_FROM_EMAIL,
                 'to_addr': self.recipient.email,

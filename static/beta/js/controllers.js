@@ -176,6 +176,7 @@ angular.module('dareyoo.controllers', []).
       $http.get("/api/v1/tournaments/" + id + "/leaderboard").success(function(response) {
         if(response.results) $scope.leaderboard = response.results;
         else $scope.leaderboard = response;
+        $scope.loaded = true;
       });
     };
     $scope.getStartDate = function() {

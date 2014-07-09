@@ -72,6 +72,15 @@ def save_registered(strategy, user, response, details,
         user.registered = True
         user.save()
 
+def save_campaign(strategy, user, response, details,
+                    is_new=False, *args, **kwargs):
+    if not user.reference_campaign:
+        utm_source = kwargs['request'].session.get('utm_source')
+        utm_medium = kwargs['request'].session.get('utm_medium')
+        utm_campaign = kwargs['request'].session.get('utm_campaign')
+        user.reference_campaign = "%s_%s_%s" % (utm_source, utm_medium, utm_campaign)
+        user.save()
+
 #https://djangosnippets.org/snippets/690/
 import re
 from django.template.defaultfilters import slugify
