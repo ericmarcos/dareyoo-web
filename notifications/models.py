@@ -229,8 +229,10 @@ class Notification(models.Model):
         if self.recipient.email and self.recipient.email_notifications:
             if self.bet:
                 link = 'http://www.dareyoo.com/app/main/bet/%s' % self.bet.id
+                link_text = 'www.dareyoo.com/app/main/bet/%s' % self.bet.id
             elif self.user:
                 link = 'http://www.dareyoo.com/app/profile/%s/bets' % self.user.id
+                link_text = 'www.dareyoo.com/app/profile/%s/bets' % self.user.id
             if self. notification_type == Notification.TYPE_BET_RECEIVED:
                 link = str(link) + "?utm_source=invite_email&utm_medium=email&utm_campaign=initial"
             kwargs = {
@@ -242,7 +244,8 @@ class Notification(models.Model):
                 'template_data': {
                     'username': self.recipient.username,
                     'subject': self.subject,
-                    'link': link
+                    'link': link,
+                    'link_text': link_text
                 }
             }
             

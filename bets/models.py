@@ -328,7 +328,6 @@ class Bet(models.Model):
                         validate_email(invite)
                         user = DareyooUser(email=invite)
                         user.reference_user = self.author
-                        user.reference_campaign = 'direct'
                         user.save()
                         u = [user]
                     except ValidationError as e:
