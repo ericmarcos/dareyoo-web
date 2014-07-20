@@ -12,7 +12,11 @@ from django.utils.translation import ugettext_lazy as _
 from django.core import validators
 from django.db import models
 from django.conf import settings
+from datetime import timedelta
+from dateutil.relativedelta import relativedelta
+from django.utils import timezone
 from django.db import IntegrityError, transaction
+from django.db.models.query import QuerySet
 from celery.execute import send_task
 from custom_user.models import AbstractEmailUser
 from avatar.util import get_primary_avatar, force_bytes
@@ -33,7 +37,57 @@ REFILL_TYPE_CHOICES = (
     )
 
 
+class DareyooUserQuerySet(QuerySet):
+    def staff(self, is_staff=True):
+        return self.filter(is_staff=is_staff)
+
+    def registered(self, registered=True):
+        return self.filter(registered=registered)
+
+    def real(self):
+        return self.staff(False).registered()
+
+    def joined_day(self):
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        tomorrow = today + timedelta(hours=24)
+        return self.between(today, tomorrow)
+
+    def joined_week(self, prev_weeks=0):
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        monday = today + timedelta(days=-today.weekday(), weeks=-prev_weeks)
+        sunday = monday + timedelta(weeks=1) # this is actually next monday
+        return self.between(monday, sunday)
+
+    def joined_month(self, prev_months=0):
+        first = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        first = first + relativedelta(months=-prev_months)
+        last = first + relativedelta(months=1)
+        return self.between(first, last)
+
+    def joined_between(self, start, end):
+        return self.filter(date_joined__range=(start, end))
+
+
+class DareyooUserManager(models.Manager):
+    use_for_related_fields = True
+
+    def get_queryset(self):
+        return DareyooUserQuerySet(self.model, using=self._db)
+
+    def get_clean_queryset(self):
+        return DareyooUserQuerySet(self.model, using=self._db)
+
+    def real(self, user):
+        qs = self.get_clean_queryset()
+        return qs.real()
+
+    def n(self):
+        return self.real().count()
+
+
 class DareyooUser(AbstractEmailUser):
+    objects = DareyooUserManager()
+
     username = models.CharField(_('username'), max_length=30, blank=True, null=True,
         help_text=_('30 characters or fewer. Letters, numbers and '
                     '@/./+/-/_ characters'),

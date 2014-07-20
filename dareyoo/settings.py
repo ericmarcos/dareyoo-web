@@ -153,6 +153,9 @@ REFEREE_FEES_RATIO = 0.02
 LOTTERY_REFEREE_FEES = 6
 
 ######### CELERY SETUP ###########
+#sudo rabbitmq-server -detached
+
+
 BROKER_POOL_LIMIT = 3
 #BROKER_TRANSPORT = 'amqplib'
 #BROKER_CONNECTION_MAX_RETRIES = 0

@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from datetime import datetime, timedelta
 from django.conf import settings
+from django.utils import timezone
 from celery import shared_task
 from bets.models import *
 
@@ -27,6 +28,7 @@ def resolving_deadline(bet_id=None, **kwargs):
                 b.claim = Bet.CLAIM_NULL
             else:
                 b.claim = Bet.CLAIM_LOST
+            b.resolved_at = timezone.now()
         b.complaining()
 
 @shared_task(name='complaining_deadline')
