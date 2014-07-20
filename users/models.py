@@ -77,7 +77,7 @@ class DareyooUserManager(models.Manager):
     def get_clean_queryset(self):
         return DareyooUserQuerySet(self.model, using=self._db)
 
-    def real(self, user):
+    def real(self):
         qs = self.get_clean_queryset()
         return qs.real()
 
