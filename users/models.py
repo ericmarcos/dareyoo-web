@@ -17,6 +17,7 @@ from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 from django.db import IntegrityError, transaction
 from django.db.models.query import QuerySet
+from django.contrib.auth.models import UserManager
 from celery.execute import send_task
 from custom_user.models import AbstractEmailUser
 from avatar.util import get_primary_avatar, force_bytes
@@ -68,7 +69,7 @@ class DareyooUserQuerySet(QuerySet):
         return self.filter(date_joined__range=(start, end))
 
 
-class DareyooUserManager(models.Manager):
+class DareyooUserManager(UserManager):
     use_for_related_fields = True
 
     def get_queryset(self):
