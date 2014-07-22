@@ -48,6 +48,12 @@ class DareyooUserQuerySet(QuerySet):
     def real(self):
         return self.staff(False).registered()
 
+    def fb(self):
+        return self.filter(social_auth__provider='facebook')
+
+    def campaign(self, campaign):
+        return self.filter(reference_campaign__icontains=campaign)
+
     def joined_day(self):
         today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
         tomorrow = today + timedelta(hours=24)
@@ -67,6 +73,47 @@ class DareyooUserQuerySet(QuerySet):
 
     def joined_between(self, start, end):
         return self.filter(date_joined__range=(start, end))
+
+    def active_day(self):
+        '''Active users today'''
+        now = timezone.now()
+        today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        return self.active_range(today, now)
+
+    def active_week(self):
+        '''Active users this week'''
+        now = timezone.now()
+        today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        monday = today + timedelta(days=-today.weekday())
+        return self.active_range(monday, now)
+
+    def active_month(self):
+        '''Active users this month'''
+        now = timezone.now()
+        first = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        return self.active_range(first, now)
+
+    def active_range(self, start, end):
+        return self.filter(last_login__range=(start, end))
+
+    def one_day_wonders(self):
+        '''Users that only login the first day and never again'''
+        return self.filter(last_login__gte=F('date_joined'),
+                            last_login__lt=F('date_joined')+timedelta(days=1),
+                            date_joined__lt=timezone.now()+timedelta(days=-1))
+
+    def churn_week(self):
+        '''Users that didn't login during the last week'''
+        now = timezone.now()
+        today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        monday = today + timedelta(days=-today.weekday())
+        return self.filter(last_login__lt=monday)
+
+    def churn_month(self):
+        '''Users that didn't login during the last month'''
+        now = timezone.now()
+        first = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        return self.filter(last_login__lt=first)
 
 
 class DareyooUserManager(UserManager):
