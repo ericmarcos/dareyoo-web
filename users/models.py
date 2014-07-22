@@ -17,6 +17,7 @@ from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 from django.db import IntegrityError, transaction
 from django.db.models.query import QuerySet
+from django.db.models import Sum
 from django.contrib.auth.models import UserManager
 from celery.execute import send_task
 from custom_user.models import AbstractEmailUser
@@ -131,6 +132,15 @@ class DareyooUserManager(UserManager):
 
     def n(self):
         return self.real().count()
+
+    def total_coins_available(self):
+        return self.get_clean_queryset().aggregate(Sum('coins_available')).get('coins_available__sum', 0)
+
+    def total_coins_locked(self):
+        return self.get_clean_queryset().aggregate(Sum('coins_locked')).get('coins_locked__sum', 0)
+
+    def total_coins(self):
+        return self.total_coins_available() + self.total_coins_locked()
 
 
 class DareyooUser(AbstractEmailUser):
