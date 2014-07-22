@@ -17,7 +17,7 @@ from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 from django.db import IntegrityError, transaction
 from django.db.models.query import QuerySet
-from django.db.models import Sum
+from django.db.models import F, Sum
 from django.contrib.auth.models import UserManager
 from celery.execute import send_task
 from custom_user.models import AbstractEmailUser
