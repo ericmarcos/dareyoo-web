@@ -108,13 +108,15 @@ class DareyooUserQuerySet(QuerySet):
         now = timezone.now()
         today = now.replace(hour=0, minute=0, second=0, microsecond=0)
         monday = today + timedelta(days=-today.weekday())
-        return self.filter(last_login__lt=monday)
+        last_monday = today + timedelta(weeks=-1)
+        return self.active_range(last_monday, monday)
 
     def churn_month(self):
         '''Users that didn't login during the last month'''
         now = timezone.now()
         first = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        return self.filter(last_login__lt=first)
+        last_first = first + relativedelta(months=-1)
+        return self.active_range(last_first, first)
 
 
 class DareyooUserManager(UserManager):
