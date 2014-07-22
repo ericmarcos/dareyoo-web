@@ -64,6 +64,7 @@ INSTALLED_APPS = (
     'users',
     'notifications',
     'gamification',
+    'metrics',
     #'alpha',
     'beta',
     'password_reset',
@@ -229,6 +230,7 @@ AUTHENTICATION_BACKENDS = (
 #http://python-social-auth.readthedocs.org/en/latest/configuration/settings.html#urls-options
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/app/main/timeline-global'
 SOCIAL_AUTH_LOGIN_URL = '/login/'
+LOGIN_URL = '/login/'
 SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/app/edit-profile?new'
 SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/new-association-redirect-url/'
 SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/account-disconnected-redirect-url/'

@@ -38,6 +38,7 @@ v1_api.register(BidResource())
 '''
 urlpatterns = patterns('',
     url(r'^', include('beta.urls')),
+    url(r'^', include('metrics.urls')),
     #url(r'^alpha/', include('alpha.urls')),
     url(r'^api/v1/', include(extra_api_urls)),
     url(r'^api/v1/', include(router.urls)),

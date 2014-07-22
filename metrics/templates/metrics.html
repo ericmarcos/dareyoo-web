@@ -1,0 +1,23 @@
+{% extends "beta-base.html" %}
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/landing.all.min.css">
+<style type="text/css">
+    #metrics-container {
+        margin-top: 100px;
+    }
+</style>
+{% endblock %}
+{% block content %}
+{{ block.super }}
+<div id="metrics-container" class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Métriques Dareyoo</h1>
+            <p>Usuaris: <strong>{{ total_real_users }}</strong> <small>(+{{ total_fake_users }} usuaris fake = {{ total_users }} usuaris totals.)</small></p>
+            <p>Leads: <strong>{{ leads }}</strong> <small>(usuaris invitats que encara no s'han registrat)</small></p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
