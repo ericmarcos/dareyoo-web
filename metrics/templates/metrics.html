@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/landing.all.min.css">
 <style type="text/css">
     #metrics-container {
-        margin-top: 100px;
+        margin-top: 50px;
     }
 </style>
 {% endblock %}
@@ -14,8 +14,63 @@
     <div class="row">
         <div class="col-md-12">
             <h1>Métriques Dareyoo</h1>
-            <p>Usuaris: <strong>{{ total_real_users }}</strong> <small>(+{{ total_fake_users }} usuaris fake = {{ total_users }} usuaris totals.)</small></p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Totals</h2>
+            <h3>Usuaris</h3>
+            <p>Registres: <strong>{{ total_real_users }}</strong></p>
             <p>Leads: <strong>{{ leads }}</strong> <small>(usuaris invitats que encara no s'han registrat)</small></p>
+            <p>Fake: <strong>{{ total_fake_users }}</strong></p>
+            <p>TOTAL: <strong>{{ total_real_users|add:leads|add:total_fake_users }}</strong></p>
+            <h3>Apostes</h3>
+            <p>Creades: <strong>{{ total_bets }}</strong></p>
+            <ul>
+                <li>Bàsiques: <strong>{{ total_basic }} ({{ percent_basic }}%)</strong></li>
+                <li>Subastes: <strong>{{ total_auction }} ({{ percent_auction }}%)</strong></li>
+                <li>Porres: <strong>{{ total_lottery }} ({{ percent_lottery }}%)</strong></li>
+            </ul>
+            <p>Tancades: <strong>{{ total_closed_bets }} ({{ percent_closed_bets }}%)</strong> <small>(sobre el total d'apostes)</small></p>
+            <h3>Monedes</h3>
+            <p>Suma total: <strong>{{ total_coins }}</strong></p>
+            <ul>
+                <li>Disponibles: <strong>{{ total_coins_available }} ({{ percent_coins_available }}%)</strong></li>
+                <li>Bloquejades: <strong>{{ total_coins_locked }} ({{ percent_coins_locked }}%)</strong></li>
+            </ul>
+            <p>Per usuari: <strong>{{ coins_per_user }}</strong> <small>(l'usuari amb més monedes en té {{ max_coins_per_user }})</small></p>
+        </div>
+        <div class="col-md-6">
+            <h2>Periòdiques
+                <div class="btn-group pull-right">
+                  <a type="button" href="?range=day" class="btn btn-default{% if range == "day" %} active{% endif %}">Dia</a>
+                  <a type="button" href="?range=week" class="btn btn-default{% if range == "week" %} active{% endif %}">Setmana</a>
+                  <a type="button" href="?range=month" class="btn btn-default{% if range == "month" %} active{% endif %}">Mes</a>
+                </div>
+            </h2>
+            <h3>Usuaris</h3>
+            <p>Nous Registres: <strong>{{ new_real_users }}</strong></p>
+            <p>Nous Leads: <strong>{{ new_leads }}</strong></p>
+            <p>Usuaris actius: <strong>{{ active }} ({{ active_percent }}%)</strong> <small>(sobre els usuaris registrats)</small></p>
+            <p>Churn: <strong>{{ churn_n }} ({{ churn }}%)</strong>
+            {% if range == "week" %} <small>(usuaris que han deixat de ser actius aquesta setmana)</small>{% endif %}
+            {% if range == "month" %} <small>(usuaris que han deixat de ser actius aquest mes)</small>{% endif %}
+            </p>
+            <h3>Apostes</h3>
+            <p>Creades: <strong>{{ new_bets }}</strong></p>
+            <ul>
+                <li>Bàsiques: <strong>{{ new_basic }} ({{ new_percent_basic }}%)</strong></li>
+                <li>Subastes: <strong>{{ new_auction }} ({{ new_percent_auction }}%)</strong></li>
+                <li>Porres: <strong>{{ new_lottery }} ({{ new_percent_lottery }}%)</strong></li>
+            </ul>
+            <p>Tancades: <strong>{{ new_closed_bets }}</strong></p>
+            <h3>Monedes</h3>
+            <p>Total introduïdes: <strong>{{ new_coins }}</strong></p>
+            <ul>
+                <li>Gratuïtes: <strong>{{ new_free_coins }} ({{ percent_new_free_coins }}%)</strong></li>
+                <li>Pagament: <strong>{{ new_paying_coins }} ({{ percent_new_paying_coins }}%)</strong></li>
+            </ul>
+            <p>Total cremades: <strong>{{ burnt_coins }}</strong></p>
         </div>
     </div>
 </div>

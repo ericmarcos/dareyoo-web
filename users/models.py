@@ -283,7 +283,50 @@ class DareyooUser(AbstractEmailUser):
         return "%s - %s" % (self.email, self.username)
 
 
+class UserRefillQuerySet(QuerySet):
+    def created_day(self):
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        tomorrow = today + timedelta(hours=24)
+        return self.created_between(today, tomorrow)
+
+    def created_week(self, prev_weeks=0):
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        monday = today + timedelta(days=-today.weekday(), weeks=-prev_weeks)
+        sunday = monday + timedelta(weeks=1) # this is actually next monday
+        return self.created_between(monday, sunday)
+
+    def created_month(self, prev_months=0):
+        first = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        first = first + relativedelta(months=-prev_months)
+        last = first + relativedelta(months=1)
+        return self.created_between(first, last)
+
+    def created_between(self, start, end):
+        return self.filter(date__range=(start, end))
+
+    def free(self):
+        return self.filter(refill_type='free')
+
+    def paying(self):
+        return self.filter(refill_type='paying')
+
+    def sum(self):
+        return self.aggregate(Sum('amount')).get('amount__sum', 0) or 0
+
+
+class UserRefillManager(UserManager):
+    use_for_related_fields = True
+
+    def get_queryset(self):
+        return UserRefillQuerySet(self.model, using=self._db)
+
+    def get_clean_queryset(self):
+        return UserRefillQuerySet(self.model, using=self._db)
+
+
 class UserRefill(models.Model):
+    objects = UserRefillManager()
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='refills', blank=True, null=True)
     date = models.DateTimeField(auto_now_add=True, blank=True, null=True, editable=False)
     refill_type = models.CharField(max_length=63, blank=True, null=True, choices=REFILL_TYPE_CHOICES)

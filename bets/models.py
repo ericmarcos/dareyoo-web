@@ -1,6 +1,8 @@
 import math
 import datetime
 import warnings
+from datetime import timedelta
+from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 from django.db import models
 from django.conf import settings
@@ -167,6 +169,46 @@ class BetQuerySet(QuerySet):
 
     def search(self, query):
         return self.search_title(query) | self.search_description(query)
+
+    def created_between(self, start, end):
+        return self.filter(created_at__range=(start, end))
+
+    def created_day(self):
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        tomorrow = today + timedelta(hours=24)
+        return self.created_between(today, tomorrow)
+
+    def created_week(self, prev_weeks=0):
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        monday = today + timedelta(days=-today.weekday(), weeks=-prev_weeks)
+        sunday = monday + timedelta(weeks=1) # this is actually next monday
+        return self.created_between(monday, sunday)
+
+    def created_month(self, prev_months=0):
+        first = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        first = first + relativedelta(months=-prev_months)
+        last = first + relativedelta(months=1)
+        return self.created_between(first, last)
+
+    def finished_between(self, start, end):
+        return self.filter(finished_at__range=(start, end))
+
+    def finished_day(self):
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        tomorrow = today + timedelta(hours=24)
+        return self.finished_between(today, tomorrow)
+
+    def finished_week(self, prev_weeks=0):
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        monday = today + timedelta(days=-today.weekday(), weeks=-prev_weeks)
+        sunday = monday + timedelta(weeks=1) # this is actually next monday
+        return self.finished_between(monday, sunday)
+
+    def finished_month(self, prev_months=0):
+        first = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        first = first + relativedelta(months=-prev_months)
+        last = first + relativedelta(months=1)
+        return self.finished_between(first, last)
 
 
 class BetsManager(models.Manager):
