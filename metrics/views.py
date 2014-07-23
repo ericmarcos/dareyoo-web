@@ -44,7 +44,7 @@ def main(request):
     total_coins = total_coins_available + total_coins_locked
     percent_coins_available = int(round(float(total_coins_available) / total_coins * 100)) if total_coins > 0 else 0
     percent_coins_locked = int(round(float(total_coins_locked) / total_coins * 100)) if total_coins > 0 else 0
-    coins_per_user = int(round(float(total_coins) / n)) if n > 0 else 0
+    coins_per_user = int(round(float(DareyooUser.objects.real().sum_coins()) / n)) if n > 0 else 0
     max_coins_per_user = int(DareyooUser.objects.real().order_by('-coins_available')[0].coins_available)
     if rang == 'day':
         begin_date = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=-prev)
@@ -74,7 +74,7 @@ def main(request):
         new_basic = Bet.objects.all().created_week(prev).simple().count()
         new_auction = Bet.objects.all().created_week(prev).auction().count()
         new_lottery = Bet.objects.all().created_week(prev).lottery().count()
-        new_closed_bets = Bet.objects.all().finished_week().count()
+        new_closed_bets = Bet.objects.all().finished_week(prev).count()
         new_free_coins = int(UserRefill.objects.all().created_week(prev).free().sum())
         new_paying_coins = int(UserRefill.objects.all().created_week(prev).paying().sum())
     elif rang == 'month':

@@ -118,6 +118,15 @@ class DareyooUserQuerySet(QuerySet):
         last_first = first + relativedelta(months=-1)
         return self.active_range(last_first, first)
 
+    def sum_coins_available(self):
+        return self.aggregate(Sum('coins_available')).get('coins_available__sum', 0) or 0
+
+    def sum_coins_locked(self):
+        return self.aggregate(Sum('coins_locked')).get('coins_locked__sum', 0) or 0
+
+    def sum_coins(self):
+        return self.sum_coins_available() + self.sum_coins_locked()
+
 
 class DareyooUserManager(UserManager):
     use_for_related_fields = True
@@ -136,10 +145,10 @@ class DareyooUserManager(UserManager):
         return self.real().count()
 
     def total_coins_available(self):
-        return self.get_clean_queryset().aggregate(Sum('coins_available')).get('coins_available__sum', 0)
+        return self.get_clean_queryset().sum_coins_available()
 
     def total_coins_locked(self):
-        return self.get_clean_queryset().aggregate(Sum('coins_locked')).get('coins_locked__sum', 0)
+        return self.get_clean_queryset().sum_coins_locked()
 
     def total_coins(self):
         return self.total_coins_available() + self.total_coins_locked()
