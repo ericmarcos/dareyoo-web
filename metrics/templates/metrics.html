@@ -41,7 +41,7 @@
             <p>Per usuari: <strong>{{ coins_per_user }}</strong> <small>(l'usuari amb més monedes en té {{ max_coins_per_user }})</small></p>
         </div>
         <div class="col-md-6">
-            <h2>Periòdiques
+            <h2>Periòdiques<small> | <a href="?prev={{ prev }}">&lt;</a> {{ begin_date|date:"d/m/y"|lower }} - {{ end_date|date:"d/m/y"|lower }} <a href="?prev={{ next }}">&gt;</a></small>
                 <div class="btn-group pull-right">
                   <a type="button" href="?range=day" class="btn btn-default{% if range == "day" %} active{% endif %}">Dia</a>
                   <a type="button" href="?range=week" class="btn btn-default{% if range == "week" %} active{% endif %}">Setmana</a>
@@ -51,8 +51,8 @@
             <h3>Usuaris</h3>
             <p>Nous Registres: <strong>{{ new_real_users }}</strong></p>
             <p>Nous Leads: <strong>{{ new_leads }}</strong></p>
-            <p>Usuaris actius: <strong>{{ active }} ({{ active_percent }}%)</strong> <small>(sobre els usuaris registrats)</small></p>
-            <p>Churn: <strong>{{ churn_n }} ({{ churn }}%)</strong>
+            <p>Usuaris actius*: <strong>{{ active }} ({{ active_percent }}%)</strong> <small>(sobre els usuaris registrats)</small></p>
+            <p>Churn*: <strong>{{ churn_n }} ({{ churn }}%)</strong>
             {% if range == "week" %} <small>(usuaris que han deixat de ser actius aquesta setmana)</small>{% endif %}
             {% if range == "month" %} <small>(usuaris que han deixat de ser actius aquest mes)</small>{% endif %}
             </p>
@@ -71,6 +71,13 @@
                 <li>Pagament: <strong>{{ new_paying_coins }} ({{ percent_new_paying_coins }}%)</strong></li>
             </ul>
             <p>Total cremades: <strong>{{ burnt_coins }}</strong></p>
+        </div>
+    </div>
+    <div class="row" style="margin-top:30px;">
+        <div class="col-md-6">
+        </div>
+        <div class="col-md-6">
+            <p><small>* els usuaris actius i el churn només es calculen pel període actual</small></p>
         </div>
     </div>
 </div>

@@ -173,8 +173,8 @@ class BetQuerySet(QuerySet):
     def created_between(self, start, end):
         return self.filter(created_at__range=(start, end))
 
-    def created_day(self):
-        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    def created_day(self, prev_days=0):
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=-prev_days)
         tomorrow = today + timedelta(hours=24)
         return self.created_between(today, tomorrow)
 
@@ -193,8 +193,8 @@ class BetQuerySet(QuerySet):
     def finished_between(self, start, end):
         return self.filter(finished_at__range=(start, end))
 
-    def finished_day(self):
-        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    def finished_day(self, prev_days):
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=-prev_days)
         tomorrow = today + timedelta(hours=24)
         return self.finished_between(today, tomorrow)
 

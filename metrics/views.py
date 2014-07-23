@@ -3,6 +3,9 @@ from django.core.urlresolvers import reverse
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.conf import settings
+from datetime import timedelta
+from dateutil.relativedelta import relativedelta
+from django.utils import timezone
 from django.http import *
 from django.shortcuts import render_to_response,redirect, get_object_or_404
 from django.template import RequestContext
@@ -13,10 +16,20 @@ from bets.models import Bet
 
 @user_passes_test(lambda u: u.is_staff)
 def main(request):
+    if request.GET.get('range') and request.GET.get('range') in ['day', 'week', 'month']:
+        request.session['range'] = request.GET.get('range')
+        request.session['prev'] = 0
+    elif not request.session.get('range'):
+        request.session['range'] = 'day'
+    if request.GET.get('prev') and int(request.GET.get('prev')) >= 0:
+        request.session['prev'] = request.GET.get('prev')
+    elif not request.session.get('prev'):
+        request.session['prev'] = 0
     n = DareyooUser.objects.n()
     fake = DareyooUser.objects.all().staff().count()
     leads = DareyooUser.objects.all().registered(False).count()
-    rang = request.GET.get('range', 'day')
+    rang = request.session.get('range')
+    prev = int(request.session.get('prev'))
     total_bets = Bet.objects.all().count()
     total_basic = Bet.objects.all().simple().count()
     total_auction = Bet.objects.all().auction().count()
@@ -34,44 +47,51 @@ def main(request):
     coins_per_user = int(round(float(total_coins) / n * 100)) if n > 0 else 0
     max_coins_per_user = int(DareyooUser.objects.real().order_by('-coins_available')[0].coins_available)
     if rang == 'day':
-        new_real_users = DareyooUser.objects.real().joined_day().count()
-        new_leads = DareyooUser.objects.all().registered(False).joined_day().count()
+        begin_date = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=-prev)
+        end_date = timezone.now() if int(prev) == 0 else begin_date + timedelta(days=1)
+        new_real_users = DareyooUser.objects.real().joined_day(prev).count()
+        new_leads = DareyooUser.objects.all().registered(False).joined_day(prev).count()
         active = DareyooUser.objects.real().active_day().count()
         churn_n = '--'
         churn = '--'
-        new_bets = Bet.objects.all().created_day().count()
-        new_basic = Bet.objects.all().created_day().simple().count()
-        new_auction = Bet.objects.all().created_day().auction().count()
-        new_lottery = Bet.objects.all().created_day().lottery().count()
-        new_closed_bets = Bet.objects.all().finished_day().count()
-        new_free_coins = int(UserRefill.objects.all().created_day().free().sum())
-        new_paying_coins = int(UserRefill.objects.all().created_day().paying().sum())
+        new_bets = Bet.objects.all().created_day(prev).count()
+        new_basic = Bet.objects.all().created_day(prev).simple().count()
+        new_auction = Bet.objects.all().created_day(prev).auction().count()
+        new_lottery = Bet.objects.all().created_day(prev).lottery().count()
+        new_closed_bets = Bet.objects.all().finished_day(prev).count()
+        new_free_coins = int(UserRefill.objects.all().created_day(prev).free().sum())
+        new_paying_coins = int(UserRefill.objects.all().created_day(prev).paying().sum())
     elif rang == 'week':
-        new_real_users = DareyooUser.objects.real().joined_week().count()
-        new_leads = DareyooUser.objects.all().registered(False).joined_week().count()
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        begin_date = today + timedelta(days=-today.weekday() - 7*prev)
+        end_date = timezone.now() if int(prev) == 0 else begin_date + timedelta(weeks=1)
+        new_real_users = DareyooUser.objects.real().joined_week(prev).count()
+        new_leads = DareyooUser.objects.all().registered(False).joined_week(prev).count()
         active = DareyooUser.objects.real().active_week().count()
         churn_n = DareyooUser.objects.real().churn_week().count()
         churn = int(round(float(churn_n) / n * 100)) if n > 0 else 0
-        new_bets = Bet.objects.all().created_week().count()
-        new_basic = Bet.objects.all().created_week().simple().count()
-        new_auction = Bet.objects.all().created_week().auction().count()
-        new_lottery = Bet.objects.all().created_week().lottery().count()
+        new_bets = Bet.objects.all().created_week(prev).count()
+        new_basic = Bet.objects.all().created_week(prev).simple().count()
+        new_auction = Bet.objects.all().created_week(prev).auction().count()
+        new_lottery = Bet.objects.all().created_week(prev).lottery().count()
         new_closed_bets = Bet.objects.all().finished_week().count()
-        new_free_coins = int(UserRefill.objects.all().created_week().free().sum())
-        new_paying_coins = int(UserRefill.objects.all().created_week().paying().sum())
+        new_free_coins = int(UserRefill.objects.all().created_week(prev).free().sum())
+        new_paying_coins = int(UserRefill.objects.all().created_week(prev).paying().sum())
     elif rang == 'month':
-        new_real_users = DareyooUser.objects.real().joined_month().count()
-        new_leads = DareyooUser.objects.all().registered(False).joined_month().count()
+        begin_date = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0) + relativedelta(months=-prev)
+        end_date = timezone.now() if int(prev) == 0 else begin_date + relativedelta(months=1)
+        new_real_users = DareyooUser.objects.real().joined_month(prev).count()
+        new_leads = DareyooUser.objects.all().registered(False).joined_month(prev).count()
         active = DareyooUser.objects.real().active_month().count()
         churn_n = DareyooUser.objects.real().churn_month().count()
         churn = int(round(float(churn_n) / n * 100)) if n > 0 else 0
-        new_bets = Bet.objects.all().created_month().count()
-        new_basic = Bet.objects.all().created_month().simple().count()
-        new_auction = Bet.objects.all().created_month().auction().count()
-        new_lottery = Bet.objects.all().created_month().lottery().count()
-        new_closed_bets = Bet.objects.all().finished_month().count()
-        new_free_coins = int(UserRefill.objects.all().created_month().free().sum())
-        new_paying_coins = int(UserRefill.objects.all().created_month().paying().sum())
+        new_bets = Bet.objects.all().created_month(prev).count()
+        new_basic = Bet.objects.all().created_month(prev).simple().count()
+        new_auction = Bet.objects.all().created_month(prev).auction().count()
+        new_lottery = Bet.objects.all().created_month(prev).lottery().count()
+        new_closed_bets = Bet.objects.all().finished_month(prev).count()
+        new_free_coins = int(UserRefill.objects.all().created_month(prev).free().sum())
+        new_paying_coins = int(UserRefill.objects.all().created_month(prev).paying().sum())
     active_percent = int(round(float(active) / n * 100)) if n > 0 else 0
     new_percent_basic = int(round(float(new_basic) / new_bets * 100)) if new_bets > 0 else 0
     new_percent_auction = int(round(float(new_auction) / new_bets * 100)) if new_bets > 0 else 0
@@ -85,6 +105,8 @@ def main(request):
         'total_fake_users': fake,
         'leads': leads,
         'range': rang,
+        'prev': int(prev) + 1,
+        'next': int(prev) - 1 if int(prev) > 0 else 0,
         'new_real_users': new_real_users,
         'new_leads': new_leads,
         'active': active,
@@ -100,6 +122,8 @@ def main(request):
         'percent_lottery': percent_lottery,
         'total_closed_bets': total_closed_bets,
         'percent_closed_bets': percent_closed_bets,
+        'begin_date': begin_date,
+        'end_date': end_date,
         'new_bets': new_bets,
         'new_basic': new_basic,
         'new_auction': new_auction,

@@ -55,8 +55,8 @@ class DareyooUserQuerySet(QuerySet):
     def campaign(self, campaign):
         return self.filter(reference_campaign__icontains=campaign)
 
-    def joined_day(self):
-        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    def joined_day(self, prev_days=0):
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=-prev_days)
         tomorrow = today + timedelta(hours=24)
         return self.joined_between(today, tomorrow)
 
@@ -284,8 +284,8 @@ class DareyooUser(AbstractEmailUser):
 
 
 class UserRefillQuerySet(QuerySet):
-    def created_day(self):
-        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    def created_day(self, prev_days=0):
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=-prev_days)
         tomorrow = today + timedelta(hours=24)
         return self.created_between(today, tomorrow)
 
