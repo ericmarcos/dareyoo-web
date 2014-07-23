@@ -44,7 +44,7 @@ def main(request):
     total_coins = total_coins_available + total_coins_locked
     percent_coins_available = int(round(float(total_coins_available) / total_coins * 100)) if total_coins > 0 else 0
     percent_coins_locked = int(round(float(total_coins_locked) / total_coins * 100)) if total_coins > 0 else 0
-    coins_per_user = int(round(float(total_coins) / n * 100)) if n > 0 else 0
+    coins_per_user = int(round(float(total_coins) / n)) if n > 0 else 0
     max_coins_per_user = int(DareyooUser.objects.real().order_by('-coins_available')[0].coins_available)
     if rang == 'day':
         begin_date = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=-prev)
