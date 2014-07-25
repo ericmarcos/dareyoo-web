@@ -871,7 +871,10 @@ dy-level-star {
             margin: 12px 0px;
         }
         .tournament-desc {
-            width: calc(100% - 200px);
+            width: -moz-calc(~"100% - 200px");
+            width: -o-calc(~"100% - 200px");
+            width: -webkit-calc(~"100% - 200px");
+            width: calc(~"100% - 200px");
             margin: 0px auto;
             font-weight: @light;
             font-size: 16px;

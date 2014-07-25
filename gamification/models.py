@@ -413,6 +413,7 @@ class TournamentManager(models.Manager):
 
 class Tournament(models.Model):
     objects = TournamentManager()
+    
     author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='tournaments_created', blank=True, null=True)
     public = models.BooleanField(blank=True, default=True)
     only_author = models.BooleanField(blank=True, default=True)
@@ -480,6 +481,9 @@ class Tournament(models.Model):
             return self.pic._get_url()
         else:
             return ""
+
+    def __unicode__(self):
+        return self.title or u"No title"
 
 
 import gamification.signals

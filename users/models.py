@@ -197,6 +197,9 @@ class DareyooUser(AbstractEmailUser):
     def is_following(self, user_id):
         return self.following.filter(id=user_id).exists()
 
+    def is_paying(self):
+        return self.refills.all().paying().exists()
+
     def has_funds(self, amount=None):
         if amount:
             return self.coins_available >= amount

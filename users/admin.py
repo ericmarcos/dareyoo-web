@@ -2,5 +2,12 @@ from django.contrib import admin
 from users.models import DareyooUser
 from custom_user.models import EmailUser
 
-#admin.site.unregister(EmailUser)
-admin.site.register(DareyooUser)
+class DareyooUserAdmin(admin.ModelAdmin):
+    list_display = ('username', 'email', 'date_joined', 'last_login', 'is_paying', 'is_staff', 'n_bets')
+    list_filter = ('is_staff',)
+    search_fields = ('username', 'email')
+
+    def n_bets(self, obj):
+        return unicode(obj.bets.count())
+
+admin.site.register(DareyooUser, DareyooUserAdmin)
