@@ -137,6 +137,12 @@ class DareyooUserManager(UserManager):
     def get_clean_queryset(self):
         return DareyooUserQuerySet(self.model, using=self._db)
 
+    def get_or_create_by_jid(self, user_jid):
+        qs = self.get_clean_queryset().filter(whatsapp_jid=user_jid, whatsapp_verified=True)
+        if len(qs) > 0:
+            return qs[0], False
+        return None, False
+
     def real(self):
         qs = self.get_clean_queryset()
         return qs.real()
@@ -174,6 +180,9 @@ class DareyooUser(AbstractEmailUser):
     is_pro = models.BooleanField(default=False)
     is_vip = models.BooleanField(default=False)
     email_notifications = models.BooleanField(default=True)
+    whatsapp_jid = models.CharField(max_length=255, blank=True, null=True)
+    whatsapp_verified = models.BooleanField(default=False)
+    whatsapp_verification_code = models.CharField(max_length=255, blank=True, null=True)
 
     def n_following(self):
         return self.following.all().count()

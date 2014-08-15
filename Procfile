@@ -1,2 +1,3 @@
 web: gunicorn dareyoo.wsgi
-worker: python manage.py celery -A dareyoo worker -B -l info
+worker: celery -A dareyoo worker -Q celery -B -l info -n default
+waserver: env WA_INIT_CLIENTS=1 celery -A dareyoo worker -Q wamsg -l info -P eventlet -c 16 -n wa

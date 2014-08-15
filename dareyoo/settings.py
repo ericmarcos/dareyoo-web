@@ -65,6 +65,8 @@ INSTALLED_APPS = (
     'notifications',
     'gamification',
     'metrics',
+    'wabots',
+    'bots',
     #'alpha',
     'beta',
     'password_reset',
@@ -158,27 +160,18 @@ LOTTERY_REFEREE_FEES = 6
 
 
 BROKER_POOL_LIMIT = 3
-#BROKER_TRANSPORT = 'amqplib'
-#BROKER_CONNECTION_MAX_RETRIES = 0
-
-djcelery.setup_loader()
-
-#BROKER_URL = 'django://'
 BROKER_URL = os.environ.get('CLOUDAMQP_URL', 'django://')
 CELERY_IGNORE_RESULT = True
-CELERY_ACCEPT_CONTENT = ['json']
+CELERY_ACCEPT_CONTENT = ['pickle', 'json']
 
-CELERY_TASK_SERIALIZER = 'json'
-#CELERY_RESULT_SERIALIZER = 'json'
+#CELERY_TASK_SERIALIZER = 'json'
 
-#CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
-#CELERY_RESULT_BACKEND = 'database'
-#CELERY_BEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
-db_url = os.environ.get('DATABASE_URL')
-
-'postgresql+psycopg2://scott:tiger@localhost/mydatabase'
-#CELERY_RESULT_BACKEND = 'db+postgresql' + db_url[8:]
-#CELERY_TASK_RESULT_EXPIRES = 14400
+CELERY_ROUTES = {
+    #'process_message': {'queue': 'wamsg'},
+    'send_start_typing': {'queue': 'wamsg'},
+    'send_stop_typing': {'queue': 'wamsg'},
+    'send_message': {'queue': 'wamsg'}
+}
 
 
 #RANKING_PERIOD = crontab(hour=1, minute=30, day_of_week=1) # deprecated
@@ -292,3 +285,16 @@ EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
 
 DEFAULT_FROM_ADDR = 'Dareyoo <no-reply@dareyoo.com>'
 DEFAULT_FROM_EMAIL = 'Dareyoo <no-reply@dareyoo.com>'
+
+
+
+#### WABOT ####
+
+WA_USERNAME = os.environ.get('WA_USERNAME')
+WA_NICKNAME = os.environ.get('WA_NICKNAME')
+WA_PASSWORD = os.environ.get('WA_PASSWORD')
+
+WA_BOTS = ("bots.models.DareyooBot",)
+WA_DEFAULT_BOT = "bots.models.DareyooBot"
+
+WA_INIT_CLIENTS = bool(int(os.environ.get('WA_INIT_CLIENTS', 0)))

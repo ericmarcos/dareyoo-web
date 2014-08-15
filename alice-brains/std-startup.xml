@@ -1,0 +1,54 @@
+<aiml version="1.0">
+
+<category>
+<pattern>TRIVIA</pattern>
+<template>
+    STARTTRIVIA
+</template>
+</category>
+
+<!-- This category works with the Standard AIML Set -->
+<category>
+<pattern>LOAD AIML B</pattern>
+<template>
+
+<!-- Load standard AIML set -->
+<learn>./alice-brains/standard/std-65percent.aiml</learn>
+<learn>./alice-brains/standard/std-atomic.aiml</learn>
+<learn>./alice-brains/standard/std-botmaster.aiml</learn>
+<learn>./alice-brains/standard/std-brain.aiml</learn>
+<learn>./alice-brains/standard/std-connect.aiml</learn>
+<learn>./alice-brains/standard/std-dictionary.aiml</learn>
+<learn>./alice-brains/standard/std-disconnect.aiml</learn>
+<learn>./alice-brains/standard/std-dont.aiml</learn>
+<learn>./alice-brains/standard/std-errors.aiml</learn>
+<learn>./alice-brains/standard/std-gender.aiml</learn>
+<learn>./alice-brains/standard/std-geography.aiml</learn>
+<learn>./alice-brains/standard/std-german.aiml</learn>
+<learn>./alice-brains/standard/std-gossip.aiml</learn>
+<learn>./alice-brains/standard/std-hello.aiml</learn>
+<learn>./alice-brains/standard/std-inactivity.aiml</learn>
+<learn>./alice-brains/standard/std-inventions.aiml</learn>
+<learn>./alice-brains/standard/std-knowledge.aiml</learn>
+<learn>./alice-brains/standard/std-lizards.aiml</learn>
+<learn>./alice-brains/standard/std-login.aiml</learn>
+<learn>./alice-brains/standard/std-numbers.aiml</learn>
+<learn>./alice-brains/standard/std-personality.aiml</learn>
+<learn>./alice-brains/standard/std-pickup.aiml</learn>
+<learn>./alice-brains/standard/std-politics.aiml</learn>
+<learn>./alice-brains/standard/std-profile.aiml</learn>
+<learn>./alice-brains/standard/std-religion.aiml</learn>
+<learn>./alice-brains/standard/std-robot.aiml</learn>
+<learn>./alice-brains/standard/std-sales.aiml</learn>
+<learn>./alice-brains/standard/std-sextalk.aiml</learn>
+<learn>./alice-brains/standard/std-sports.aiml</learn>
+<learn>./alice-brains/standard/std-srai.aiml</learn>
+<learn>./alice-brains/standard/std-suffixes.aiml</learn>
+<learn>./alice-brains/standard/std-that.aiml</learn>
+<learn>./alice-brains/standard/std-turing.aiml</learn>
+<learn>./alice-brains/standard/std-yesno.aiml</learn>
+
+</template>
+</category>
+
+</aiml>
