@@ -777,7 +777,7 @@ angular.module('dareyoo.controllers', []).
         case '20 minutos': now.setMinutes(now.getMinutes() + 20); break;
         case '30 minutos': now.setMinutes(now.getMinutes() + 30); break;
         case '45 minutos': now.setMinutes(now.getMinutes() + 45); break;
-        case '1 horas': now.setMinutes(now.getMinutes() + 60); break;
+        case '1 hora': now.setMinutes(now.getMinutes() + 60); break;
         case '2 horas': now.setMinutes(now.getMinutes() + 60*2); break;
         case '4 horas': now.setMinutes(now.getMinutes() + 60*4); break;
         case '6 horas': now.setMinutes(now.getMinutes() + 60*6); break;
