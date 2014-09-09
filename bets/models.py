@@ -338,8 +338,7 @@ class Bet(models.Model):
         if self.is_simple() or self.is_auction():
             return self.accepted_bid != None
         elif self.is_lottery():
-            return sum([len(bid.participants.all()) for bid in self.bids.all()]) >= 1
-            #return DareyooUser.filter(participated_bids__bet=self).count()
+            return self.n_participants() >= 1
 
     def has_conflict(self):
         return self.referee != None
@@ -370,7 +369,7 @@ class Bet(models.Model):
 
     def is_desert(self):
         if self.is_lottery():
-            return len(self.participants()) == 0
+            return self.n_participants() == 0
         elif self.is_simple() or self.is_auction():
             return not bool(self.accepted_bid)
 
@@ -408,6 +407,12 @@ class Bet(models.Model):
         elif self.is_lottery():
             return set(u for b in self.bids.all() for u in b.participants.all())
 
+    def n_participants(self):
+        if self.is_simple() or self.is_auction():
+            return 2 if self.accepted_bid else 1
+        elif self.is_lottery():
+            return DareyooUser.objects.filter(participated_bids__bet=self).count()
+
     def pot(self):
         '''
         TODO: This is very expensive because it performs many queries
@@ -423,7 +428,7 @@ class Bet(models.Model):
             else:
                 pot = self.amount
         if self.is_lottery():
-            pot = sum([bid.amount * len(bid.participants.all()) for bid in self.bids.all()])
+            pot = sum([bid.amount * bid.participants.count() for bid in self.bids.all()])
         return pot
 
     def winners(self):
