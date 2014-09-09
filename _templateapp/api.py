@@ -1,1 +1,0 @@
-# Tastypie API
