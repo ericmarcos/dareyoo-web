@@ -339,6 +339,7 @@ class Bet(models.Model):
             return self.accepted_bid != None
         elif self.is_lottery():
             return sum([len(bid.participants.all()) for bid in self.bids.all()]) >= 1
+            #return DareyooUser.filter(participated_bids__bet=self).count()
 
     def has_conflict(self):
         return self.referee != None
@@ -670,7 +671,7 @@ class Bet(models.Model):
                     p.unlock_funds(bid.amount)
                     p.save()
         elif winner:
-            n = len(winner.participants.all()) or 1
+            n = winner.participants.count() or 1
             price = math.ceil((self.pot() - self.winning_fees()) / n)
             for bid in self.bids.all():
                 if bid.id != winner.id:
@@ -786,7 +787,7 @@ class Bid(models.Model):
     claim = models.PositiveSmallIntegerField(max_length=63, blank=True, null=True, choices=Bet.BET_CLAIM_CHOICES)
     claim_message = models.TextField(blank=True, null=True, default="")
     claim_author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='lottery_claimer', blank=True, null=True)
-    participants = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, null=True)
+    participants = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='participated_bids', blank=True, null=True)
 
     def check_valid(self):
         if self.amount <= 0:
