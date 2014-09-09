@@ -50,7 +50,7 @@ class BetFactory:
                 public=kwargs.get('public', True))
         #recipients = kwargs.get('recipients', [])
         b.check_valid()
-        b.referee_escrow = b.referee_fees()
+        #b.referee_escrow = b.referee_fees()
         #b.set_author(kwargs.get('author'))
         #b.save()
         return b
@@ -82,7 +82,7 @@ class BetFactory:
                 open_lottery=kwargs.get('open_lottery', True))
         #        recipients=kwargs.get('recipients', []))
         b.check_valid()
-        b.referee_escrow = b.referee_fees()
+        #b.referee_escrow = b.referee_fees()
         #b.set_author(author)
         #b.save()
         return b
@@ -466,19 +466,13 @@ class Bet(models.Model):
         return math.ceil(self.pot()*settings.WINNING_FEES_RATIO)
 
     def referee_fees(self):
-        if self.is_lottery():
-            return settings.LOTTERY_REFEREE_FEES
         return math.ceil(self.pot()*settings.REFEREE_FEES_RATIO)*2
 
     def set_author(self, author):
         if author:
-            if self.is_simple():
-                author.lock_funds(self.amount + self.referee_escrow)
-            elif self.is_auction():
+            if self.is_simple() or self.is_auction():
                 author.lock_funds(self.amount)
-            elif self.is_lottery():
-                author.lock_funds(self.referee_escrow)
-            author.save()
+                author.save()
             self.author = author
         else:
             raise BetException("Author can't be None")
@@ -544,9 +538,6 @@ class Bet(models.Model):
             self.accepted_bid_id = bid_id
             if self.is_auction():
                 self.odds = float(self.amount + self.accepted_bid.amount) / self.amount
-                self.referee_escrow = self.referee_fees()
-                self.author.lock_funds(self.referee_escrow)
-                self.author.save()
             self.accepted_bid.author.lock_funds(self.accepted_bid.amount)
             self.accepted_bid.author.save()
             self.event()
@@ -615,16 +606,12 @@ class Bet(models.Model):
         if arbitrating:
             claim = self.referee_claim
             if claim == self.claim:
-                self.author.unlock_funds(self.referee_escrow)
-                self.accepted_bid.author.charge(self.referee_escrow, locked=True)
+                self.accepted_bid.author.charge(self.referee_escrow, ignore_negative=True)
             elif claim == self.accepted_bid.claim:
-                self.author.charge(self.referee_escrow, locked=True)
-                self.accepted_bid.author.unlock_funds(self.referee_escrow)
+                self.author.charge(self.referee_escrow, ignore_negative=True)
             else:
-                self.author.unlock_funds(self.referee_escrow / 2)
-                self.author.charge(self.referee_escrow / 2, locked=True)
-                self.accepted_bid.author.unlock_funds(self.referee_escrow / 2)
-                self.accepted_bid.author.charge(self.referee_escrow / 2, locked=True)
+                self.author.charge(self.referee_escrow / 2, ignore_negative=True)
+                self.accepted_bid.author.charge(self.referee_escrow / 2, ignore_negative=True)
             if self.referee:
                 self.referee.coins_available += self.referee_escrow
                 self.referee.save()
@@ -658,16 +645,12 @@ class Bet(models.Model):
             winner = self.referee_lottery_winner
             complainer = next(bid for bid in self.bids.all() if bid.claim != None)
             if claim == self.claim or winner == self.claim_lottery_winner:
-                self.author.unlock_funds(self.referee_escrow)
-                complainer.claim_author.charge(self.referee_escrow, locked=True)
+                complainer.claim_author.charge(self.referee_escrow, ignore_negative=True)
             elif claim == complainer.claim or winner == complainer:
-                self.author.charge(self.referee_escrow, locked=True)
-                complainer.claim_author.unlock_funds(self.referee_escrow)
+                self.author.charge(self.referee_escrow, ignore_negative=True)
             else:
-                self.author.unlock_funds(self.referee_escrow / 2)
-                self.author.charge(self.referee_escrow / 2, locked=True)
-                complainer.claim_author.unlock_funds(self.referee_escrow / 2)
-                complainer.claim_author.charge(self.referee_escrow / 2, locked=True)
+                self.author.charge(self.referee_escrow / 2, ignore_negative=True)
+                complainer.claim_author.charge(self.referee_escrow / 2, ignore_negative=True)
             self.referee.coins_available += self.referee_escrow
             self.referee.save()
         if claim == Bet.CLAIM_NULL:
@@ -823,8 +806,7 @@ class Bid(models.Model):
                 self.claim = claim
                 self.claim_message = claim_message
                 self.claim_author = user
-                user.lock_funds(self.bet.referee_escrow)
-                user.save()
+                self.bet.referee_escrow = self.bet.referee_fees()
                 self.bet.complained_at = timezone.now()
                 self.bet.save()
             else:

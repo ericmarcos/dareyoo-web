@@ -220,14 +220,14 @@ class DareyooUser(AbstractEmailUser):
         else:
             raise DareyooUserException("Not enough money at stake!")
 
-    def charge(self, amount, locked=False):
+    def charge(self, amount, locked=False, ignore_negative=False):
         if locked:
             if self.coins_locked >= amount:
                 self.coins_locked -= amount
             else:
                 raise DareyooUserException("Not enough funds!")
         else:
-            if self.has_funds(amount):
+            if self.has_funds(amount) or ignore_negative:
                 self.coins_available -= amount
             else:
                 raise DareyooUserException("Not enough funds!")
