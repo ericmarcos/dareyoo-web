@@ -729,11 +729,11 @@ class Bet(models.Model):
             self.complaining()
         elif self.is_complaining():
             if Bid.objects.filter(bet=self, claim__isnull=False).count() == 0:
-                b.closed_ok()
+                self.closed_ok()
             else:
-                b.arbitrating()
-        elif b.is_arbitrating():
-            b.closed_conflict()
+                self.arbitrating()
+        elif self.is_arbitrating():
+            self.closed_conflict()
 
     def __unicode__(self):
         return unicode(self.title) or unicode(self.id) or u"Bet object"
