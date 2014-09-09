@@ -670,7 +670,8 @@ class Bet(models.Model):
                     p.unlock_funds(bid.amount)
                     p.save()
         elif winner:
-            price = math.ceil((self.pot() - self.winning_fees()) / len(winner.participants.all()))
+            n = len(winner.participants.all()) or 1
+            price = math.ceil((self.pot() - self.winning_fees()) / n)
             for bid in self.bids.all():
                 if bid.id != winner.id:
                     for p in bid.participants.all():
