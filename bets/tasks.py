@@ -8,40 +8,42 @@ from bets.models import *
 @shared_task(name='bidding_deadline')
 def bidding_deadline(bet_id=None, **kwargs):
     b = Bet.objects.get(pk=bet_id)
-    if not b.is_event():
-        if b.is_desert():
-            b.closed_desert()
-        else:
-            b.event()
+    if b.is_bidding():
+        b.next_state()
 
 @shared_task(name='event_deadline')
 def event_deadline(bet_id=None, **kwargs):
     b = Bet.objects.get(pk=bet_id)
-    b.resolving()
+    if b.is_event():
+        b.next_state()
 
 @shared_task(name='resolving_deadline')
 def resolving_deadline(bet_id=None, **kwargs):
     b = Bet.objects.get(pk=bet_id)
     if b.is_resolving():
-        if not b.claim:
-            if b.is_lottery():
-                b.claim = Bet.CLAIM_NULL
-            else:
-                b.claim = Bet.CLAIM_LOST
-            b.resolved_at = timezone.now()
-        b.complaining()
+        b.next_state()
 
 @shared_task(name='complaining_deadline')
 def complaining_deadline(bet_id=None, **kwargs):
     b = Bet.objects.get(pk=bet_id)
     if b.is_complaining():
-        if Bid.objects.filter(bet=b, claim__isnull=False).count() == 0:
-            b.closed_ok()
-        else:
-            b.arbitrating()
+        b.next_state()
 
 @shared_task(name='arbitrating_deadline')
 def arbitrating_deadline(bet_id=None, **kwargs):
     b = Bet.objects.get(pk=bet_id)
     if b.is_arbitrating():
-        b.closed_conflict()
+        b.next_state()
+
+@shared_task(name='missed_deadlines')
+def missed_deadlines():
+    for b in Bet.objects.all().bidding_deadline_missed():
+        b.next_state()
+    for b in Bet.objects.all().event_deadline_missed():
+        b.next_state()
+    for b in Bet.objects.all().resolving_deadline_missed():
+        b.next_state()
+    for b in Bet.objects.all().complaining_deadline_missed():
+        b.next_state()
+    for b in Bet.objects.all().arbitrating_deadline_missed():
+        b.next_state()

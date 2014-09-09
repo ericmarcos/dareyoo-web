@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.db import models
 from django.conf import settings
 from django.db.models.query import QuerySet
-from django.db.models import Sum, Q
+from django.db.models import Sum, Q, F
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django_fsm.db.fields import FSMField, transition
@@ -209,6 +209,24 @@ class BetQuerySet(QuerySet):
         first = first + relativedelta(months=-prev_months)
         last = first + relativedelta(months=1)
         return self.finished_between(first, last)
+
+    def bidding_deadline_missed(self):
+        return self.bidding().filter(bidding_deadline__lt=timezone.now())
+
+    def event_deadline_missed(self):
+        return self.event().filter(event_deadline__lt=timezone.now())
+
+    def resolving_deadline_missed(self):
+        deadline = timezone.now() - timedelta(seconds=settings.RESOLVING_COUNTDOWN)
+        return self.resolving().filter(event_deadline__lt=deadline)
+
+    def complaining_deadline_missed(self):
+        deadline = timezone.now() - timedelta(seconds=settings.COMPLAINING_COUNTDOWN)
+        return self.complaining().filter(resolved_at__lt=deadline)
+
+    def arbitrating_deadline_missed(self):
+        deadline = timezone.now() - timedelta(seconds=settings.ARBITRATING_COUNTDOWN)
+        return self.complaining().filter(complained_at__lt=deadline)
 
 
 class BetsManager(models.Manager):
@@ -692,6 +710,30 @@ class Bet(models.Model):
     @transition(field=bet_state, source='arbitrating', target='closed', save=True)
     def closed_conflict(self):
         self.close(arbitrating=True)
+
+    def next_state(self):
+        if self.is_bidding():
+            if self.is_desert():
+                self.closed_desert()
+            else:
+                self.event()
+        elif self.is_event():
+            self.resolving()
+        elif self.is_resolving():
+            if not self.claim:
+                if self.is_lottery():
+                    self.claim = Bet.CLAIM_NULL
+                else:
+                    self.claim = Bet.CLAIM_LOST
+                self.resolved_at = timezone.now()
+            self.complaining()
+        elif self.is_complaining():
+            if Bid.objects.filter(bet=self, claim__isnull=False).count() == 0:
+                b.closed_ok()
+            else:
+                b.arbitrating()
+        elif b.is_arbitrating():
+            b.closed_conflict()
 
     def __unicode__(self):
         return unicode(self.title) or unicode(self.id) or u"Bet object"
