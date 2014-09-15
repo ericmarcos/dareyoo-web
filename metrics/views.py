@@ -16,8 +16,20 @@ from bets.models import Bet
 
 @user_passes_test(lambda u: u.is_staff)
 def new_users(request):
-    users = DareyooUser.objects.real().joined_week()
-    return render_to_response('new_users.html', context_instance=RequestContext(request, {'users': users}))
+    today_users = DareyooUser.objects.real().joined_day()
+    week_users = DareyooUser.objects.real().joined_week()
+    return render_to_response('new_users.html', context_instance=RequestContext(request,
+        {'today_users': today_users, 'week_users': week_users}))
+
+
+@user_passes_test(lambda u: u.is_staff)
+def inactive_users(request):
+    one_day_wonders = DareyooUser.objects.real().one_day_wonders()
+    inactive_month = DareyooUser.objects.real().churn_month()
+    inactive_week = DareyooUser.objects.real().churn_week()
+    return render_to_response('inactive_users.html', context_instance=RequestContext(request,
+        {'one_day_wonders': one_day_wonders, 'inactive_month': inactive_month, 'inactive_week': inactive_week}))
+
 
 @user_passes_test(lambda u: u.is_staff)
 def main(request):

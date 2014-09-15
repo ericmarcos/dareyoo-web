@@ -13,22 +13,30 @@
 <div id="metrics-container" class="container">
     <div class="row">
         <div class="col-md-12">
-            <h1>Nuevos Usuarios Dareyoo</h1>
+            <h1>Usuarios Inactivos Dareyoo</h1>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
-            <h3>Hoy:</h3>
+        <div class="col-md-4">
+            <h3>One day wonders:</h3>
             <ul>
-            {% for u in today_users %}
+            {% for u in one_day_wonders %}
                 <li>{{ u.username }} (<a href="/app/profile/{{ u.id }}/bets">/app/profile/{{ u.id }}/bets</a>)</li>
             {% endfor %}
             </ul>
         </div>
-        <div class="col-md-6">
-            <h3>Esta semana:</h3>
+        <div class="col-md-4">
+            <h3>Inactivos este mes:</h3>
             <ul>
-            {% for u in week_users %}
+            {% for u in inactive_month %}
+                <li>{{ u.username }} (<a href="/app/profile/{{ u.id }}/bets">/app/profile/{{ u.id }}/bets</a>)</li>
+            {% endfor %}
+            </ul>
+        </div>
+        <div class="col-md-4">
+            <h3>Inactivos esta semana:</h3>
+            <ul>
+            {% for u in inactive_week %}
                 <li>{{ u.username }} (<a href="/app/profile/{{ u.id }}/bets">/app/profile/{{ u.id }}/bets</a>)</li>
             {% endfor %}
             </ul>
