@@ -15,6 +15,11 @@ from bets.models import Bet
 
 
 @user_passes_test(lambda u: u.is_staff)
+def new_users(request):
+    users = DareyooUser.objects.real().joined_week()
+    return render_to_response('new_users.html', context_instance=RequestContext(request, {'users': users}))
+
+@user_passes_test(lambda u: u.is_staff)
 def main(request):
     if request.GET.get('range') and request.GET.get('range') in ['day', 'week', 'month']:
         request.session['range'] = request.GET.get('range')

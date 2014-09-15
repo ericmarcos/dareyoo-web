@@ -1,0 +1,29 @@
+{% extends "beta-base.html" %}
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/landing.all.min.css">
+<style type="text/css">
+    #metrics-container {
+        margin-top: 50px;
+    }
+</style>
+{% endblock %}
+{% block content %}
+{{ block.super }}
+<div id="metrics-container" class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Nuevos Usuarios Dareyoo</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Esta semana:</h3>
+            {% for u in users %}
+                <li>{{ u.username }} (<a href="/app/profile/{{ u.id }}/bets">/app/profile/{{ u.id }}/bets</a>)</li>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
