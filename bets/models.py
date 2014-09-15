@@ -45,7 +45,7 @@ class BetFactory:
                 description=kwargs.get('description', ""),
                 amount=float(kwargs.get('amount', 1)),
                 odds=float(kwargs.get('odds', 2)),
-                bidding_deadline=kwargs.get('bidding_deadline', timezone.now() + datetime.timedelta(minutes=10)),
+                bidding_deadline=kwargs.get('bidding_deadline', None),
                 event_deadline=kwargs.get('event_deadline', timezone.now() + datetime.timedelta(minutes=30)),
                 public=kwargs.get('public', True))
         #recipients = kwargs.get('recipients', [])
@@ -61,7 +61,7 @@ class BetFactory:
                 title=kwargs.get('title', ""),
                 description=kwargs.get('description', ""),
                 amount=kwargs.get('amount', 1),
-                bidding_deadline=kwargs.get('bidding_deadline', timezone.now() + datetime.timedelta(minutes=10)),
+                bidding_deadline=kwargs.get('bidding_deadline', None),
                 event_deadline=kwargs.get('event_deadline', timezone.now() + datetime.timedelta(minutes=30)),
                 public=kwargs.get('public', True))
         #        recipients=kwargs.get('recipients', []))
@@ -76,7 +76,7 @@ class BetFactory:
                 title=kwargs.get('title', ""),
                 description=kwargs.get('description', ""),
                 amount=kwargs.get('amount', 1),
-                bidding_deadline=kwargs.get('bidding_deadline', timezone.now() + datetime.timedelta(minutes=10)),
+                bidding_deadline=kwargs.get('bidding_deadline', None),
                 event_deadline=kwargs.get('event_deadline', timezone.now() + datetime.timedelta(minutes=30)),
                 public=kwargs.get('public', True),
                 open_lottery=kwargs.get('open_lottery', True))
@@ -226,7 +226,21 @@ class BetQuerySet(QuerySet):
 
     def arbitrating_deadline_missed(self):
         deadline = timezone.now() - timedelta(seconds=settings.ARBITRATING_COUNTDOWN)
-        return self.complaining().filter(complained_at__lt=deadline)
+        return self.arbitrating().filter(complained_at__lt=deadline)
+
+    def fede(self):
+        return self.cm('fedebentue')
+
+    def marc(self):
+        return self.cm('mcomacast')
+
+    def alfonso(self):
+        return self.cm('alfmarpin')
+
+    def cm(self, email):
+        return self.filter(Q(author__email__icontains=email) |
+            Q(bids__author__email__icontains=email) |
+            Q(bids__participants__email__icontains=email))
 
 
 class BetsManager(models.Manager):
@@ -312,11 +326,11 @@ class Bet(models.Model):
         pass
 
     def check_valid(self):
-        if not self.bidding_deadline or not self.event_deadline:
-            raise BetException("You must set a bidding deadline and an event deadline")
-        if self.bidding_deadline < timezone.now():
+        if not self.event_deadline:
+            raise BetException("You must set an event deadline")
+        if self.bidding_deadline and self.bidding_deadline < timezone.now():
             raise BetException("Can't create a bet in the past")
-        if self.bidding_deadline > self.event_deadline - datetime.timedelta(minutes=10):
+        if self.bidding_deadline and self.bidding_deadline > self.event_deadline - datetime.timedelta(minutes=10):
             raise BetException("The event deadline must be later than the bidding deadline plus 10 minutes")
         if self.amount <= 0:
             raise BetException("The amount must be at least 1")
@@ -525,7 +539,7 @@ class Bet(models.Model):
                 bid = Bid()
                 self.add_bid(bid, user)
             else:
-                raise BetException("Can't accept this bet because it's not of 'simple' type.")
+                raise BetException("Can't accept this bet because it's not of 'basic' type.")
         else:
             raise BetException("Can't accept this bet because it's not on bidding sate (current state:%s)" % self.bet_state)
 

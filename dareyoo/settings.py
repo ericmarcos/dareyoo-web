@@ -49,7 +49,7 @@ INSTALLED_APPS = (
     'gunicorn',
     'storages',
     'rest_framework',
-    'djcelery',
+#    'djcelery',
 #    'kombu.transport.django',
 #    'haystack',
     'provider',
@@ -152,36 +152,23 @@ FREE_REFILL_AMOUNT = 50
 WINNING_FEES_RATIO = 0.02
 REFEREE_FEES_RATIO = 0.02
 LOTTERY_REFEREE_FEES = 6
+MISSED_DEADLINES_PERIOD = 60*60*6
 
 ######### CELERY SETUP ###########
 #sudo rabbitmq-server -detached
 
 
 BROKER_POOL_LIMIT = 1
-#BROKER_TRANSPORT = 'amqplib'
-#BROKER_CONNECTION_MAX_RETRIES = 0
 
-djcelery.setup_loader()
+#djcelery.setup_loader()
 
-#BROKER_URL = 'django://'
 BROKER_URL = os.environ.get('CLOUDAMQP_URL', 'django://')
 CELERY_IGNORE_RESULT = True
 CELERY_ACCEPT_CONTENT = ['json']
 
 CELERY_TASK_SERIALIZER = 'json'
-#CELERY_RESULT_SERIALIZER = 'json'
-
-#CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
-#CELERY_RESULT_BACKEND = 'database'
-#CELERY_BEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
-db_url = os.environ.get('DATABASE_URL')
-
-'postgresql+psycopg2://scott:tiger@localhost/mydatabase'
-#CELERY_RESULT_BACKEND = 'db+postgresql' + db_url[8:]
-#CELERY_TASK_RESULT_EXPIRES = 14400
 
 
-#RANKING_PERIOD = crontab(hour=1, minute=30, day_of_week=1) # deprecated
 RESOLVING_COUNTDOWN = 60*60*24
 COMPLAINING_COUNTDOWN = 60*60*24
 ARBITRATING_COUNTDOWN = 60*60*24
@@ -193,10 +180,10 @@ CELERYBEAT_SCHEDULE = {
         'task': 'free_coins',
         'schedule': timedelta(seconds=FREE_COINS_INTERVAL)
     },
-    #'generate-ranking': {
-    #    'task': 'users.tasks.ranking',
-    #    'schedule': RANKING_PERIOD
-    #},
+    'fix-missed-deadlines': {
+        'task': 'bets.tasks.missed_deadlines',
+        'schedule': timedelta(seconds=MISSED_DEADLINES_PERIOD)
+    },
 }
 
 #this is the default already
