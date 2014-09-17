@@ -162,7 +162,8 @@ BROKER_POOL_LIMIT = 1
 
 #djcelery.setup_loader()
 
-BROKER_URL = os.environ.get('CLOUDAMQP_URL', 'django://') + "?heartbeat=30"
+BROKER_URL = os.environ.get('CLOUDAMQP_URL', 'django://')
+BROKER_HEARTBEAT = 30
 CELERY_IGNORE_RESULT = True
 CELERY_ACCEPT_CONTENT = ['json']
 
