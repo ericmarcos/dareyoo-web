@@ -156,13 +156,13 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
     }
 
     $rootScope.getMe = function() {
-      $http.get("/api/v1/me/").success(function(response) {
+      $http.get("//api/v1/me/").success(function(response) {
           $rootScope.user = response;
       });
       $timeout($rootScope.getMe, 5000);
     };
     $rootScope.getMyFollowers = function() {
-      $http.get("/api/v1/me/followers").success(function(response) {
+      $http.get("//api/v1/me/followers").success(function(response) {
         if(response && response.length > 0) {
           $rootScope.followers = response;
           $rootScope.followers_names = [];
@@ -176,7 +176,7 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
     };
 
     $rootScope.getNotifications = function() {
-      $http.get("/api/v1/notifications/").success(function(response) {
+      $http.get("//api/v1/notifications/").success(function(response) {
         var not = [];
         if(response.results) not = response.results;
         else not = response;
@@ -197,14 +197,14 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
     $rootScope.notificationViewed = function(note) {
       if(note.is_new) {
         note.is_new = false;
-        $http.post('/api/v1/notifications/' + note.id + '/mark_as_viewed/');
+        $http.post('//api/v1/notifications/' + note.id + '/mark_as_viewed/');
       }
     };
 
     $rootScope.notificationClick = function(note) {
       if(!note.readed) {
         note.readed = true;
-        $http.post('/api/v1/notifications/' + note.id + '/mark_as_readed/');
+        $http.post('//api/v1/notifications/' + note.id + '/mark_as_readed/');
       }
     }
 
