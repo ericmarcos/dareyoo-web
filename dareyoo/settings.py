@@ -12,7 +12,7 @@ import os
 from datetime import timedelta
 from django.utils.translation import ugettext_lazy as _
 import dj_database_url
-import djcelery
+
 #from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -48,8 +48,6 @@ INSTALLED_APPS = (
     'south',
     'gunicorn',
     'storages',
-    'rest_framework',
-#    'djcelery',
 #    'kombu.transport.django',
 #    'haystack',
     'provider',
@@ -159,8 +157,6 @@ MISSED_DEADLINES_PERIOD = 60*60*6
 
 
 BROKER_POOL_LIMIT = 1
-
-#djcelery.setup_loader()
 
 BROKER_URL = os.environ.get('CLOUDAMQP_URL', 'django://')
 BROKER_HEARTBEAT = 30
