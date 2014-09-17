@@ -25,7 +25,10 @@ config(['$sceDelegateProvider', function($sceDelegateProvider) {
     // Allow loading from outer templates domain.
     'http://s3-eu-west-1.amazonaws.com/dareyoo/**',
     'http://s3-eu-west-1.amazonaws.com/dareyoo-pro/**',
-    'http://s3-eu-west-1.amazonaws.com/dareyoo-pre/**'
+    'http://s3-eu-west-1.amazonaws.com/dareyoo-pre/**',
+    'https://s3-eu-west-1.amazonaws.com/dareyoo/**',
+    'https://s3-eu-west-1.amazonaws.com/dareyoo-pro/**',
+    'https://s3-eu-west-1.amazonaws.com/dareyoo-pre/**'
   ]); 
 }]).
 /*config(['FacebookProvider', 'config', function(FacebookProvider, config) {

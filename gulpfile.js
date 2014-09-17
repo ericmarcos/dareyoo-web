@@ -24,7 +24,7 @@ var isDev = !isPro && !isPre;
 //TODO: take it from env vars
 var dev_url = '/static';
 var pre_url = 'http://s3-eu-west-1.amazonaws.com/dareyoo-pre';
-var pro_url = 'http://s3-eu-west-1.amazonaws.com/dareyoo-pro';
+var pro_url = 'https://s3-eu-west-1.amazonaws.com/dareyoo-pro';
 
 var paths = {
   html: ['./static/beta/partials/**', './static/beta/partials/directives/**'],
