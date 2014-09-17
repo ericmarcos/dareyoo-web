@@ -128,13 +128,13 @@ angular.module('dareyoo.directives', [])
       templateUrl: config.static_url + 'beta/build/partials/directives/dy-user-list.html',
       controller: ["$scope", "$element", "$attrs", "$transclude", "$http", "config", function($scope, $element, $attrs, $transclude, $http, config) {
         $scope.followUser = function(user) {
-          $http.post("//api/v1/users/" + user.id + "/follow/").success(function(response) {
+          $http.post($window.location.origin + "/api/v1/users/" + user.id + "/follow/").success(function(response) {
             $scope.$broadcast('follow_unfollow');
             user.im_following = true;
           });
         };
         $scope.unfollowUser = function(user) {
-          $http.post("//api/v1/users/" + user.id + "/unfollow/").success(function(response) {
+          $http.post($window.location.origin + "/api/v1/users/" + user.id + "/unfollow/").success(function(response) {
             $scope.$broadcast('follow_unfollow');
             user.im_following = false;
           });

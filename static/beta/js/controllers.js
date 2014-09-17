@@ -75,7 +75,7 @@ angular.module('dareyoo.controllers', []).
       var fd = new FormData();
       var b = blob($scope.shrinked);
       fd.append("profile_pic", b, "profile_pic");
-      $http.post("//api/v1/users/" + $scope.user.id + "/pic_upload/", fd, {
+      $http.post($window.location.origin + "/api/v1/users/" + $scope.user.id + "/pic_upload/", fd, {
           withCredentials: true,
           headers: {'Content-Type': undefined},
           transformRequest: angular.identity
@@ -96,7 +96,7 @@ angular.module('dareyoo.controllers', []).
             description: $scope.new_description,
             email_notifications: $scope.new_email_notifications
         };
-        var url = "//api/v1/users/" + $scope.user.id + "/";
+        var url = $window.location.origin + "/api/v1/users/" + $scope.user.id + "/";
         if($scope.new_user) {
           url += "?new=true";
         }
@@ -119,9 +119,9 @@ angular.module('dareyoo.controllers', []).
     $scope.search_friends = function(provider) {
       $scope.loaded = false;
       $scope.provider = provider;
-      var url = "//api/v1/search-dareyoo-suggested/?description=true";
+      var url = $window.location.origin + "/api/v1/search-dareyoo-suggested/?description=true";
       if(provider == 'facebook')
-        url = "//api/v1/search-facebook-friends/";
+        url = $window.location.origin + "/api/v1/search-facebook-friends/";
       $http.get(url).success(function(response) {
         if(response.results) $scope.friends_list = response.results;
         else $scope.friends_list = response;
@@ -133,7 +133,7 @@ angular.module('dareyoo.controllers', []).
   controller('RankingCtrl', ['$scope', '$http', '$location', '$filter', function($scope, $http, $location, $filter) {
     $scope.ranking = [];
     $scope.getRanking = function(order) {
-      $http.get("//api/v1/ranking/").success(function(response) {
+      $http.get($window.location.origin + "/api/v1/ranking/").success(function(response) {
         if(response.results) $scope.ranking = response.results;
         else $scope.ranking = response;
       });
@@ -144,7 +144,7 @@ angular.module('dareyoo.controllers', []).
   controller('TournamentsCtrl', ['$scope', '$http', '$location', '$filter', function($scope, $http, $location, $filter) {
     $scope.tournaments = [];
     $scope.getTournaments = function() {
-      $http.get("//api/v1/tournaments/").success(function(response) {
+      $http.get($window.location.origin + "/api/v1/tournaments/").success(function(response) {
         if(response.results) $scope.tournaments = response.results;
         else $scope.tournaments = response;
       });
@@ -166,14 +166,14 @@ angular.module('dareyoo.controllers', []).
     $scope.global = $stateParams.tournamentId == 0;
     $scope.loaded = false;
     $scope.getTournament = function(id) {
-      $http.get("//api/v1/tournaments/" + id).success(function(response) {
+      $http.get($window.location.origin + "/api/v1/tournaments/" + id).success(function(response) {
         if(response.results) $scope.tournament = response.results;
         else $scope.tournament = response;
         $scope.loaded = true;
       });
     };
     $scope.getLeaderboard = function(id) {
-      $http.get("//api/v1/tournaments/" + id + "/leaderboard").success(function(response) {
+      $http.get($window.location.origin + "/api/v1/tournaments/" + id + "/leaderboard").success(function(response) {
         if(response.results) $scope.leaderboard = response.results;
         else $scope.leaderboard = response;
         $scope.loaded = true;
@@ -207,7 +207,7 @@ angular.module('dareyoo.controllers', []).
     $scope.loaded = false;
     $scope.getTimeline = function(order) {
       $scope.order_by = order || $scope.order_by;
-      $http.get("//api/v1/timeline/", {'params': {'order': $scope.order_by}}).success(function(response) {
+      $http.get($window.location.origin + "/api/v1/timeline/", {'params': {'order': $scope.order_by}}).success(function(response) {
         if(response.results) {
           $scope.bets = response.results;
           $scope.more_bets_link = response.next;
@@ -233,7 +233,7 @@ angular.module('dareyoo.controllers', []).
     $scope.loaded = false;
     $scope.getTimeline = function(order) {
       $scope.order_by = order || $scope.order_by;
-      $http.get("//api/v1/timeline/", {'params': {'order': $scope.order_by, 'global': true}}).success(function(response) {
+      $http.get($window.location.origin + "/api/v1/timeline/", {'params': {'order': $scope.order_by, 'global': true}}).success(function(response) {
         if(response.results) {
           $scope.bets = response.results;
           $scope.more_bets_link = response.next;
@@ -260,7 +260,7 @@ angular.module('dareyoo.controllers', []).
     $scope.loaded = false;
     $scope.getTimeline = function(order) {
       $scope.order_by = order || $scope.order_by;
-      $http.get("//api/v1/timeline/", {'params': {'order': $scope.order_by, 'global': true, 'state': 'arbitrating'}}).success(function(response) {
+      $http.get($window.location.origin + "/api/v1/timeline/", {'params': {'order': $scope.order_by, 'global': true, 'state': 'arbitrating'}}).success(function(response) {
         if(response.results) $scope.bets = response.results;
         else $scope.bets = response;
         $scope.loaded = true;
@@ -289,7 +289,7 @@ angular.module('dareyoo.controllers', []).
     $scope.loaded = false;
     $scope.getTimeline = function(order) {
       $scope.order_by = order || $scope.order_by;
-      $http.get("//api/v1/bets/search/", {'params': {'q': $rootScope.q.query}}).success(function(response) {
+      $http.get($window.location.origin + "/api/v1/bets/search/", {'params': {'q': $rootScope.q.query}}).success(function(response) {
         if(response.results) $scope.bets = response.results;
         else $scope.bets = response;
         $scope.loaded = true;
@@ -306,7 +306,7 @@ angular.module('dareyoo.controllers', []).
 
     $scope.getOpenBets = function(order) {
       $scope.order_by = order || $scope.order_by;
-      $http.get("//api/v1/me/open_bets/").success(function(response) {
+      $http.get($window.location.origin + "/api/v1/me/open_bets/").success(function(response) {
         if(response.results) $scope.bets = response.results;
         else $scope.bets = response;
         $scope.loaded = true;
@@ -323,7 +323,7 @@ angular.module('dareyoo.controllers', []).
     $scope.loaded = false;
 
     $scope.getUser = function(id) {
-      $http.get("//api/v1/users/" + id).success(function(response) {
+      $http.get($window.location.origin + "/api/v1/users/" + id).success(function(response) {
         $scope.profile_user = response;
         $scope.$root.title = $scope.profile_user.username;
         $scope.loaded = true;
@@ -332,21 +332,21 @@ angular.module('dareyoo.controllers', []).
     /*$scope.getNBets = function(id, params, callback) {
       params = params || {};
       callback = callback || function(response) { $scope.n_bets = response.count; };
-      $http.get("//api/v1/users/" + id + "/n_bets/", {'params': params}).success(callback);
+      $http.get($window.location.origin + "/api/v1/users/" + id + "/n_bets/", {'params': params}).success(callback);
     }*/
     $scope.followUser = function(id) {
-      $http.post("//api/v1/users/" + id + "/follow/").success(function(response) {
+      $http.post($window.location.origin + "/api/v1/users/" + id + "/follow/").success(function(response) {
         $scope.$broadcast('follow_unfollow');
       });
     };
     $scope.unfollowUser = function(id) {
-      $http.post("//api/v1/users/" + id + "/unfollow/").success(function(response) {
+      $http.post($window.location.origin + "/api/v1/users/" + id + "/unfollow/").success(function(response) {
         $scope.$broadcast('follow_unfollow');
         //$scope.loadUser();
       });
     };
     /*$scope.isFollowing = function(id, ask_id, success) {
-      $http.get("//api/v1/users/" + id + "/is_following/", {'params': {'user_id': ask_id}}).success(success);
+      $http.get($window.location.origin + "/api/v1/users/" + id + "/is_following/", {'params': {'user_id': ask_id}}).success(success);
     };*/
 
     $scope.getBadgePath = function(badge, level) {
@@ -376,7 +376,7 @@ angular.module('dareyoo.controllers', []).
   }])
   .controller('ProfileFollowersCtrl', ['$scope', '$rootScope', '$http', '$stateParams', function($scope, $rootScope, $http, $stateParams) {
     $scope.getFollowers = function(id) {
-      $http.get("//api/v1/users/" + id + "/followers/").success(function(response) {
+      $http.get($window.location.origin + "/api/v1/users/" + id + "/followers/").success(function(response) {
         if(response.results) $scope.followers = response.results;
         else $scope.followers = response;
       });
@@ -388,7 +388,7 @@ angular.module('dareyoo.controllers', []).
   }])
   .controller('ProfileFollowingCtrl', ['$scope', '$rootScope', '$http', '$stateParams', function($scope, $rootScope, $http, $stateParams) {
     $scope.getFollowing = function(id) {
-      $http.get("//api/v1/users/" + id + "/following/").success(function(response) {
+      $http.get($window.location.origin + "/api/v1/users/" + id + "/following/").success(function(response) {
         if(response.results) $scope.following = response.results;
         else $scope.following = response;
       });
@@ -402,7 +402,7 @@ angular.module('dareyoo.controllers', []).
     $scope.getBets = function(id, params, callback) {
       params = params || {};
       callback = callback || function(response) { if(response.results) $scope.bets = response.results; else $scope.bets = response; };
-      $http.get("//api/v1/users/" + id + "/bets/", {'params': params}).success(callback);
+      $http.get($window.location.origin + "/api/v1/users/" + id + "/bets/", {'params': params}).success(callback);
     };
 
     $scope.getBets($stateParams.userId, {'all':true});
@@ -441,7 +441,7 @@ angular.module('dareyoo.controllers', []).
     };
 
     $scope.getBet = function(id) {
-      $http.get("//api/v1/bets/" + id).success(function(response) {
+      $http.get($window.location.origin + "/api/v1/bets/" + id).success(function(response) {
         $scope.bet = response;
         $scope.loaded = true;
         $scope.$root.title = $scope.bet.title;
@@ -453,12 +453,12 @@ angular.module('dareyoo.controllers', []).
       }).error($scope.betAPIError);
     };
     $scope.acceptBet = function() {
-      $http.post("//api/v1/bets/" + $scope.bet.id + "/accept_bet/").success(function(response) {
+      $http.post($window.location.origin + "/api/v1/bets/" + $scope.bet.id + "/accept_bet/").success(function(response) {
         $scope.getBet($stateParams.betId);
       }).error($scope.betAPIError);
     };
     $scope.postBid = function(title, amount) {
-      $http.post("//api/v1/bets/" + $scope.bet.id + "/bids/", {title: title, amount: amount}).success(function(response) {
+      $http.post($window.location.origin + "/api/v1/bets/" + $scope.bet.id + "/bids/", {title: title, amount: amount}).success(function(response) {
         $scope.getBet($stateParams.betId);
         $scope.dialogs.bid = false;
         if($scope.user.id != $scope.bet.author.id && $scope.bet.bet_type == 3) {
@@ -468,17 +468,17 @@ angular.module('dareyoo.controllers', []).
       }).error($scope.betAPIError);
     };
     $scope.acceptBid = function(bidId) {
-      $http.post("//api/v1/bets/" + $scope.bet.id + "/accept_bid/", {bid_id: bidId}).success(function(response) {
+      $http.post($window.location.origin + "/api/v1/bets/" + $scope.bet.id + "/accept_bid/", {bid_id: bidId}).success(function(response) {
         $scope.getBet($stateParams.betId);
       }).error($scope.betAPIError);
     };
     $scope.participateBid = function(bidId) {
-      $http.post("//api/v1/bids/" + bidId + "/add_participant/").success(function(response) {
+      $http.post($window.location.origin + "/api/v1/bids/" + bidId + "/add_participant/").success(function(response) {
         $scope.getBet($stateParams.betId);
       }).error($scope.betAPIError);
     };
     $scope.showParticipants = function(bid) {
-      $http.get("//api/v1/bids/" + bid.id + "/participants/").success(function(response) {
+      $http.get($window.location.origin + "/api/v1/bids/" + bid.id + "/participants/").success(function(response) {
         $scope.current_bid_result = bid.title;
         $scope.current_bid_participants = response;
         $('#bid-participants-modal').modal('show');
@@ -486,54 +486,54 @@ angular.module('dareyoo.controllers', []).
       return false;
     };
     $scope.removeBid = function(bidId) {
-      $http.post("//api/v1/bets/" + $scope.bet.id + "/remove_bid/", {bid_id: bidId}).success(function(response) {
+      $http.post($window.location.origin + "/api/v1/bets/" + $scope.bet.id + "/remove_bid/", {bid_id: bidId}).success(function(response) {
         $scope.getBet($stateParams.betId);
       }).error($scope.betAPIError);
     };
     $scope.resolveBet = function(claim) { /* {1: Bet author won, 2: Bid author won, 3: null} */
-      $http.post("//api/v1/bets/" + $scope.bet.id + "/resolve/", {claim: claim, claim_message: $scope.claims.resolvingClaim}).success(function(response) {
+      $http.post($window.location.origin + "/api/v1/bets/" + $scope.bet.id + "/resolve/", {claim: claim, claim_message: $scope.claims.resolvingClaim}).success(function(response) {
         $scope.getBet($stateParams.betId);
       }).error($scope.betAPIError);
     };
     $scope.resolveLottery = function(bidId, claim) { /* {1: Bet author won, 2: Bid author won, 3: null} */
       if(claim == 3) {
-        $http.post("//api/v1/bets/" + $scope.bet.id + "/resolve/", {claim: claim, claim_message: $scope.claims.resolvingClaim}).success(function(response) {
+        $http.post($window.location.origin + "/api/v1/bets/" + $scope.bet.id + "/resolve/", {claim: claim, claim_message: $scope.claims.resolvingClaim}).success(function(response) {
           $scope.getBet($stateParams.betId);
         }).error($scope.betAPIError);
       } else {
-        $http.post("//api/v1/bets/" + $scope.bet.id + "/resolve/", {claim_lottery_winner: bidId, claim_message: $scope.claims.resolvingClaim}).success(function(response) {
+        $http.post($window.location.origin + "/api/v1/bets/" + $scope.bet.id + "/resolve/", {claim_lottery_winner: bidId, claim_message: $scope.claims.resolvingClaim}).success(function(response) {
           $scope.getBet($stateParams.betId);
         }).error($scope.betAPIError);
       }
     };
     $scope.complainBet = function(bid_id, claim) { /* {1: Bet author won, 2: Bid author won, 3: null} */
-      $http.post("//api/v1/bids/" + bid_id + "/complain/", {claim: claim, claim_message: $scope.claims.complainingClaim}).success(function(response) {
+      $http.post($window.location.origin + "/api/v1/bids/" + bid_id + "/complain/", {claim: claim, claim_message: $scope.claims.complainingClaim}).success(function(response) {
         $scope.getBet($stateParams.betId);
       }).error($scope.betAPIError);
     };
     $scope.complainLottery = function(claim_lottery_winner, claim) { /* {1: Bet author won, 2: Bid author won, 3: null} */
       if(claim == 3) {
-        $http.post("//api/v1/bids/" + claim_lottery_winner + "/complain/", {claim: claim, claim_message: $scope.claims.complainingClaim}).success(function(response) {
+        $http.post($window.location.origin + "/api/v1/bids/" + claim_lottery_winner + "/complain/", {claim: claim, claim_message: $scope.claims.complainingClaim}).success(function(response) {
           $scope.getBet($stateParams.betId);
         }).error($scope.betAPIError);
       } else {
-        $http.post("//api/v1/bids/" + claim_lottery_winner + "/complain/", {claim: 2, claim_message: $scope.claims.complainingClaim}).success(function(response) {
+        $http.post($window.location.origin + "/api/v1/bids/" + claim_lottery_winner + "/complain/", {claim: 2, claim_message: $scope.claims.complainingClaim}).success(function(response) {
           $scope.getBet($stateParams.betId);
         }).error($scope.betAPIError);
       }
     };
     $scope.arbitrateBet = function(claim) { /* {1: Bet author won, 2: Bid author won, 3: null} */
-      $http.post("//api/v1/bets/" + $scope.bet.id + "/arbitrate/", {claim: claim, claim_message: $scope.claims.arbitratingClaim}).success(function(response) {
+      $http.post($window.location.origin + "/api/v1/bets/" + $scope.bet.id + "/arbitrate/", {claim: claim, claim_message: $scope.claims.arbitratingClaim}).success(function(response) {
         $scope.getBet($stateParams.betId);
       }).error($scope.betAPIError);
     };
     $scope.arbitrateLottery = function(claim_lottery_winner, claim) { /* {1: Bet author won, 2: Bid author won, 3: null} */
       if(claim == 3) {
-        $http.post("//api/v1/bets/" + $scope.bet.id + "/arbitrate/", {claim:claim, claim_message: $scope.claims.arbitratingClaim}).success(function(response) {
+        $http.post($window.location.origin + "/api/v1/bets/" + $scope.bet.id + "/arbitrate/", {claim:claim, claim_message: $scope.claims.arbitratingClaim}).success(function(response) {
           $scope.getBet($stateParams.betId);
         }).error($scope.betAPIError);
       } else {
-        $http.post("//api/v1/bets/" + $scope.bet.id + "/arbitrate/", {claim_lottery_winner: claim_lottery_winner, claim_message: $scope.claims.arbitratingClaim}).success(function(response) {
+        $http.post($window.location.origin + "/api/v1/bets/" + $scope.bet.id + "/arbitrate/", {claim_lottery_winner: claim_lottery_winner, claim_message: $scope.claims.arbitratingClaim}).success(function(response) {
           $scope.getBet($stateParams.betId);
         }).error($scope.betAPIError);
       }
@@ -845,7 +845,7 @@ angular.module('dareyoo.controllers', []).
       delete postData.against;
       delete postData.bidding_deadline_simple;
       delete postData.event_deadline_simple;
-      $http.post("//api/v1/bets/", postData)
+      $http.post($window.location.origin + "/api/v1/bets/", postData)
       .success(function(response, status, headers, config) {
         $scope.new_bet = response;
         $scope.step = 5;
