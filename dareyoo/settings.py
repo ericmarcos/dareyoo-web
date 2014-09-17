@@ -162,7 +162,7 @@ BROKER_POOL_LIMIT = 1
 
 #djcelery.setup_loader()
 
-BROKER_URL = os.environ.get('CLOUDAMQP_URL', 'django://')
+BROKER_URL = os.environ.get('CLOUDAMQP_URL', 'django://') + "?heartbeat=30"
 CELERY_IGNORE_RESULT = True
 CELERY_ACCEPT_CONTENT = ['json']
 
@@ -181,7 +181,7 @@ CELERYBEAT_SCHEDULE = {
         'schedule': timedelta(seconds=FREE_COINS_INTERVAL)
     },
     'fix-missed-deadlines': {
-        'task': 'bets.tasks.missed_deadlines',
+        'task': 'missed_deadlines',
         'schedule': timedelta(seconds=MISSED_DEADLINES_PERIOD)
     },
 }
