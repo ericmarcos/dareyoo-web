@@ -135,6 +135,8 @@ class MeRedirectView(RedirectView):
         args = self.request.META.get('QUERY_STRING', '')
         if args and self.query_string:
             url = "%s?%s" % (url, args)
+        if self.request.is_secure():
+            url = 'https://' + url
         return url
 
 
