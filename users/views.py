@@ -37,12 +37,15 @@ class DareyooUserViewSet(viewsets.ModelViewSet):
     queryset = DareyooUser.objects.all()
     serializer_class = DareyooUserFullSerializer
     short_serializer_class = DareyooUserShortSerializer
+    mini_serializer_class = DareyooUserMiniSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsSelfOrReadOnly)
 
     def list(self, request):
         if request.QUERY_PARAMS.get('only_usernames'):
-            queryset = DareyooUser.objects.values('username')
-            return Response(queryset)
+            queryset = DareyooUser.objects.only('username', 'profile_pic')
+            serializer_class = self.mini_serializer_class
+            serializer = serializer_class(queryset, many=True, context={'request': request})
+            return Response(serializer.data)
         else:
             return super(DareyooUserViewSet, self).list(request)
 

@@ -84,3 +84,11 @@ class DareyooUserShortSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = DareyooUser
         fields = ('id', 'url', 'username', 'pic', 'im_following', 'following_me', 'description')
+
+
+class DareyooUserMiniSerializer(serializers.HyperlinkedModelSerializer):
+    pic = serializers.Field(source='get_profile_pic_url')
+
+    class Meta:
+        model = DareyooUser
+        fields = ('username', 'pic',)
