@@ -39,6 +39,13 @@ class DareyooUserViewSet(viewsets.ModelViewSet):
     short_serializer_class = DareyooUserShortSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsSelfOrReadOnly)
 
+    def list(self, request):
+        if request.QUERY_PARAMS.get('only_usernames'):
+            queryset = DareyooUser.objects.values('username')
+            return Response(queryset)
+        else:
+            return super(DareyooUserViewSet, self).list(request)
+
     def update(self, request, pk=None):
         username = request.DATA.get('username')
         if request.user.username != username and DareyooUser.objects.filter(username=username).exists():

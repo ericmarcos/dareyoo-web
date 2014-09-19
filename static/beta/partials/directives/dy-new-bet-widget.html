@@ -199,8 +199,8 @@
                 <button class="btn btn-default btn-sm btn-block" ng-click="prevStep()"><small><span class="glyphicon glyphicon-chevron-left"></span></small></button>
             </div>
             <div class="col-small-9">
-                <button class="btn btn-primary btn-sm btn-block" ng-if="!newBetFormData.public" ng-click="nextStep()">Siguiente <small><span class="glyphicon glyphicon-chevron-right"></span></small></button>
-                <button class="btn btn-primary btn-sm btn-block" ng-if="newBetFormData.public" ng-click="nextStep()">Apostar!</button>
+                <button class="btn btn-primary btn-sm btn-block" ng-click="nextStep()">Siguiente <small><span class="glyphicon glyphicon-chevron-right"></span></small></button>
+                <!-- <button class="btn btn-primary btn-sm btn-block" ng-if="newBetFormData.public" ng-click="nextStep()">Apostar!</button> -->
             </div>
         </div>
     </div>
@@ -223,12 +223,18 @@
         <div class="row-small">
             <div class="col-small-12">
                 <div class="input-group">
-                    <input type="text" ng-model="inviteSelected" placeholder="username o email" typeahead="f as f.username for f in $root.followers | filter:{'username': $viewValue}" typeahead-template-url="invitesAutocomplete.html" typeahead-on-select='onSelectInvite($item, $model, $label)' ng-keypress="onInviteEnter($event)" class="form-control new-bet-widget-input">
+                    <input type="text" ng-model="inviteSelected" placeholder="username o email" typeahead="f as f.username for f in $root.usernames | filter:{'username': $viewValue}" typeahead-template-url="invitesAutocomplete.html" typeahead-on-select='onSelectInvite($item, $model, $label)' ng-keypress="onInviteEnter($event)" class="form-control new-bet-widget-input" typeahead-min-length="2">
 
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="button" ng-click="onInviteEnter()">Añadir</button>
                     </span>
                 </div><!-- /input-group -->
+            </div>
+            <!-- <p>¿Quieres conseguir 50 Yoos extra? </p> -->
+        </div>
+        <div class="row-small">
+            <div class="col-small-12">
+                <span><br><a id="extra_yoos" href="#" data-toggle="tooltip" title="Te damos 50 Yoos por cada amigo al que invites y se registre en Dareyoo" data-placement="bottom">¿Quieres conseguir Yoos extra?</a><br></span>
             </div>
         </div>
         <div class="row-small action-row">

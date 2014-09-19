@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     'south',
     'gunicorn',
     'storages',
+    'rest_framework',
 #    'kombu.transport.django',
 #    'haystack',
     'provider',

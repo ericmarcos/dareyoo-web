@@ -391,10 +391,10 @@ class Bet(models.Model):
         return user in self.participants()
 
     def invite(self, invites):
-        if invites and len(invites) > 0 and not self.public:
+        if invites and len(invites) > 0:
             recipients = []
             for invite in invites:
-                u = DareyooUser.objects.filter(username=invite, following=self.author)
+                u = DareyooUser.objects.filter(username=invite)
                 if len(u) == 0:
                     u = DareyooUser.objects.filter(email=invite)
                 if len(u) == 0:

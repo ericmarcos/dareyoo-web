@@ -679,7 +679,7 @@ angular.module('dareyoo.controllers', []).
       $('#description').css($scope.noFocusTextStyles);
     }
     $scope.resetWidget();
-
+    $('#extra_yoos').tooltip();
     $scope.expandWidget = function() {
       //$('.new-bet-widget').css({"height":"150px","transition":"0.8s"});
       $('.new-bet-widget').css($scope.transitionStyles);
@@ -734,13 +734,7 @@ angular.module('dareyoo.controllers', []).
         $scope.newBetFormData.bet_type = bet_type;
         $scope.step = 2;
       } else if($scope.step == 2) {
-        if($scope.newBetFormData.public) {
-          if($scope.postNewBet()) {
-            $scope.step = 4;
-          }
-        } else {
-          $scope.step = 3;
-        }
+        $scope.step = 3;
       } else if($scope.step == 3) {
         if($scope.postNewBet()) {
           $scope.step = 4;
@@ -788,18 +782,18 @@ angular.module('dareyoo.controllers', []).
     }
 
     $scope.onSelectInvite = function($item, $model, $label) {
-      if($model.id) {
-        $scope.addInvite($model);
+      if($model.username) {
+        $scope.addInvite($model.username);
         $scope.inviteSelected = null;
       }
     }
 
     $scope.onInviteEnter = function(event) {
       if (!event || event.which == 13) {
-        var usernames = $.map($rootScope.followers, function(element) { return element.username; });
+        var usernames = $.map($rootScope.usernames, function(element) { return element.username; });
         var i = usernames.indexOf($scope.inviteSelected);
         if(i != -1) {
-          $scope.addInvite($rootScope.followers[i]);
+          $scope.addInvite($rootScope.usernames[i].username);
         } else {
           $scope.addInvite($scope.inviteSelected);
         }

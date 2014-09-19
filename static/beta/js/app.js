@@ -165,12 +165,13 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
       $http.get(document.location.origin +"/api/v1/me/followers").success(function(response) {
         if(response && response.length > 0) {
           $rootScope.followers = response;
-          $rootScope.followers_names = [];
-          for (var i = $rootScope.followers.length - 1; i >= 0; i--) {
-            if($rootScope.followers[i].username) {
-              $rootScope.followers_names.push($rootScope.followers[i].username);
-            }
-          };
+        }
+      });
+    };
+    $rootScope.getAllUsernames = function() {
+      $http.get(document.location.origin +"/api/v1/users?only_usernames=true").success(function(response) {
+        if(response && response.length > 0) {
+          $rootScope.usernames = response;
         }
       });
     };
@@ -211,6 +212,7 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
     $rootScope.getMe();
     $rootScope.getMyFollowers();
     $rootScope.getNotifications();
+    $rootScope.getAllUsernames();
 
 }]).
 constant('moment', moment);
