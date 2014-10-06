@@ -665,8 +665,9 @@ class Bet(models.Model):
             else:
                 self.author.charge(self.referee_escrow / 2, ignore_negative=True)
                 complainer.claim_author.charge(self.referee_escrow / 2, ignore_negative=True)
-            self.referee.coins_available += self.referee_escrow
-            self.referee.save()
+            if self.referee:
+                self.referee.coins_available += self.referee_escrow
+                self.referee.save()
         if claim == Bet.CLAIM_NULL:
             for bid in self.bids.all():
                 for p in bid.participants.all():

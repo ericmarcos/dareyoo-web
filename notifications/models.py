@@ -171,7 +171,8 @@ class NotificationFactory:
                 else:
                     n.subject = "%s ha arbitrado la apuesta de %s \"%s\" y ha decidido que has perdido." % (bet.referee.username, bet.author.username, bet.title)
         elif bet.is_lottery():
-            if recipient in bet.winners():
+            winners = bet.winners() or []
+            if recipient in winners:
                 n.subject = "%s ha arbitrado la porra \"%s\" y ha decidido que has ganado." % (bet.referee.username, bet.title)
             else:
                 n.subject = "%s ha arbitrado la porra \"%s\" y ha decidido que has perdido." % (bet.referee.username, bet.title)
