@@ -24,7 +24,7 @@ then source your .bashrc to activate these lines.
 ##Create a DB
 Create a database and a database user in PostgreSQL
 
-##Preparing the virtualenvironment
+##Preparing the virtual environment
 
 After cloning this repo, create a python virtualenv:
 `mkvirtualenv dareyoo`
@@ -38,7 +38,7 @@ this will create an isolated python virtual environment, so we can install all o
 # This hook is run after this virtualenv is activated.
 
 export PROJECT_NAME=dareyoo
-export PROJECT_HOME=~/Documents/dareyoo/dareyoo-web [REPLACE BY YOUR PROJECT'S DIR]
+export PROJECT_HOME=~/Documents/dareyoo/dareyoo-web [REPLACE BY YOUR PROJECT DIR]
 cd $PROJECT_HOME
 export DATABASE_URL=postgres://[DB_USERNAME]:[DB_PASSWORD]@localhost:5432/[DB_NAME]
 export STATIC_URL=/static/
@@ -58,8 +58,11 @@ Now `workon dareyoo` and you'll be ready to go.
 ##Sync DB
 
 To create the tables in the database just run:
-`django syncdb`
-`django migrate`
+
+```
+django syncdb
+django migrate
+```
 
 It will prompt you for an admin user, you can create one if you want.
 
@@ -70,3 +73,11 @@ It will prompt you for an admin user, you can create one if you want.
 ##Run developement tasks server
 
 `cr` and leave that console open. It will handle periodic and delayed tasks like closing bets, refilling yoos, etc.
+
+##Preparing the frontend environment
+
+From the project's root dir run:
+```
+npm install
+bower install
+```
