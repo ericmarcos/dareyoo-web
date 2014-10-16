@@ -804,7 +804,6 @@ angular.module('dareyoo.controllers', []).
     $scope.addInvite = function(inv) {
       if(inv && $scope.invites.indexOf(inv) == -1) {
         $scope.invites.push(inv);
-        console.log($scope.invites);
       }
     }
 
@@ -832,9 +831,9 @@ angular.module('dareyoo.controllers', []).
         postData.bidding_deadline = $scope.relToAbsTime(postData.bidding_deadline_simple);
       if($scope.timeRelativeEvent)
         postData.event_deadline = $scope.relToAbsTime(postData.event_deadline_simple);
-      if(!postData.public) {
+      //if(!postData.public) {
         postData['invites'] = $.map($scope.invites, function(element) { return element.username || element; });
-      }
+      //}
       
       delete postData.against;
       delete postData.bidding_deadline_simple;
