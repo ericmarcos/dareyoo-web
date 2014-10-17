@@ -53,7 +53,7 @@ Now `workon dareyoo` and you'll be ready to go.
 
 ##Installing python dependencies
 
-`pip -r requirements.txt`
+`pip install -r requirements.txt`
 
 ##Sync DB
 
