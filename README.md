@@ -79,5 +79,6 @@ It will prompt you for an admin user, you can create one if you want.
 From the project's root dir run:
 ```
 npm install
+npm install -g bower
 bower install
 ```
