@@ -91,3 +91,11 @@ def app(request):
 def landing_view(request):
     handle_campaign(request)
     return render_to_response('beta-landing.html', context_instance=RequestContext(request))
+
+def how_to(request):
+    handle_campaign(request)
+    return render_to_response('beta-como-funciona.html', context_instance=RequestContext(request))
+
+def faq(request):
+    handle_campaign(request)
+    return render_to_response('beta-faq.html', context_instance=RequestContext(request))

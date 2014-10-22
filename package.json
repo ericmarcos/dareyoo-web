@@ -21,7 +21,8 @@
     "gulp-print": "^1.0.3",
     "gulp-imagemin": "^0.2.0",
     "gulp-shell": "^0.2.4",
-    "gulp-connect": "^2.0.5"
+    "gulp-connect": "^2.0.5",
+    "gulp-image-resize": "^0.5.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

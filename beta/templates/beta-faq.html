@@ -1,0 +1,213 @@
+{% extends "beta-base.html" %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/landing.all.min.css">
+<!-- <link rel="stylesheet" href="{{ STATIC_URL }}beta/lib/bootstrap/dist/css/bootstrap.min.css"> -->
+<style type="text/css">
+    /*body, html { height: 100%; overflow: hidden; }*/
+    body {
+      position: relative;
+      padding-bottom: 100px;
+    }
+    h4 {
+        text-align: left;
+    }
+    .main-container {
+        /*overflow: scroll;*/
+        margin-top: 100px;
+        /*height: calc(100%-100px);
+        height: -moz-calc(100% - 100px);
+        height: -webkit-calc(100% - 100px);
+        height: -o-calc(100% - 100px);*/
+        height: 100%;
+        position: relative;
+    }
+    .dy-docs-sidebar>li>a { border-left: 5px transparent solid; font-size: 16px; font-weight: 300; }
+    .dy-docs-sidebar>li.active>a, .dy-docs-sidebar>li:hover>a {
+        border-left: 5px #fdd solid;
+        background-color: transparent;
+        font-weight: 400;
+    }
+    .dy-docs-sidebar>li>ul { display: none; font-size: 17px; font-weight: 300; }
+    .dy-docs-sidebar>li.active>ul { display: inline; }
+    .dy-docs-sidebar>li>ul>li>a { border-left: 5px transparent solid; padding: 4px 30px 0px; }
+    .dy-docs-sidebar>li>ul>li.active>a, .dy-docs-sidebar>li>ul>li:hover>a {
+        border-left: 5px #fdd solid;
+        background-color: transparent;
+        font-weight: 400;
+    }
+
+    .bs-callout {
+        padding: 20px;
+        margin: 20px 0;
+        border: 1px solid #eee;
+        border-left-width: 5px;
+        border-radius: 3px;
+    }
+    .bs-callout-info { border-left-color: #5bc0de; }
+    .bs-callout h4 { margin-top: 0; margin-bottom: 5px; }
+    .bs-callout-info h4 { color: #5bc0de; }
+
+    h1 { margin-top: 0px; }
+    p { margin: 10px 0px; }
+    ul.big-list { font-size: 19px; font-weight: 300; }
+    dl:last-child { margin-bottom: 0px; }
+    dt, dd { font-size: 16px; }
+    .dy-docs-sidebar { max-width: 280px; }
+
+</style>
+{% endblock %}
+
+{% block body %}<body data-spy="scroll" data-target=".sidebar" data-offset="120">{% endblock %}
+
+{% block content %}
+{{ block.super }}
+
+<div class="container main-container">
+    <div class="row">
+        <div id="sidebar" class="col-md-3 sidebar">
+            <ul class="nav nav-list dy-docs-sidebar affix">
+                <li class="active">
+                    <a href="#quees">No me ha quedado claro. ¿Que es Dareyoo?</a>
+                </li>
+                <li>
+                    <a href="#comofunciona">Pero... ¿Como funciona Dareyoo?</a>
+                </li>
+                <li>
+                    <a href="#pagar">¿Hay que pagar para jugar?</a>
+                </li>
+                <li>
+                    <a href="#dineroreal">¿Puedo apostar con dinero real?</a>
+                </li>
+                <li>
+                    <a href="#cambiaryoos">¿Puedo cambiar mis Yoos por dinero real?</a>
+                </li>
+                <li>
+                    <a href="#publicasprivadas">Las apuestas pueden ser públicas o privadas. ¿Que significa eso?</a>
+                </li>
+                <li>
+                    <a href="#arbitraje">¿Que es esto del arbitraje?</a>
+                </li>
+                <li>
+                    <a href="#comoarbitrar">¿Como puedo arbitrar apuestas?</a>
+                </li>
+                <li>
+                    <a href="#puntos">¿Para que sirven los puntos?</a>
+                </li>
+                <li>
+                    <a href="#logros">¿Para que sirven los logros/medallas?</a>
+                </li>
+                <li>
+                    <a href="#ganarpremio">¿Como puedo ganar un premio?</a>
+                </li>
+            </ul>
+        </div>
+        <div id="main-content" class="col-md-9" role="main">
+            <h1>F.A.Q.</h1>
+
+            <p class="lead">Si tienes dudas y no encuentras la respuesta en este FAQ ponte en contacto con nosotros. Mándanos un mail a soporte@dareyooo.com o envíanos tu pregunta vía twitter mencionando <a href="http://www.twitter.com/dareyooapp">@dareyooapp</a> en tu tweet.</p>
+
+            <section id="quees">
+            <h3>No me ha quedado claro. ¿Que es Dareyoo?</h3>
+            <p>Dareyoo es una plataforma de apuestas libre y social. Eso significa que en Dareyoo puedes crear la apuesta que quieras y jugar contra quien tú elijas con nuestra moneda virtual, el Yoo. Resumiendo, Dareyoo es un juego que va sobre apostar.</p>
+            </section>
+
+            <section id="comofunciona">
+            <h3>Pero... ¿Como funciona Dareyoo?</h3>
+            <p>Te damos 100 Yoos al registrarte para que puedas empezar a apostar. Gástalos sin miedo porque cada 2 horas recibirás una recarga gratuita de 10Y, siempre y cuando tengas menos de 100Y disponibles en tu cuenta. Una vez sabes sobre qué quieres apostar debes tener claro: hasta cuando aceptas posibles rivales y cuando termina el evento sobre el que apuestas. Una vez finalizado, el creador de la apuesta determina quién ha ganado y se reparten los Yoos y los puntos según el resultado. Registrate para empezar a crear tus apuestas.</p>
+            </section>
+
+            <section id="pagar">
+            <h3>¿Hay que pagar para jugar?</h3>
+            <p>No. Dareyoo te proporciona gratuitamente Yoo’s para que apuestes. Concretamente 1 Yoo cada 2h (10Y al dia).
+            Puedes comprar packs de Yoo’s extra si te apetece apostar a lo grande o hacerte PRO y disfrutar de funcionalidades extra sin ningún tipo de límite. Consulta nuestra oferta aquí.</p>
+            </section>
+
+            <section id="dineroreal">
+            <h3>¿Puedo apostar con dinero real?</h3>
+            <p>No. Puedes comprar packs de Yoo’s con dinero real, pero en ningún momento puedes usar dinero real para apostar.</p>
+            </section>
+
+            <section id="cambiaryoos">
+            <h3>¿Puedo cambiar mis Yoos por dinero real?</h3>
+            <p>No. En ningun caso podrás intercambiar tus Yoos por otra moneda de curso legal. Recuerda, Dareyoo es un juego, no somos una casa de apuestas.</p>
+            </section>
+                
+            <section id="publicasprivadas">
+            <h3>Las apuestas pueden ser públicas o privadas. ¿Que significa eso?</h3>
+            <p>Es muy sencillo, si al crear una apuesta la marcas como pública todos los usuarios podrán verla y serán posibles rivales. Si por el contrario elijes hacerla privada deberás elegir un rival con el que quieras apostar. Puedes compartir tu apuesta con quien tu quieras mediante tus redes sociales habituales.</p>
+            </section>
+
+            <section id="arbitraje">
+            <h3>¿Que es esto del arbitraje?</h3>
+            <p>Cuando un usuario no está de acuerdo con el resultado de una apuesta puede reclamar. Inmediatamente esa apuesta se convierte en un conflicto y entra en juego un tercer usuario para arbitrar. Este usuario debe cumplir con unos requisitos para poder actuar como árbitro y si decide arbitrar se llevará la comisión de arbitraje como recompensa por su esfuerzo.</p>
+            <p>Es importante remarcar que todas aquellas apuestas que no sean fácilmente comprobables por el árbitro serán declaradas nulas y por lo tanto los jugadores perderán la comisión de arbitraje y ciertos puntos de reputación. Aquellos usuarios que generan conflictos habitualmente y los pierdan pueden incluso llegar a ser expulsados del sistema.</p>
+            </section>
+
+            <section id="comoarbitrar">
+            <h3>¿Como puedo arbitrar apuestas?</h3>
+            <p>Debes cumplir una serie de requisitos para poder arbitrar en Dareyoo. Estos requisitos estan relacionados con el juego limpio y la experiencia como jugador/apostador. Cuando consigas cumplirlos se te comunicará que ¡ya puedes ser árbitro en Dareyoo!</p>
+            </section>
+
+            <section id="puntos">
+            <h3>¿Para que sirven los puntos?</h3>
+            <p>Los puntos sirven para dos cosas distintas:
+            <ul class="big-list">
+                <li>Te posicionan en los rankings de los torneos, por lo tanto, son la forma de conseguir premios.</li>
+                <li>Determinan tu rango como usuario. Acumula puntos para subir de nivel y desbloquear funcionalidades!</li>
+            </ul>
+            </p>
+            </section>
+
+            <section id="logros">
+            <h3>¿Para que sirven los logros/medallas?</h3>
+            <p>Cada logro te define como apostador y facilita a otros usuarios el saber sobre que te gusta apostar, en qué eres bueno e incluso si juegas limpio o no.</p>
+            </section>
+
+            <section id="ganarpremio">
+            <h3>¿Como puedo ganar un premio?</h3>
+            <p>Siendo el mejor. Cuando ganas acumulas puntos y cuantas más monedas te juegues más puntos conseguirás. Es una relación sencilla, el que apuesta grandes cantidades de Yoos y gana sus apuestas tendrá más posibilidades de llevarse el premio.</p>
+            </section>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <!-- <p>Dareyoo Gaming. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>-->
+</footer>
+
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}beta/build/js/jquery.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}beta/build/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    
+$(document).ready(function(){
+    $("#sidebar").on("activate.bs.scrollspy", function () {
+        var currentItem = $(".nav li.active > a").text();
+        //console.log("hola", currentItem);
+        //$("#info").empty().html("Currently you are viewing - " + currentItem);
+    });
+    $('li>a').click(function(event) {
+        //event.preventDefault();
+        //$('#sidebar').removeClass('sidebar');
+        var elemId = event.target.hash;
+        $('body').animate({
+            scrollTop: $(elemId).parent().scrollTop() + $(elemId).offset().top - $(elemId).parent().offset().top + 40
+        }, {
+            duration: 300,
+            specialEasing: {
+                width: 'linear',
+                height: 'easeOutBounce'
+            },
+            complete: function () {
+                //$('#sidebar').addClass('sidebar');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -58,6 +58,7 @@ INSTALLED_APPS = (
 #    'social.apps.django_app.me',
     'avatar',
     'djrill',
+    'django_extensions',
     'dareyoo',
     'bets',
     'users',

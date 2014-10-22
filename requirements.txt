@@ -12,6 +12,7 @@ django-oauth2-provider==0.2.6
 python-social-auth==0.1.23
 django-storages==1.1.8
 django-tastypie==0.10.0
+django-extensions==1.4.4
 gunicorn==18.0
 httplib2==0.8
 #librabbitmq==1.5.2 #it doesn't support heartbeat
