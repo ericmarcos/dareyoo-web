@@ -89,7 +89,7 @@
                     <a href="/app/main/bet/{{ b.id }}"><h3>"{{ b.title }}"</h3></a>
                     <a href="/app/profile/{{ b.author.id }}/bets">
                     <div class="bet-signature">
-                        <img src="{{ b.author.get_profile_pic_url }}" width="32">
+                        <img src="{{ b.author.get_profile_pic_url }}" width="32" class="img-circle">
                         <p>{{ b.author.username }}</p>
                     </div>
                     </a>
