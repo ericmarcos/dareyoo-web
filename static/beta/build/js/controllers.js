@@ -160,22 +160,43 @@ angular.module('dareyoo.controllers', []).
 
     $scope.getTournaments();
   }]).
+  controller('TournamentRankingCtrl', ['$scope', '$http', '$location', '$filter', '$stateParams', function($scope, $http, $location, $filter, $stateParams) {
+    $scope.leaderboard = {};
+    $scope.loaded = false;
+    $scope.getLeaderboard = function(id) {
+      $http.get(document.location.origin + "/api/v1/tournaments/" + id + "/leaderboard").success(function(response) {
+        if(response.results) $scope.leaderboard = response.results;
+        else $scope.leaderboard = response;
+        $scope.loaded = true;
+      });
+    };
+    if($scope.global) {
+      $scope.getLeaderboard(0);
+    } else {
+      $scope.getLeaderboard($stateParams.tournamentId);
+    }
+  }]).
+  controller('TournamentBetsCtrl', ['$scope', '$http', '$location', '$filter', '$stateParams', function($scope, $http, $location, $filter, $stateParams) {
+    $scope.tournament_bets = [];
+    $scope.global = $stateParams.tournamentId == 0;
+    $scope.loaded = false;
+    $scope.getTournamentBets = function(id) {
+      $http.get(document.location.origin + "/api/v1/tournaments/" + id + "/bets").success(function(response) {
+        if(response.results) $scope.tournament_bets = response.results;
+        else $scope.tournament_bets = response;
+        $scope.loaded = true;
+      });
+    };
+    $scope.getTournamentBets($stateParams.tournamentId);
+  }]).
   controller('TournamentCtrl', ['$scope', '$http', '$location', '$filter', '$stateParams', function($scope, $http, $location, $filter, $stateParams) {
     $scope.tournament = {};
-    $scope.leaderboard = {};
     $scope.global = $stateParams.tournamentId == 0;
     $scope.loaded = false;
     $scope.getTournament = function(id) {
       $http.get(document.location.origin + "/api/v1/tournaments/" + id).success(function(response) {
         if(response.results) $scope.tournament = response.results;
         else $scope.tournament = response;
-        $scope.loaded = true;
-      });
-    };
-    $scope.getLeaderboard = function(id) {
-      $http.get(document.location.origin + "/api/v1/tournaments/" + id + "/leaderboard").success(function(response) {
-        if(response.results) $scope.leaderboard = response.results;
-        else $scope.leaderboard = response;
         $scope.loaded = true;
       });
     };
@@ -193,11 +214,8 @@ angular.module('dareyoo.controllers', []).
       }
       return null;
     };
-    if($scope.global) {
-      $scope.getLeaderboard(0);
-    } else {
+    if(!$scope.global) {
       $scope.getTournament($stateParams.tournamentId);
-      $scope.getLeaderboard($stateParams.tournamentId);
     }
   }]).
   controller('TimelineCtrl', ['$scope', '$http', '$location', '$filter', function($scope, $http, $location, $filter) {

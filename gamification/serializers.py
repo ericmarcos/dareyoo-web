@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, pagination
 from users.models import DareyooUser
 from users.serializers import *
 from bets.serializers import *
@@ -74,10 +74,16 @@ class BetPointsSerializer(BetSerializer):
         model = BetSerializer.Meta.model
         fields = BetSerializer.Meta.fields + ('points', 'referee_points')
 
+
 class UserField(DareyooUserPointsShortSerializer):
     def to_native(self, obj):
         user = DareyooUser.objects.get(pk=obj)
         return super(UserField, self).to_native(user)
+
+
+class PaginatedBetPointsSerializer(pagination.PaginationSerializer):
+    class Meta:
+        object_serializer_class = BetPointsSerializer
 
 
 class RankingSerializer(serializers.Serializer):

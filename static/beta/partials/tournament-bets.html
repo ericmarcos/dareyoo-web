@@ -1,0 +1,13 @@
+<div ng-show="loaded && tournament_bets.length > 0" class="bets-list">
+    <div ng-if="(tournament_bets|filter:{'bet_state':'bidding'}).length > 0" class="bet-row-label">Abiertas</div>
+    <div ng-repeat="bet in tournament_bets | filter:{'bet_state':'bidding'}">
+      <dy-bet-list-item bet="bet"></dy-bet-list-item>
+    </div>
+    <div ng-if="(tournament_bets|filter:{'bet_state':'!bidding'}).length > 0" class="bet-row-label">Cerradas</div>
+    <div ng-repeat="bet in tournament_bets | filter:{'bet_state':'!bidding'}">
+      <dy-bet-list-item bet="bet"></dy-bet-list-item>
+    </div>
+    <div ng-show="more_bets_link" class="more-bets">
+        <button type="button" class="btn btn-primary btn-block" ng-click="moreBets()">Cargar más apuestas...</button>
+    </div>
+</div>

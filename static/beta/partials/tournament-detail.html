@@ -22,11 +22,14 @@
                 </div>
             </div>
         </div>
-        <div class="leaderboard-row" ng-repeat="l in leaderboard">
-            <div class="leaderboard-pos">#[[$index + 1]]</div>
-            <div class="leaderboard-user"><dy-user-pic-name user="l.user" size="'small'" horizontal='true' badges='false'></dy-user-pic-name></div>
-            <div class="leaderboard-points">[[l.points]] <span class="puntos">PUNTOS</span></div>
-            <div class="clearfix"></div>
-        </div>
+        <ul class="nav nav-pills nav-justified tournament-nav">
+            <li ng-class="{ 'active': $state.includes('tournament-detail.bets') }">
+                <a href="#" ui-sref="tournament-detail.bets({tournamentId:tournament.id || '0'})">Apuestas</a>
+            </li>
+            <li ng-class="{ 'active': $state.includes('tournament-detail.ranking') }">
+                <a href="#" ui-sref="tournament-detail.ranking({tournamentId:tournament.id || '0'})">Ránking</a>
+            </li>
+        </ul>
+        <ui-view></ui-view>
     </div>
 </div>

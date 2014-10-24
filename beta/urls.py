@@ -17,5 +17,6 @@ urlpatterns = patterns('',
     url(r'^$', 'beta.views.landing_view', name='beta-landing'),
     url(r'^como-funciona/$', 'beta.views.how_to', name='beta-how-to'),
     url(r'^faq/$', 'beta.views.faq', name='beta-faq'),
+    url(r'^mobile-notification/$', 'beta.views.mobile_notification', name='beta-mobile-notification'),
     url(r'^app', 'beta.views.app', name='beta-home'),
 )

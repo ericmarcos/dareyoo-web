@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from rest_framework import generics, views, response, status, renderers, mixins
 from rest_framework.decorators import link
 from rest_framework.response import Response
@@ -78,9 +79,33 @@ class TournamentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.R
         serializer = RankingSerializer(ranking, context={'request': request}, many=True)
         return response.Response(serializer.data, status=status.HTTP_200_OK)
 
+    @link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
+    def bets(self, request, *args, **kwargs):
+        tournament = self.get_object()
+        #http://www.django-rest-framework.org/api-guide/pagination
+        qs = tournament.bets.all()
+        if request.QUERY_PARAMS.get('state'):
+            qs = qs.filter(bet_state=request.QUERY_PARAMS.get('state'))
+        paginator = Paginator(qs.order_by('-created_at'), 10)
+        page = request.QUERY_PARAMS.get('page')
+        try:
+            bets = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            bets = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999),
+            # deliver last page of results.
+            bets = paginator.page(paginator.num_pages)
+
+        serializer_context = {'request': request}
+        serializer = PaginatedBetPointsSerializer(bets, context=serializer_context)
+        return response.Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class TimelinePointsList(TimelineList):
     serializer_class = BetPointsSerializer
+
 
 class SearchBetsPointsList(SearchBetsList):
     model = Bet

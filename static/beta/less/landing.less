@@ -41,9 +41,19 @@ body {
 /////////////////////// LANDING SECTION 0: INTRO /////////////////////
 
 #intro{
-  .at2x("@{base-url}/beta/build/img/landing/intro/landing_intro_pattern.jpg", 58px, 102px);
+  // http://www.patternify.com/
+  background-image:
+  url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAHElEQVQIW2NkYGD4D8QNMMwIZNQDMRyABPCrAADxVAYBTWty8wAAAABJRU5ErkJggg=="),
+  url("@{base-url}/beta/build/img/landing/intro/fons1.jpg");
+  background-position: left top, center center;
+  background-repeat: repeat, no-repeat;
+  -webkit-background-size: auto, cover;
+  -moz-background-size: auto, cover;
+  -o-background-size: auto, cover;
+  background-size: auto, cover;
   margin: 0 auto;
   padding: 100px 0px 0px;
+  min-height: 500px;
 }
 .social-btns {
   float: right; 
@@ -80,16 +90,24 @@ body {
 .logo-claim {
   img {
     display: inline-block;
-    width: 233px;
-    height: 80px;
+    width: 160px;
+    /*height: 80px;*/
     margin: 0px auto;
   }
   h2 {
     color: white;
+    font-size: 40px;
+    font-weight: @light;
+    margin: 8px auto 0px;
+    max-width: 500px;
+    padding-right: 25px;
+  }
+  h3 {
+    color: white;
     font-size: 22px;
     font-weight: @light;
     margin: 8px auto 0px;
-    width: 300px;
+    max-width: 500px;
     padding-right: 25px;
   }
 }
@@ -111,12 +129,29 @@ body {
   }
 }
 
+.bets-reel {
+  margin: 40px auto;
+  height: 150px;
+  max-width: 460px;
+  #bets-carousel { height: 100%; .carousel-inner { height: 100%; }}
+  h3 { color: #fff; font-size: 28px; }
+  .bet-signature {
+    text-align: right;
+    img { display: inline-block; margin-right: 10px; }
+    p { display: inline-block; color: #fff; font-weight: 400; padding-top: 5px; }
+  }
+}
+
 .video-btn {
+  margin-top: 40px;
+  display: inline-block;
   padding-right: 25px;
   .btn-video {
     .button-variant(white, rgba(255, 255, 255, 0), white);
+    min-width: 260px;
     box-shadow: inset 0 0 4px #fff;
     padding: 10px 20px;
+    font-size: 16px;
     &:hover {
       box-shadow: inset 0 0 8px #fff;
     }

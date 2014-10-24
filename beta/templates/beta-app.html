@@ -31,7 +31,7 @@
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="main-app-navbar-collapse">
         <ul class="nav navbar-nav navbar-left">
-          <li ng-class="{ active: $state.includes('main') }"><a href="#" ui-sref="main.timeline">INICIO</a></li>
+          <li ng-class="{ active: $state.includes('main') }"><a href="#" ui-sref="main.timeline-global">INICIO</a></li>
           <li ng-class="{ active: $state.includes('profile') }" ng-if="user"><a href="#" ui-sref="profile.bets({userId:user.id})">PERFIL</a></li>
           <li ng-class="{ active: $state.includes('rankings') }"><a href="#" ui-sref="tournaments">TORNEOS Y PREMIOS</a></li>
         </ul>

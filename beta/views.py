@@ -1,4 +1,5 @@
 import re
+import json
 from django.core.urlresolvers import reverse
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
@@ -11,6 +12,7 @@ from django.contrib.auth import authenticate, login, logout
 from users.models import DareyooUser
 from users.pipelines import *
 from bets.models import Bet
+from .models import *
 
 def handle_campaign(request):
     #utm_source=google&utm_medium=cpc&utm_campaign=inicial
@@ -90,7 +92,9 @@ def app(request):
 
 def landing_view(request):
     handle_campaign(request)
-    return render_to_response('beta-landing.html', context_instance=RequestContext(request))
+    bets = Bet.objects.all().bidding().public().extra(where=["CHAR_LENGTH(title) > 50 AND CHAR_LENGTH(title) < 120"]).order_by('?')[:5]
+    context = { 'bets': bets }
+    return render_to_response('beta-landing.html', context_instance=RequestContext(request, context))
 
 def how_to(request):
     handle_campaign(request)
@@ -99,3 +103,13 @@ def how_to(request):
 def faq(request):
     handle_campaign(request)
     return render_to_response('beta-faq.html', context_instance=RequestContext(request))
+
+def mobile_notification(request):
+    if request.is_ajax():
+        email = request.POST.get('email')
+        os = request.POST.get('os')
+        print email, os
+        MobileNotification.objects.create(email=email, os=os)
+        data = json.dumps({'message': "OK"})
+        return HttpResponse(data, mimetype='application/json')
+    return HttpResponseBadRequest()

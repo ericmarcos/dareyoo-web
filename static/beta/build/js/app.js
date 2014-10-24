@@ -104,9 +104,20 @@ config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'config', f
           controller: 'TournamentsCtrl'
         })
         .state('tournament-detail', {
+          abstract: true,
           url: "/tournament/:tournamentId",
           templateUrl: config.static_url + "beta/build/partials/tournament-detail.html",
           controller: 'TournamentCtrl'
+        })
+        .state('tournament-detail.bets', {
+          url: "/bets",
+          templateUrl: config.static_url + "beta/build/partials/tournament-bets.html",
+          controller: 'TournamentBetsCtrl'
+        })
+        .state('tournament-detail.ranking', {
+          url: "/ranking",
+          templateUrl: config.static_url + "beta/build/partials/tournament-ranking.html",
+          controller: 'TournamentRankingCtrl'
         })
         .state('edit-profile', {
           url: "/edit-profile",
