@@ -108,7 +108,6 @@ def mobile_notification(request):
     if request.is_ajax():
         email = request.POST.get('email')
         os = request.POST.get('os')
-        print email, os
         MobileNotification.objects.create(email=email, os=os)
         data = json.dumps({'message': "OK"})
         return HttpResponse(data, mimetype='application/json')
