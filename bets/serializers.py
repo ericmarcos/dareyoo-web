@@ -23,6 +23,7 @@ class BetSerializer(serializers.HyperlinkedModelSerializer):
     #type = serializers.Field(source='get_type_name')
     bids = BidSerializer(many=True, read_only=True)
     accepted_bid = BidSerializer(read_only=True)
+    referee = DareyooUserShortSerializer(read_only=True)
     claim_lottery_winner = BidSerializer(read_only=True)
     referee_lottery_winner = BidSerializer(read_only=True)
     winning_fees = serializers.Field(source='winning_fees')
