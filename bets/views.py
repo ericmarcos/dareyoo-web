@@ -119,7 +119,10 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
     def resolve(self, request, *args, **kwargs):
         bet = self.get_object()
         user = self.request.user
-        claim = request.DATA.get('claim', None)
+        try:
+            claim = int(request.DATA.get('claim'))
+        except:
+            claim = request.DATA.get('claim')
         claim_lottery_winner = request.DATA.get('claim_lottery_winner', None)
         claim_message = request.DATA.get('claim_message', "")
         try:
@@ -135,7 +138,10 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
     def arbitrate(self, request, *args, **kwargs):
         bet = self.get_object()
         user = self.request.user
-        referee_claim = request.DATA.get('claim', None)
+        try:
+            referee_claim = int(request.DATA.get('claim'))
+        except:
+            referee_claim = request.DATA.get('claim')
         referee_lottery_winner = request.DATA.get('claim_lottery_winner', None)
         referee_message = request.DATA.get('claim_message', "")
         try:
@@ -185,7 +191,10 @@ class BidViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
     def complain(self, request, *args, **kwargs):
         bid = self.get_object()
         user = self.request.user
-        claim = request.DATA.get('claim', None)
+        try:
+            claim = int(request.DATA.get('claim'))
+        except:
+            claim = request.DATA.get('claim')
         claim_message = request.DATA.get('claim_message', "")
         try:
             if claim == bid.bet.claim and not bid.bet.is_lottery():

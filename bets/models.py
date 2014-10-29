@@ -572,6 +572,7 @@ class Bet(models.Model):
                     self.claim_message = claim_message
                 elif claim == Bet.CLAIM_NULL:
                     self.claim = Bet.CLAIM_NULL
+                    self.claim_message = claim_message
                 else:
                     raise BetException("Invalid claim")
             self.resolved_at = timezone.now()

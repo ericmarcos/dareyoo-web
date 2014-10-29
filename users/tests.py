@@ -13,7 +13,7 @@ from django.test.client import Client
 class UserResourceTest(APITestCase):
     # Use ``fixtures`` & ``urls`` as normal. See Django's ``TestCase``
     # documentation for the gory details.
-    fixtures = ['test_data.json']
+    #fixtures = ['test_data.json']
     
     def setUp(self):
         super(APITestCase, self).setUp()

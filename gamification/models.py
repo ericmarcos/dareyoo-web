@@ -134,14 +134,22 @@ class UserPointsFactory:
     @staticmethod
     def fromBet(bet):
         if bet.is_lottery():
+            author_participated = False
             for bid in bet.bids.all():
                 for p in bid.participants.all():
                     u = UserPoints()
                     u.bet = bet
                     u.user = p
                     u.calculatePointsFromBet(bid)
-
+                    if p == bet.author:
+                        author_participated = True
                     u.save()
+            if not author_participated:
+                u = UserPoints()
+                u.bet = bet
+                u.user = bet.author
+                u.calculatePointsFromBet()
+                u.save()
             #TODO: the creator of the lottery should get some extra points
             #u = UserPoints()
             #u.bet = bet
@@ -207,7 +215,7 @@ class UserPoints(models.Model):
             if self.bet.is_lottery():
                 if ref == self.user:
                     self.points = self.refereePoints()
-                elif self.user == bid.claim_author:
+                elif bid and self.user == bid.claim_author:
                     if self.bet.referee_lottery_winner == bid or (self.bet.referee_claim == Bet.CLAIM_NULL and bid.claim == Bet.CLAIM_NULL):
                         self.points = self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.bet.referee_lottery_winner == bid)
                         self.points += self.conflictWinnerPoints()
