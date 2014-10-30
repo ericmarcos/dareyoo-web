@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     'south',
     'gunicorn',
     'storages',
+    'corsheaders',
     'rest_framework',
 #    'kombu.transport.django',
 #    'haystack',
@@ -73,6 +74,7 @@ INSTALLED_APPS = (
 MIDDLEWARE_CLASSES = (
     #'sslify.middleware.SSLifyMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -284,3 +286,6 @@ EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
 
 DEFAULT_FROM_ADDR = 'Dareyoo <no-reply@dareyoo.com>'
 DEFAULT_FROM_EMAIL = 'Dareyoo <no-reply@dareyoo.com>'
+
+### CORS ###
+CORS_URLS_REGEX = r'^/api/v1.*$'

@@ -33,3 +33,4 @@ djrill==1.1.1
 SQLAlchemy==0.9.6
 django-password-reset==0.7
 django-sslify==0.2.3
+django-cors-headers==0.13
