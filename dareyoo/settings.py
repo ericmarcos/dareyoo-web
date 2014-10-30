@@ -289,3 +289,4 @@ DEFAULT_FROM_EMAIL = 'Dareyoo <no-reply@dareyoo.com>'
 
 ### CORS ###
 CORS_URLS_REGEX = r'^/api/v1.*$'
+CORS_ORIGIN_ALLOW_ALL = True
