@@ -240,7 +240,7 @@ class DareyooUser(AbstractEmailUser):
         if self.facebook_uid:
             return "http://graph.facebook.com/%s/picture" % self.facebook_uid
         
-        default_avatar = urljoin(settings.STATIC_URL, "alpha/img/profile_%s.png" % (self.id or 1 % 10))
+        default_avatar = urljoin(settings.STATIC_URL, "alpha/img/profile_%s.png" % ((self.id or 1) % 10))
 
         if settings.AVATAR_GRAVATAR_BACKUP:
             params = {'s': str(size), 'd': default_avatar}
@@ -253,7 +253,7 @@ class DareyooUser(AbstractEmailUser):
         if self.profile_pic:
             return self.profile_pic._get_url()
         else:
-            return settings.STATIC_URL + "beta/build/img/default_profile_pics/profile_%s.png" % (self.id or 1 % 10)
+            return settings.STATIC_URL + "beta/build/img/default_profile_pics/profile_%s.png" % ((self.id or 1 )% 10)
 
     def get_fb_friends(self):
         social_user = self.social_auth.filter(
