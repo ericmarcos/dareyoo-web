@@ -253,7 +253,7 @@ class DareyooUser(AbstractEmailUser):
         if self.profile_pic:
             return self.profile_pic._get_url()
         else:
-            return ""
+            return settings.STATIC_URL + "beta/build/img/default_profile_pics/profile_%s.png" % (self.id or 1 % 10)
 
     def get_fb_friends(self):
         social_user = self.social_auth.filter(
