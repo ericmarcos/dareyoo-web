@@ -33,7 +33,7 @@
         <ul class="nav navbar-nav navbar-left">
           <li ng-class="{ active: $state.includes('main') }"><a href="#" ui-sref="main.timeline-global">INICIO</a></li>
           <li ng-class="{ active: $state.includes('profile') }" ng-if="user"><a href="#" ui-sref="profile.bets({userId:user.id})">PERFIL</a></li>
-          <li ng-class="{ active: $state.includes('tournaments') }"><a href="#" ui-sref="tournaments">TORNEOS Y PREMIOS</a></li>
+          <li ng-class="{ active: $state.includes('tournament') }"><a href="#" ui-sref="tournaments">TORNEOS Y PREMIOS</a></li>
         </ul>
         <div class="navbar-form navbar-left" role="search" ng-controller="SearchCtrl">
           <div class="form-group">
