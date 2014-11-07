@@ -148,7 +148,7 @@ class UserPointsFactory:
                 u = UserPoints()
                 u.bet = bet
                 u.user = bet.author
-                u.calculatePointsFromBet()
+                u.points = bet.pot()
                 u.save()
             #TODO: the creator of the lottery should get some extra points
             #u = UserPoints()
