@@ -642,6 +642,11 @@ angular.module('dareyoo.controllers', []).
       $('#new-bet-fail-modal').modal('show');
     };
 
+    $scope.help = function(topic) {
+      $scope.help_topic = topic;
+      $('#new-bet-help-modal').modal('show');
+    }
+
     $scope.simpleBetBiddingDeadlineOptions = ['10 minutos',
                                               '20 minutos',
                                               '30 minutos',

@@ -33,14 +33,43 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+
+
 <div class="new-bet-widget" ng-controller="NewBetCtrl">
+
+<div id="new-bet-help-modal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
+        <h4 class="modal-title">Ayuda: crear apuesta</h4>
+      </div>
+      <div class="modal-body">
+        <p ng-show="help_topic=='title'">El título es la esencia de la apuesta, es donde tienes que decir en pocas palabras cual es tu predicción. Intenta ser claro y conciso (tienes un máximo de 140 carácteres) y evita empezar con "Me apuesto que ...".<br><br>Por ejemplo: "Messi hará un hat-trick esta noche". Se asume que estás apostando A FAVOR de lo que escribas aquí y que los rivales que acepten jugar, lo harán EN CONTRA. Por ejemplo, si alguien acepta la apuesta sobre Messi, estará apostando a que no hará un hat-trick.<br><br>En el caso de que vayas a crear una porra el sentido será distinto. En una porra el título es puramente descriptivo, por ejemplo: "Porra Barça-Madrid". También es habitual escribir el título de una porra en forma de pregunta: "¿Quién ganará el Oscar a la mejor actriz de reparto?"<br><br><a href="http://www.dareyoo.com/como-funciona">+ info</a></p>
+        <p ng-show="help_topic=='description'">Los detalles sirven como complemento del título, especialmente para evitar posibles ambigüedades en el resultado final, o clarificar aspectos que no caben en el título.<br><br>Por ejemplo, a veces hay discrepancias sobre la autoría de un gol si éste ha sido de rebote. Aquí se debería poner algo como "Me basaré en la estadística oficial de La Liga". Otro ejemplo, imagínate una porra que sea "¿Cuál será la participación en las próximas elecciones?", en los detalles tendría sentido poner "Daré como ganador el resultado que más se acerque a los datos oficiales que dé el Gobierno".<br><br>Es como la letra pequeña en un contrato, sé cuidadoso con ella, !y lee la letra pequeña de otros contratos antes de aceptarlos!<br><br><a href="http://www.dareyoo.com/como-funciona">+ info</a></p>
+        <p ng-show="help_topic=='public'">Una apuesta pública será visible por todos los usuarios y cualquiera podrá participar en ella. Por contra, una apuesta privada sólo será visible para aquellos usuarios a los que invites (en el último paso de la creación de la apuesta), por lo tanto, sólo ellos podrán participar.<br><br><a href="http://www.dareyoo.com/como-funciona">+ info</a></p>
+        <p ng-show="help_topic=='type'"><strong>Básica:</strong> En este tipo de apuesta, el primer usuario que acepte jugar en contra será tu rival, quedando definida como un cara a cara. La apuesta quedará cerrada y nadie más podrá participar.<br><br><strong>Subasta:</strong> Como su propio nombre indica, en este tipo de apuesta recibirás ofertas para jugar en contra. Al final deberás decidir que oferta aceptas para jugar cara a cara.<br><br><strong>Porra:</strong> En una porra se definirán los posibles resultados y los jugadores apostarán por el resultado que crean oportuno. Es el único tipo de apuesta en el que pueden participar más de dos usuarios a la vez.<br><br><a href="http://www.dareyoo.com/como-funciona">+ info</a></p>
+        <p ng-show="help_topic=='amount' && newBetFormData.bet_type != 3">Cantidad de Yoos que te apuestas. Cuantos más Yoos te juegues, más puntos obtendrás por esta apuesta, tanto si pierdes como si ganas. Cuando hayas acabado de crear la apuesta se te bloquearán los Yoos que hayas apostado y no se desbloquearán hasta que la apuesta finalize.<br><br><a href="http://www.dareyoo.com/como-funciona">+ info</a></p>
+        <p ng-show="help_topic=='amount' && newBetFormData.bet_type == 3">Cantidad de Yoos a apostar por cada jugador que quiera participar en esta porra. Ten en cuenta que crear la porra no implica que tengas que participar en ella y por lo tanto no supone ningún gasto de Yoos de entrada. Para participar deberás apostar por algún resultado, igual que los demás jugadores.<br><br><a href="http://www.dareyoo.com/como-funciona">+ info</a></p>
+        <p ng-show="help_topic=='against'">Cantidad de Yoos que deberá apostar tu rival para jugar en esta apuesta. Ten en cuenta que el "ratio" entre la cantidad que tú apuestas y la cantidad de tu rival tiene una gran influencia en la cantidad de puntos que obtienes al finalizar la apuesta.<br><br>Por ejemplo, si te apuestas 20Y contra 20Y obtendrás menos puntos que si te apuestas 10Y contra 30Y, aunque el bote final sea el mismo, ya que se asume que estás asumiendo un riesgo mucho mayor.<br><br><a href="http://www.dareyoo.com/como-funciona">+ info</a></p>
+        <p ng-show="help_topic=='bidding_deadline'">Fecha de cierre de la apuesta, indica hasta que momento se podrá participar en la apuesta.<br><br>Por ejemplo, si estás apostando sobre el resultado de un partido, esta fecha debería ser la hora de inicio del partido, ya que no quieres que alguien pueda participar una vez haya empezado el partido. En una apuesta básica, si nadie ha aceptado la apuesta antes de esta fecha se declarará desierta y se te devolverán los Yoos bloqueados. Lo mismo sucede en una subasta si no has aceptado ninguna oferta antes de esta fecha.<br><br><a href="http://www.dareyoo.com/como-funciona">+ info</a></p>
+        <p ng-show="help_topic=='event_deadline'">Fecha de finalización de la apuesta, indica a partir de que momento podrás solucionar la apuesta.<br><br>Por ejemplo, si estás apostando sobre el resultado de un partido, esta fecha debería ser la hora de finalización del partido.<br><br>Cuando llegue este momento recibirás una notificación para recordarte que debes solucionar la apuesta y tendrás 24 horas para hacerlo.<br><br><a href="http://www.dareyoo.com/como-funciona">+ info</a></p>
+        <p ng-show="help_topic=='open_lottery'"><strong>Porra abierta:</strong> Cualquier jugador podrá añadir un resultado a la porra. Aconsejamos elegir esta opción para apuestas donde hay muchos posibles resultados.<br><br>Por ejemplo: "¿Cuántos puntos anotará Rudy?", cada usuario pondrá la cantidad de puntos que crea oportuno.<br><br>Como creador de la apuesta tienes la responsabilidad de administrarla bien y eliminar los resultados que no se ajusten a tu criterio. En el caso de la porra de Rudy, si lo que quieres es que la gente ponga el número exacto y alguien pone "más de 1", deberás eliminar ese resultado.<br><br><strong>Porra cerrada:</strong> Sólo tú podrás crear resultados en la porra y los jugadores que quieran participar deberán unirse a uno de los resultados predeterminados. Aconsejamos elegir esta opción para porras con un número limitado de posibilidades o por si quieres limitar las opciones en un resultado abierto.<br><br>Por ejemplo, en el caso anteror, "¿Cuántos puntos anotará Rudy?", te podría interesar limitar la porra a 4 resultados: "más de 20", "entre 15 y 20", "entre 10 y 15" y "menos de 10".<br><br><a href="http://www.dareyoo.com/como-funciona">+ info</a></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
     <div class="new-bet-widget-header" ng-class="{'basic-bg':newBetFormData.bet_type==1, 'auction-bg':newBetFormData.bet_type==2, 'lottery-bg':newBetFormData.bet_type==3 }" ng-if="step != 1">
         <span class="header-title"><small><span class="glyphicon glyphicon-[[newBetFormData.public && 'globe' || 'lock']]"></span></small><strong> [[getTypeName()]]:</strong> [[newBetFormData.title]]</span>
     </div>
     <div class="container-fluid-small" ng-show="step==1">
         <div class="row-small" ng-show="focus">
             <div class="col-small-12">
-                <span class="new-bet-label">Título: [<a href="#">?</a>]</span>
+                <span class="new-bet-label">Título: [<a href="#" ng-click="help('title')">?</a>]</span>
                 <span class="pull-right"><span>[[140 - newBetFormData.title.length]]</span></span>
             </div>
         </div>
@@ -51,7 +80,7 @@
         </div>
         <div class="row-small" ng-show="focus">
             <div class="col-small-12">
-                <span class="new-bet-label">Detalles: [<a href="#">?</a>]</span>
+                <span class="new-bet-label">Detalles: [<a href="#" ng-click="help('description')">?</a>]</span>
             </div>
         </div>
         <div class="row-small" ng-show="focus">
@@ -69,12 +98,12 @@
                     <input type="radio"><small><span class="glyphicon glyphicon-lock"></span></small>
                     </label>
                 </div>
-                <span class="new-bet-label" ng-click="setPublic(!newBetFormData.public)">[[newBetFormData.public && "Pública" || "Privada"]] [<a href="#">?</a>]</span>
+                <span class="new-bet-label" ng-click="setPublic(!newBetFormData.public)">[[newBetFormData.public && "Pública" || "Privada"]] [<a href="#" ng-click="help('public')">?</a>]</span>
             </div>
         </div>
         <div class="row-small" ng-show="focus">
             <div class="col-small-12">
-                <span class="new-bet-label">Tipo de apuesta: [<a href="#">?</a>]</span>
+                <span class="new-bet-label">Tipo de apuesta: [<a href="#" ng-click="help('type')">?</a>]</span>
             </div>
         </div>
         <div class="row-small action-row" ng-show="focus">
@@ -93,12 +122,12 @@
         <div class="row-small">
             <div class="col-small-12">
                 <div class="input-group new-bet-widget-input">
-                    <span class="input-group-addon input-grout-wide">[[newBetFormData.bet_type == 3 && "Por barba" || "Me juego"]] [<a href="#">?</a>]</span>
+                    <span class="input-group-addon input-grout-wide">[[newBetFormData.bet_type == 3 && "Por barba" || "Me juego"]] [<a href="#" ng-click="help('amount')">?</a>]</span>
                     <input type="number" id="amount" name="amount" class="form-control text-center" value="10" ng-model="newBetFormData.amount">
                     <span class="input-group-addon">Y</span>
                 </div>
                 <div class="input-group new-bet-widget-input" ng-show="newBetFormData.bet_type==1">
-                    <span class="input-group-addon input-grout-wide">Contra [<a href="#">?</a>]</span>
+                    <span class="input-group-addon input-grout-wide">Contra [<a href="#" ng-click="help('against')">?</a>]</span>
                     <input type="number" id="against" name="against" class="form-control text-center" value="10" ng-model="newBetFormData.against">
                     <span class="input-group-addon">Y</span>
                 </div>
@@ -117,7 +146,7 @@
         </div>
         <div class="row-small">
             <div class="col-small-12">
-                <span class="new-bet-label">Cierre: [<a href="#">?</a>]</span>
+                <span class="new-bet-label">Cierre: [<a href="#" ng-click="help('bidding_deadline')">?</a>]</span>
             </div>
         </div>
         <div class="row-small" ng-show="!timeRelativeBidding">
@@ -150,7 +179,7 @@
         </div>
         <div class="row-small">
             <div class="col-small-12">
-                <span class="new-bet-label">Finalización: [<a href="#">?</a>]</span>
+                <span class="new-bet-label">Finalización: [<a href="#" ng-click="help('event_deadline')">?</a>]</span>
             </div>
         </div>
         <div class="row-small" ng-show="!timeRelativeEvent">
@@ -191,7 +220,7 @@
                     <input type="radio"><small><span class="glyphicon glyphicon-lock"></span></small>
                     </label>
                 </div>
-                <span class="new-bet-label" ng-click="setOpenLottery(!newBetFormData.open_lottery)">[[newBetFormData.open_lottery && "Porra abierta" || "Porra cerrada"]] [<a href="#">?</a>]</span>
+                <span class="new-bet-label" ng-click="setOpenLottery(!newBetFormData.open_lottery)">[[newBetFormData.open_lottery && "Porra abierta" || "Porra cerrada"]] [<a href="#" ng-click="help('open_lottery')">?</a>]</span>
             </div>
         </div>
         <div class="row-small action-row">
