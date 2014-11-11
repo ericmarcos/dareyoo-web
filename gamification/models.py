@@ -467,7 +467,7 @@ class Tournament(models.Model):
         if bet.author != self.author and self.only_author:
             #raise GamificationException("Can't add a bet by another author")
             return False
-        if self.tag and not self.tag in bet.title:
+        if self.tag and not self.tag.lower() in bet.title.lower():
             return False
         if not self.public and not bet.author in self.participants.all():
             return False
