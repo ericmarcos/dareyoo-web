@@ -34,6 +34,7 @@ def arbitrating_deadline(bet_id=None, **kwargs):
     #b = Bet.objects.get(pk=bet_id)
     #if b.is_arbitrating():
     #    b.next_state()
+    pass
 
 @shared_task(name='missed_deadlines')
 def missed_deadlines():
