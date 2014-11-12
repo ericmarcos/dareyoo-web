@@ -25,10 +25,6 @@ class IsAuthenticatedOrIsGlobal(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated() or request.QUERY_PARAMS.get('global')
 
-    def has_object_permission(self, request, view, obj):
-        # Read permissions are allowed to any request
-        return request.method in permissions.SAFE_METHODS or obj.author == request.user
-
 
 class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
@@ -243,7 +239,7 @@ class SearchBetsList(generics.ListAPIView):
 class TimelineList(generics.ListAPIView):
     model = Bet
     serializer_class = BetSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrIsGlobal,)
 
     def get_queryset(self):
         user = self.request.user
