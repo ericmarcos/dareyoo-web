@@ -250,7 +250,10 @@ class TimelineList(generics.ListAPIView):
         qs = Bet.objects.all()
         if all_bets:
             #Global timeline: all public bets plus private bets where user is involved
-            qs = qs.involved(user) | qs.public()
+            if self.request.user.is_authenticated():
+                qs = qs.involved(user) | qs.public()
+            else:
+                qs = qs.public()
         else:
             #User timeline
             qs = qs.involved(user) | qs.following(user)
