@@ -83,7 +83,7 @@ class TournamentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.R
                         self.user = user
                         self.total_points = points
                         self.position = position
-                if my_points:
+                if my_points and my_points[1] > 10:
                     ranking.append(Item(request.user.id, my_points[0], my_points[1]))
         serializer = RankingSerializer(ranking, context={'request': request}, many=True)
         return response.Response(serializer.data, status=status.HTTP_200_OK)
