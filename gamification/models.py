@@ -51,8 +51,8 @@ class UserPointsQuerySet(TimeRangeQuerySet, TagQuerySet):
         ie: user.points.week().sum() '''
         return self.aggregate(total_points=Sum('points')).get('total_points', 0) or 0
 
-    def sum_pos(self):
-        points = self.sum()
+    def sum_pos(self, user):
+        points = self.user(user).sum()
         if points > 0:
             pos = self.values('user').annotate(total_points=Sum('points')).filter(total_points__gt=points).count()
             return (points, pos + 1)

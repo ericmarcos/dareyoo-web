@@ -77,7 +77,7 @@ class TournamentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.R
             tournament = self.get_object()
             ranking = list(tournament.leaderboard()[:10])
             if request.user.is_authenticated():
-                my_points = tournament.points(request.user).sum_pos()
+                my_points = tournament.points().sum_pos(request.user)
                 class Item:
                     def __init__(self, user, points, position):
                         self.user = user
