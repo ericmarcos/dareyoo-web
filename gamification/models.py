@@ -51,6 +51,17 @@ class UserPointsQuerySet(TimeRangeQuerySet, TagQuerySet):
         ie: user.points.week().sum() '''
         return self.aggregate(total_points=Sum('points')).get('total_points', 0) or 0
 
+    def sum_pos(self):
+        points = self.sum()
+        if points > 0:
+            pos = self.values('user').annotate(total_points=Sum('points')).filter(total_points__gt=points).count()
+            return (points, pos + 1)
+        else:
+            return None
+
+    def user(self, user):
+        return self.filter(user=user)
+
     def ranking(self):
         qs = self.values('user')
         qs = qs.annotate(total_points=Sum('points'))
@@ -481,8 +492,15 @@ class Tournament(models.Model):
     def add_participant(self, user):
         self.participants.add(user)
 
+    def points(self, user=None):
+        qs = UserPoints.objects.filter(bet__tournaments=self)
+        if user:
+            return qs.user(user)
+        else:
+            return qs
+
     def leaderboard(self):
-        return UserPoints.objects.filter(bet__tournaments=self).ranking()
+        return self.points().ranking()
 
     def get_pic_url(self):
         if self.pic:

@@ -75,7 +75,16 @@ class TournamentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.R
             ranking = UserPoints.objects.all().ranking()
         else:
             tournament = self.get_object()
-            ranking = tournament.leaderboard()
+            ranking = list(tournament.leaderboard()[:10])
+            if request.user.is_authenticated():
+                my_points = tournament.points(request.user).sum_pos()
+                class Item:
+                    def __init__(self, user, points, position):
+                        self.user = user
+                        self.total_points = points
+                        self.position = position
+                if my_points:
+                    ranking.append(Item(request.user.id, my_points[0], my_points[1]))
         serializer = RankingSerializer(ranking, context={'request': request}, many=True)
         return response.Response(serializer.data, status=status.HTTP_200_OK)
 

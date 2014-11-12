@@ -89,6 +89,13 @@ class PaginatedBetPointsSerializer(pagination.PaginationSerializer):
 class RankingSerializer(serializers.Serializer):
     user = UserField()
     points = serializers.FloatField(source='total_points')
+    position = serializers.SerializerMethodField('get_position')
+
+    def get_position(self, obj):
+        if hasattr(obj, 'position'):
+            return obj.position
+        else:
+            return None
 
 
 class TournamentSerializer(serializers.HyperlinkedModelSerializer):
