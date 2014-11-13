@@ -282,7 +282,7 @@ REST_FRAMEWORK = {
 
 ## MAILCHIMP ##
 MAILCHIMP_API_KEY = '5c8d8f1dd4ca262475403502425f914a-us9'
-MAILCHIMP_LISTS {
+MAILCHIMP_LISTS = {
     'Dareyoo': 'a731d54b3a',
     'Dareyoo News': 'e9a48ad632'
 }

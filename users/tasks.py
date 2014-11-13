@@ -61,7 +61,8 @@ def send_email(**kwargs):
 
 @shared_task(name='register_email_mailchimp')
 def register_email_mailchimp(**kwargs):
-    user = kwargs.get('user')
+    user_id = kwargs.get('user_id')
+    user = DareyooUser.objects.get(id=user_id)
     if user and user.email:
         conn = mailchimp.utils.get_connection()
         dy_main_list = conn.get_list_by_id(settings.MAILCHIMP_LISTS.get('Dareyoo'))
