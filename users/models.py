@@ -290,6 +290,7 @@ class DareyooUser(AbstractEmailUser):
             }
             
             send_task('send_email', kwargs=kwargs)
+            send_task('register_email_mailchimp', kwargs={'user_id':self.id})
 
     def __unicode__(self):
         return "%s - %s" % (self.email, self.username)
