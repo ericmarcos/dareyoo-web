@@ -155,18 +155,13 @@ class UserPointsFactory:
                     if p == bet.author:
                         author_participated = True
                     u.save()
-            if not author_participated:
-                u = UserPoints()
-                u.bet = bet
-                u.user = bet.author
-                u.points = bet.pot()
-                u.save()
-            #TODO: the creator of the lottery should get some extra points
-            #u = UserPoints()
-            #u.bet = bet
-            #u.user = bet.author
-            #u.points = u.lotteryCreatorPoints()
-            #u.save()
+            # TODO: decide what to do when creator doesnt participate
+            #if not author_participated:
+            #    u = UserPoints()
+            #    u.bet = bet
+            #    u.user = bet.author
+            #    u.points = bet.pot()
+            #    u.save()
         else:
             u = UserPoints()
             u.bet = bet
