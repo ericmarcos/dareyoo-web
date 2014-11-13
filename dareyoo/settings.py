@@ -58,6 +58,7 @@ INSTALLED_APPS = (
     'social.apps.django_app.default',
 #    'social.apps.django_app.me',
     'avatar',
+    'mailchimp',
     'djrill',
     'django_extensions',
     'dareyoo',
@@ -277,6 +278,13 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ),
     'PAGINATE_BY': 10
+}
+
+## MAILCHIMP ##
+MAILCHIMP_API_KEY = '5c8d8f1dd4ca262475403502425f914a-us9'
+MAILCHIMP_LISTS {
+    'Dareyoo': 'a731d54b3a',
+    'Dareyoo News': 'e9a48ad632'
 }
 
 ### DJRILL ###
