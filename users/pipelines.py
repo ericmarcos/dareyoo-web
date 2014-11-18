@@ -13,7 +13,7 @@ from requests import request, HTTPError
 
 from django.core.files.base import ContentFile
 from django.conf import settings
-from .models import DareyooUser
+from .models import DareyooUser, PromoCode
 
 #http://stackoverflow.com/questions/19890824/save-facebook-profile-picture-in-model-using-python-social-auth
 def save_profile_picture(strategy, user, response, details,
@@ -88,6 +88,16 @@ def save_campaign(strategy, user, response, details,
         utm_campaign = kwargs['request'].session.get('utm_campaign')
         user.reference_campaign = "%s_%s_%s" % (utm_source, utm_medium, utm_campaign)
         user.save()
+
+def promo_code(strategy, user, response, details,
+                    is_new=False, *args, **kwargs):
+    code = kwargs['request'].POST.get('promo_code') or kwargs['request'].session.get('promo_code')
+    if code:
+        try:
+            pc = PromoCode.objects.get(code=code)
+            pc.exchange(user)
+        except:
+            pass
 
 #https://djangosnippets.org/snippets/690/
 import re

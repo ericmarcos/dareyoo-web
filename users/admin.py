@@ -1,5 +1,5 @@
 from django.contrib import admin
-from users.models import DareyooUser
+from users.models import DareyooUser, PromoCode
 from custom_user.models import EmailUser
 
 class DareyooUserAdmin(admin.ModelAdmin):
@@ -11,3 +11,4 @@ class DareyooUserAdmin(admin.ModelAdmin):
         return unicode(obj.bets.count())
 
 admin.site.register(DareyooUser, DareyooUserAdmin)
+admin.site.register(PromoCode)

@@ -237,6 +237,8 @@ SOCIAL_AUTH_STORAGE = 'social.apps.django_app.default.models.DjangoStorage'
 AUTH_USER_MODEL = 'users.DareyooUser'
 SOCIAL_AUTH_USER_MODEL = 'users.DareyooUser'
 
+SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['promo_code',]
+
 SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.social_details',
     'social.pipeline.social_auth.social_uid',

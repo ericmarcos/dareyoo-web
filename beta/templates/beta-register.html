@@ -28,13 +28,17 @@
             <input type="password" id="password2" name="password2" placeholder="repite el password" class="form-control">
             <span class="help-block"></span>
 
+            <input type="text" id="promo_code" name="promo_code" placeholder="Código de promoción (opcional)" class="form-control">
+            <span class="help-block"></span>
+
             <button type="submit" class="btn btn-primary">Registrar</button>
             <input type="hidden" name="next" value="{{ next }}" />
             </form>
         </div>
         <div class="col-md-3">
             <p>O ahórrate un minuto y regístrate con:</p><br><br>
-            <a href="{% url 'social:begin' "facebook" %}">
+            <input type="text" id="promo_code_fb" name="promo_code_fb" placeholder="Código de promoción (opcional)" class="form-control" style="width:226px; margin:10px auto;">
+            <a onclick="add_promo_code(this)" href="{% url 'social:begin' "facebook" %}">
                 <button class='zocial facebook'>Registrar con Facebook</button>
             </a>
             <p><small>(nunca publicaremos nada en tu nombre)</small></p>
@@ -48,4 +52,16 @@
 </div>
 </div>
 
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script type="text/javascript">
+function add_promo_code(element)
+{
+    $(element).attr('href', function() {
+        return this.href + '&promo_code=' + $('promo_code_fb').val();
+    });
+}
+</script>
 {% endblock %}

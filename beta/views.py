@@ -66,6 +66,7 @@ def register_view(request):
                 save_reference_user(**pipeline_params)
                 save_registered(**pipeline_params)
                 save_campaign(**pipeline_params)
+                promo_code(**pipeline_params)
                 #This is kind of a hack... but it works
                 #http://stackoverflow.com/questions/15192808/django-automatic-login-after-user-registration-1-4
                 user.backend = "django.contrib.auth.backends.ModelBackend"

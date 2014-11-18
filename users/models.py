@@ -1,5 +1,6 @@
 import re
 import hashlib
+import random
 
 try:
     from urllib.parse import urljoin, urlencode
@@ -347,3 +348,27 @@ class UserRefill(models.Model):
 
     def __unicode__(self):
         return "%s - %s [%s]" % (self.date, self.user, self.refill_type)
+
+
+class PromoCode(models.Model):
+    code = models.CharField(max_length=63, blank=True, null=True)
+    extra_coins = models.IntegerField(default=0)
+    users = models.ManyToManyField(DareyooUser, blank=True)
+
+    def exchange(self, user):
+        if not self.users.filter(id=user.id).exists():
+            user.coins_available += self.extra_coins
+            user.save()
+            self.users.add(user)
+
+    @staticmethod
+    def generate_random(extra_coins, n=1, prefix=""):
+        codes = []
+        for i in xrange(n):
+            code = str(random.random())[-4:]
+            pc = PromoCode.objects.create(code=prefix + code, extra_coins=extra_coins)
+            codes.append(pc)
+        return codes
+
+    def __unicode__(self):
+        return self.code
