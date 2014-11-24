@@ -41,6 +41,7 @@ def save_profile_picture(strategy, user, response, details,
 def save_username(strategy, user, response, details,
                     is_new=False, *args, **kwargs):
     if is_new:
+        username = ""
         if strategy and strategy.backend and strategy.backend.name == 'facebook':
             try:
                 username = response['username']
@@ -60,6 +61,13 @@ def save_username(strategy, user, response, details,
                 user.save()
             except Exception:
                 pass
+            if not username and user.email:
+                try:
+                    username = user.email.split("@")[0]
+                    user.username = username
+                    user.save()
+                except:
+                    pass
 
 def save_reference_user(strategy, user, response, details,
                     is_new=False, *args, **kwargs):
