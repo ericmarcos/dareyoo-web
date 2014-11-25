@@ -162,9 +162,17 @@ angular.module('dareyoo.controllers', []).
   }]).
   controller('TournamentRankingCtrl', ['$scope', '$http', '$location', '$filter', '$stateParams', function($scope, $http, $location, $filter, $stateParams) {
     $scope.leaderboard = {};
+    $scope.week = '0';
     $scope.loaded = false;
-    $scope.getLeaderboard = function(id) {
-      $http.get(document.location.origin + "/api/v1/tournaments/" + id + "/leaderboard").success(function(response) {
+    $scope.getLeaderboard = function(id, week) {
+      var data = {};
+      if(week) {
+        $scope.week = String(week);
+        data["params"] = {"week": $scope.week};
+      } else {
+        $scope.week = null;
+      }
+      $http.get(document.location.origin + "/api/v1/tournaments/" + id + "/leaderboard", data).success(function(response) {
         if(response.results) $scope.leaderboard = response.results;
         else $scope.leaderboard = response;
         $scope.loaded = true;
@@ -173,7 +181,7 @@ angular.module('dareyoo.controllers', []).
     if($scope.global) {
       $scope.getLeaderboard(0);
     } else {
-      $scope.getLeaderboard($stateParams.tournamentId);
+      $scope.getLeaderboard($stateParams.tournamentId, $scope.week); //by default we get current week
     }
   }]).
   controller('TournamentBetsCtrl', ['$scope', '$http', '$location', '$filter', '$stateParams', function($scope, $http, $location, $filter, $stateParams) {
@@ -191,6 +199,7 @@ angular.module('dareyoo.controllers', []).
   }]).
   controller('TournamentCtrl', ['$scope', '$http', '$location', '$filter', '$stateParams', function($scope, $http, $location, $filter, $stateParams) {
     $scope.tournament = {};
+    $scope.weeks = [];
     $scope.global = $stateParams.tournamentId == 0;
     $scope.loaded = false;
     $scope.getTournament = function(id) {
@@ -198,6 +207,10 @@ angular.module('dareyoo.controllers', []).
         if(response.results) $scope.tournament = response.results;
         else $scope.tournament = response;
         $scope.loaded = true;
+        var now = new Date(Date.now());
+        for (var d = new Date($scope.tournament.start); d <= now; d.setDate(d.getDate() + 7)) {
+            $scope.weeks.push(new Date(d));
+        }
       });
     };
     $scope.getStartDate = function() {

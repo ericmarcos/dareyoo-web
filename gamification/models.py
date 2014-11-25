@@ -487,15 +487,16 @@ class Tournament(models.Model):
     def add_participant(self, user):
         self.participants.add(user)
 
-    def points(self, user=None):
+    def points(self, user=None, week=None):
         qs = UserPoints.objects.filter(bet__tournaments=self)
         if user:
-            return qs.user(user)
-        else:
-            return qs
+            qs = qs.user(user)
+        if week:
+            qs = qs.week(week)
+        return qs
 
-    def leaderboard(self):
-        return self.points().ranking()
+    def leaderboard(self, week=None):
+        return self.points(week).ranking()
 
     def get_pic_url(self):
         if self.pic:
