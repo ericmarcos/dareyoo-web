@@ -188,14 +188,26 @@ angular.module('dareyoo.controllers', []).
     $scope.tournament_bets = [];
     $scope.global = $stateParams.tournamentId == 0;
     $scope.loaded = false;
-    $scope.getTournamentBets = function(id) {
-      $http.get(document.location.origin + "/api/v1/tournaments/" + id + "/bets").success(function(response) {
+    $scope.more_bets_link = null;
+    $scope.state = "bidding"; //{bidding, closed}
+    $scope.getTournamentBets = function(id, state) {
+      $scope.state = state;
+      $http.get(document.location.origin + "/api/v1/tournaments/" + id + "/bets", {"params": {"state": state}}).success(function(response) {
         if(response.results) $scope.tournament_bets = response.results;
         else $scope.tournament_bets = response;
         $scope.loaded = true;
+        $scope.more_bets_link = response.next;
       });
     };
-    $scope.getTournamentBets($stateParams.tournamentId);
+    $scope.moreBets = function() {
+      $http.get($scope.more_bets_link).success(function(response) {
+        if(response.results) {
+          $scope.tournament_bets.push.apply($scope.bets, response.results);
+          $scope.more_bets_link = response.next;
+        }
+      });
+    };
+    $scope.getTournamentBets($stateParams.tournamentId, $scope.state);
   }]).
   controller('TournamentCtrl', ['$scope', '$http', '$location', '$filter', '$stateParams', function($scope, $http, $location, $filter, $stateParams) {
     $scope.tournament = {};

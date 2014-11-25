@@ -102,22 +102,25 @@ class BetQuerySet(QuerySet):
             raise BetException('Invalid bet state (valid types: ' + str(dict(Bet.BET_STATE_CHOICES).values()) + ')')
 
     def bidding(self):
-        return self.filter(bet_state='bidding')
+        return self.state('bidding')
+
+    def not_bidding(self):
+        return self.exclude(bet_state='bidding')
 
     def event(self):
-        return self.filter(bet_state='event')
+        return self.state('event')
 
     def resolving(self):
-        return self.filter(bet_state='resolving')
+        return self.state('resolving')
 
     def complaining(self):
-        return self.filter(bet_state='complaining')
+        return self.state('complaining')
 
     def arbitrating(self):
-        return self.filter(bet_state='arbitrating')
+        return self.state('arbitrating')
 
     def closed(self):
-        return self.filter(bet_state='closed')
+        return self.state('closed')
 
     def open(self):
         return self.exclude(bet_state='closed')

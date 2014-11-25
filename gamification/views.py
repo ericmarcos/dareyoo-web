@@ -98,8 +98,11 @@ class TournamentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.R
         tournament = self.get_object()
         #http://www.django-rest-framework.org/api-guide/pagination
         qs = tournament.bets.all()
-        if request.QUERY_PARAMS.get('state', 'bidding'):
-            qs = qs.filter(bet_state=request.QUERY_PARAMS.get('state', 'bidding'))
+        state = request.QUERY_PARAMS.get('state')
+        if state == 'closed':
+            qs = qs.not_bidding()
+        elif state:
+            qs = qs.state(state)
         paginator = Paginator(qs.order_by('-created_at'), 10)
         page = request.QUERY_PARAMS.get('page')
         try:

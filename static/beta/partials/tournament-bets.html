@@ -1,10 +1,14 @@
+<div class="text-center">
+    <div class="ranking-weeks">
+        <span class="label label-as-badge pointer" ng-class="{'label-primary': state=='bidding', 'label-default': state != 'bidding'}" ng-click="getTournamentBets(tournament.id, 'bidding')">ABIERTAS</span>
+        <span class="label label-default label-as-badge pointer" ng-click="getTournamentBets(tournament.id, 'closed')" ng-class="{'label-primary': state=='closed', 'label-default': state!='closed'}">CERRADAS</span>
+    </div>
+</div>
 <div ng-show="loaded && tournament_bets.length > 0" class="bets-list">
-    <div ng-if="(tournament_bets|filter:{'bet_state':'bidding'}).length > 0" class="bet-row-label">Abiertas</div>
-    <div ng-repeat="bet in tournament_bets | filter:{'bet_state':'bidding'}">
+    <div ng-repeat="bet in tournament_bets">
       <dy-bet-list-item bet="bet"></dy-bet-list-item>
     </div>
-    <div ng-if="(tournament_bets|filter:{'bet_state':'!bidding'}).length > 0" class="bet-row-label">Cerradas</div>
-    <div ng-repeat="bet in tournament_bets | filter:{'bet_state':'!bidding'}">
+    <div ng-repeat="bet in tournament_bets">
       <dy-bet-list-item bet="bet"></dy-bet-list-item>
     </div>
     <div ng-show="more_bets_link" class="more-bets">
