@@ -1,12 +1,18 @@
-<div class="ranking-weeks">
-    <div class="pull-left" ng-repeat="w in weeks">
-        <span class="label label-as-badge pointer" ng-class="{'label-primary': week==weeks.length - $index - 1, 'label-default': week != weeks.length - $index - 1}" ng-click="getLeaderboard(tournament.id, weeks.length - $index - 1)">SEMANA DEL [[w | date:'dd/MM']]</span>
+<div class="text-center">
+    <div class="ranking-weeks">
+        <div class="pull-left" ng-repeat="w in weeks">
+            <span class="label label-as-badge pointer" ng-class="{'label-primary': week==weeks.length - $index - 1, 'label-default': week != weeks.length - $index - 1}" ng-click="getLeaderboard(tournament.id, weeks.length - $index - 1)">SEMANA DEL [[w | date:'dd/MM']]</span>
+        </div>
+        <div class="pull-left"><span class="label label-default label-as-badge pointer" ng-click="getLeaderboard(tournament.id)" ng-class="{'label-primary': !week, 'label-default': week}">GLOBAL</span></div>
+        <div class="clearfix"></div>
     </div>
-    <div class="pull-left"><span class="label label-default label-as-badge pointer" ng-click="getLeaderboard(tournament.id)" ng-class="{'label-primary': !week, 'label-default': week}">GLOBAL</span></div>
 </div>
 <div class="leaderboard-row" ng-repeat="l in leaderboard">
     <div class="leaderboard-pos">#[[l.position || $index + 1]]</div>
     <div class="leaderboard-user"><dy-user-pic-name user="l.user" size="'small'" horizontal='true' badges='false'></dy-user-pic-name></div>
     <div class="leaderboard-points">[[l.points]] <span class="puntos">PUNTOS</span></div>
     <div class="clearfix"></div>
+</div>
+<div class="leaderboard-row" ng-hide="leaderboard.length">
+    <div class="text-center"><span class="puntos">Nadie ha puntuado aún<span ng-show="week != null"> esta semana</span></span></div>
 </div>

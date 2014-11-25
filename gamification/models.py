@@ -491,7 +491,7 @@ class Tournament(models.Model):
         qs = UserPoints.objects.filter(bet__tournaments=self)
         if user:
             qs = qs.user(user)
-        if week:
+        if week is not None:
             qs = qs.week(week)
         return qs
 
