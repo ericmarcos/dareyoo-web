@@ -496,7 +496,7 @@ class Tournament(models.Model):
         return qs
 
     def leaderboard(self, week=None):
-        return self.points(week).ranking()
+        return self.points(week=week).ranking()
 
     def get_pic_url(self):
         if self.pic:
