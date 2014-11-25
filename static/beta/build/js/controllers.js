@@ -165,6 +165,7 @@ angular.module('dareyoo.controllers', []).
     $scope.week = '0';
     $scope.loaded = false;
     $scope.getLeaderboard = function(id, week) {
+      $scope.leaderboard = {};
       var data = {};
       $scope.loaded = false;
       if(!isNaN(week)) {
