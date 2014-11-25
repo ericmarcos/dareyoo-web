@@ -5,12 +5,13 @@
         
     </div>
 </div>
+<div ng-hide="loaded" class="container-fluid text-center"><dy-loader></dy-loader></div>
 <div class="leaderboard-row" ng-repeat="l in leaderboard">
     <div class="leaderboard-pos">#[[l.position || $index + 1]]</div>
     <div class="leaderboard-user"><dy-user-pic-name user="l.user" size="'small'" horizontal='true' badges='false'></dy-user-pic-name></div>
     <div class="leaderboard-points">[[l.points]] <span class="puntos">PUNTOS</span></div>
     <div class="clearfix"></div>
 </div>
-<div class="leaderboard-row" ng-hide="leaderboard.length">
+<div class="leaderboard-row" ng-hide="leaderboard.length" style="background-color:#eee">
     <div class="text-center"><span class="puntos">Nadie ha puntuado aún<span ng-show="week != null"> esta semana</span></span></div>
 </div>

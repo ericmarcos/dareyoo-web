@@ -166,6 +166,7 @@ angular.module('dareyoo.controllers', []).
     $scope.loaded = false;
     $scope.getLeaderboard = function(id, week) {
       var data = {};
+      $scope.loaded = false;
       if(!isNaN(week)) {
         $scope.week = String(week);
         data["params"] = {"week": $scope.week};
@@ -191,6 +192,7 @@ angular.module('dareyoo.controllers', []).
     $scope.more_bets_link = null;
     $scope.state = "bidding"; //{bidding, closed}
     $scope.getTournamentBets = function(id, state) {
+      $scope.loaded = false;
       $scope.state = state;
       $http.get(document.location.origin + "/api/v1/tournaments/" + id + "/bets", {"params": {"state": state}}).success(function(response) {
         if(response.results) $scope.tournament_bets = response.results;
@@ -200,10 +202,12 @@ angular.module('dareyoo.controllers', []).
       });
     };
     $scope.moreBets = function() {
+      $scope.loaded = false;
       $http.get($scope.more_bets_link).success(function(response) {
         if(response.results) {
-          $scope.tournament_bets.push.apply($scope.bets, response.results);
+          $scope.tournament_bets.push.apply($scope.tournament_bets, response.results);
           $scope.more_bets_link = response.next;
+          $scope.loaded = true;
         }
       });
     };

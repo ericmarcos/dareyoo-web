@@ -8,7 +8,11 @@
     <div ng-repeat="bet in tournament_bets">
       <dy-bet-list-item bet="bet"></dy-bet-list-item>
     </div>
-    <div ng-show="more_bets_link" class="more-bets">
+    <div ng-hide="loaded" class="container-fluid text-center"><dy-loader></dy-loader></div>
+    <div ng-show="more_bets_link && loaded" class="more-bets">
         <button type="button" class="btn btn-primary btn-block" ng-click="moreBets()">Cargar más apuestas...</button>
     </div>
+</div>
+<div class="leaderboard-row" ng-show="loaded && tournament_bets.length == 0" style="background-color:#eee">
+    <div class="text-center"><span class="puntos">No hay apuestas que mostrar</span></div>
 </div>
