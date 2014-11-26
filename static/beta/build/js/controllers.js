@@ -748,10 +748,10 @@ angular.module('dareyoo.controllers', []).
       return $scope.isAuthor() && $scope.isBidding() && $scope.isAuction();
     };
     $scope.canResolve = function() {
-      return $scope.isAuthor() && $scope.isResolving() && !$scope.isLottery();
+      return $scope.isAuthor() && ($scope.isEvent() || $scope.isResolving()) && !$scope.isLottery();
     };
     $scope.canResolveResult = function() {
-      return $scope.isAuthor() && $scope.isResolving() && $scope.isLottery();
+      return $scope.isAuthor() && ($scope.isEvent() || $scope.isResolving()) && $scope.isLottery();
     };
     $scope.canComplain = function() {
       return $scope.isComplaining() && $scope.isRival();
