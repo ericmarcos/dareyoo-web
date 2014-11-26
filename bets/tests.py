@@ -82,7 +82,7 @@ class BetResourceTest(APITestCase):
     def logout(self):
         self.client.credentials()
 
-    def test_lottery_arbitrage(self):
+    def test_lottery_arbitrage1(self):
 
         ###### Creating lottery with user 1
         self.login(1)
@@ -180,7 +180,7 @@ class BetResourceTest(APITestCase):
         self.login(2)
         url_post_bet_complain = reverse('bid-complain', args=(bid_1.id,))
         post_complain_data = {
-            'claim': 1,
+            'claim': 2,
             'claim_message': "ClaimComplainMessageTest"
         }
         response_post_bet_complain = self.client.post(url_post_bet_complain, post_complain_data)
@@ -204,7 +204,130 @@ class BetResourceTest(APITestCase):
         ranking = [self.username_5, self.username_2, self.username_3, self.username_1]
         self.assertEqual([p.user.username for p in bet.points.all().order_by('-points')], ranking)
 
+        self.logout()
 
+    def test_lottery_arbitrage2(self):
+
+        ###### Creating lottery with user 1
+        self.login(1)
+
+        bet_count = Bet.objects.count()
+        post_bet_data = {
+            'amount': 50.0,
+            'bet_type': 3,
+            'bidding_deadline': self.future(15),
+            'description': 'This is a test Bet POST',
+            'event_deadline': self.future(30),
+            'public': True,
+            'title': 'TestBetPost'
+        }
+        response_post_bet = self.client.post(self.url_post_bet, post_bet_data)
+        self.assertEqual(Bet.objects.count(), bet_count + 1)
+
+        bet = Bet.objects.last()
+        self.assertEqual(bet.title, post_bet_data.get('title'))
+        self.assertEqual(bet.bet_state, "bidding")
+
+        ####### Creating some results with user 1
+        url_post_bid = reverse('bet-bids', args=(bet.id,))
+
+        post_bid_data = {
+            'title': "TestBid1"
+        }
+        response_post_bid = self.client.post(url_post_bid, post_bid_data)
+        self.assertEqual(bet.bids.count(), 1)
+        bid_1 = Bid.objects.last()
+        self.assertEqual(response_post_bid.data.get('title'), bid_1.title)
+
+        post_bid_data = {
+            'title': "TestBid2"
+        }
+        response_post_bid = self.client.post(url_post_bid, post_bid_data)
+        self.assertEqual(bet.bids.count(), 2)
+        bid_2 = Bid.objects.last()
+        self.assertEqual(response_post_bid.data.get('title'), bid_2.title)
+
+        post_bid_data = {
+            'title': "TestBid3"
+        }
+        response_post_bid = self.client.post(url_post_bid, post_bid_data)
+        self.assertEqual(bet.bids.count(), 3)
+        bid_3 = Bid.objects.last()
+        self.assertEqual(response_post_bid.data.get('title'), bid_3.title)
+
+        ####### Participating in first result with user 2
+        self.login(2)
+
+        url_post_bid_participant = reverse('bid-add-participant', args=(bid_1.id,))
+        response_post_bid_participant = self.client.post(url_post_bid_participant)
+        self.assertEqual(bid_1.participants.count(), 1)
+
+        url_get_bid_participants = reverse('bid-participants', args=(bid_1.id,))
+        response_get_bid_participants = self.client.get(url_get_bid_participants)
+        self.assertEqual(len(response_get_bid_participants.data), 1)
+        self.assertEqual(response_get_bid_participants.data[0]['username'], self.username_2)
+
+        ####### Participating in second result with user 3
+        self.login(3)
+
+        url_post_bid_participant = reverse('bid-add-participant', args=(bid_2.id,))
+        response_post_bid_participant = self.client.post(url_post_bid_participant)
+        self.assertEqual(bid_2.participants.count(), 1)
+
+        url_get_bid_participants = reverse('bid-participants', args=(bid_2.id,))
+        response_get_bid_participants = self.client.get(url_get_bid_participants)
+        self.assertEqual(len(response_get_bid_participants.data), 1)
+        self.assertEqual(response_get_bid_participants.data[0]['username'], self.username_3)
+
+        ####### Going to event state
+        self.time_machine(16)
+        bet.next_state()
+        self.assertEqual(bet.bet_state, "event")
+
+        ####### Going to resolving state
+        self.time_machine(31)
+        bet.next_state()
+        self.assertEqual(bet.bet_state, "resolving")
+
+        ###### Resolving bet with user 1 (resolving that result 1 is the winner)
+        self.login(1)
+        url_post_bet_resolve = reverse('bet-resolve', args=(bet.id,))
+        post_resolve_data = {
+            'claim_lottery_winner': bid_1.id,
+            'claim_message': "ClaimMessageTest"
+        }
+        response_post_bet_resolve = self.client.post(url_post_bet_resolve, post_resolve_data)
+        bet = Bet.objects.get(id=bet.id)
+        self.assertEqual(bet.bet_state, "complaining")
+
+        ###### Complaining bet with user 2 (complaining that nobody won)
+        self.login(2)
+        url_post_bet_complain = reverse('bid-complain', args=(bid_1.id,))
+        post_complain_data = {
+            'claim': 3,
+            'claim_message': "ClaimComplainMessageTest"
+        }
+        response_post_bet_complain = self.client.post(url_post_bet_complain, post_complain_data)
+        bet = Bet.objects.get(id=bet.id)
+        self.assertEqual(bet.bet_state, "arbitrating")
+
+        ###### Arbitrating bet with user 5 (arbitrating in favour of user 1, so result 1 is the actual winner)
+        self.login(5)
+        url_post_bet_arbitrate = reverse('bet-arbitrate', args=(bet.id,))
+        post_arbitrate_data = {
+            'claim_lottery_winner': bid_1.id,
+            'claim_message': "ClaimArbitrateMessageTest"
+        }
+        response_post_bet_arbitrate = self.client.post(url_post_bet_arbitrate, post_arbitrate_data)
+        bet = Bet.objects.get(id=bet.id)
+        self.assertEqual(bet.bet_state, "closed")
+
+        ####### User 5 should get the most points for arbitrating,
+        ####### then user 2 for winning the lottery, then user 3 for participating
+        ####### and finally user 1 with negative points for losing the conflict
+        ranking = [self.username_5, self.username_1, self.username_3, self.username_2]
+        real_ranking = [(p.user.username, p.points) for p in bet.points.all().order_by('-points')]
+        self.assertEqual([p.user.username for p in bet.points.all().order_by('-points')], ranking)
 
         self.logout()
 

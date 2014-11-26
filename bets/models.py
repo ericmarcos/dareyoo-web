@@ -449,7 +449,7 @@ class Bet(models.Model):
         return pot
 
     def winners(self):
-        if self.is_closed() and not self.is_desert():
+        if (self.is_complaining() or self.is_arbitrating() or self.is_closed()) and not self.is_desert():
             claim = self.referee_claim or self.claim
             if self.is_lottery():
                 if claim != Bet.CLAIM_NULL:

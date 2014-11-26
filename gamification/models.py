@@ -155,13 +155,12 @@ class UserPointsFactory:
                     if p == bet.author:
                         author_participated = True
                     u.save()
-            # TODO: decide what to do when creator doesnt participate
-            #if not author_participated:
-            #    u = UserPoints()
-            #    u.bet = bet
-            #    u.user = bet.author
-            #    u.points = bet.pot()
-            #    u.save()
+            if not author_participated:
+                u = UserPoints()
+                u.bet = bet
+                u.user = bet.author
+                u.calculatePointsFromBet()
+                u.save()
         else:
             u = UserPoints()
             u.bet = bet
@@ -222,7 +221,7 @@ class UserPoints(models.Model):
                 if ref == self.user:
                     self.points = self.refereePoints()
                 elif bid and self.user == bid.claim_author:
-                    if self.bet.referee_lottery_winner == bid or (self.bet.referee_claim == Bet.CLAIM_NULL and bid.claim == Bet.CLAIM_NULL):
+                    if (self.bet.referee_lottery_winner == bid and bid.claim == Bet.CLAIM_LOST) or (self.bet.referee_claim == Bet.CLAIM_NULL and bid.claim == Bet.CLAIM_NULL):
                         self.points = self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.bet.referee_lottery_winner == bid)
                         self.points += self.conflictWinnerPoints()
                     else:
@@ -248,7 +247,11 @@ class UserPoints(models.Model):
                     self.points = self.conflictLoserPoints()
         else:
             if self.bet.is_lottery():
-                self.points = self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.user in winners)
+                if bid:
+                    self.points = self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.user in winners)
+                else:
+                    #lottery creator
+                    self.points = self.lotteryCreatorPoints()
             else:
                 points = self.pointsFromAmount(self.bet.amount, self.bet.accepted_bid.amount, winners and self.bet.author == winners[0])
                 if winners and winners[0] == self.user:

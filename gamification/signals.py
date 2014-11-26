@@ -24,11 +24,15 @@ def bet_closing_points(sender, **kwargs):
     bet = kwargs.get('instance')
     transition = kwargs.get('name')
 
-    if transition == 'closed_ok' or transition == 'closed_conflict':
-        #Calculate points for this bet
+    if transition == 'complaining':
         UserPointsFactory.fromBet(bet)
 
-        #Check out if any badges were unlocked
+    if transition == 'closed_conflict':
+        bet.points.all().delete()
+        UserPointsFactory.fromBet(bet)
+        UserBadges.fromBet(bet)
+
+    if transition == 'closed_ok':
         UserBadges.fromBet(bet)
 
 
