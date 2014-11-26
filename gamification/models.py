@@ -186,6 +186,7 @@ class UserPoints(models.Model):
     bid = models.ForeignKey(Bid, related_name='points', blank=True, null=True)
     points = models.FloatField(blank=True, null=True, default=0)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True, editable=False)
+    count_tournament = models.BooleanField(default=True)
 
     @staticmethod
     def level(points):
@@ -220,15 +221,19 @@ class UserPoints(models.Model):
             if self.bet.is_lottery():
                 if ref == self.user:
                     self.points = self.refereePoints()
+                    self.count_tournament = False
                 elif bid and self.user == bid.claim_author:
                     if (self.bet.referee_lottery_winner == bid and bid.claim == Bet.CLAIM_LOST) or (self.bet.referee_claim == Bet.CLAIM_NULL and bid.claim == Bet.CLAIM_NULL):
                         self.points = self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.bet.referee_lottery_winner == bid)
-                        self.points += self.conflictWinnerPoints()
+                        #self.points += self.conflictWinnerPoints()
                     else:
                         self.points = self.conflictLoserPoints()
                 elif self.user == self.bet.author:
                     if self.bet.referee_lottery_winner == self.bet.claim_lottery_winner or (self.bet.referee_claim == Bet.CLAIM_NULL and self.bet.claim == Bet.CLAIM_NULL):
-                        self.points = self.conflictWinnerPoints()
+                        #self.points = self.conflictWinnerPoints()
+                        #lottery creator
+                        self.points = self.lotteryCreatorPoints()
+                        self.count_tournament = False
                         '''the author wins the conflict, but maybe he hasn't participated'''
                         if self.user in self.bet.participants():
                             self.points += self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.user in winners)
@@ -240,9 +245,10 @@ class UserPoints(models.Model):
                 points = self.pointsFromAmount(self.bet.amount, self.bet.accepted_bid.amount, winners and self.bet.author == winners[0])
                 if winners and winners[0] == self.user:
                     self.points = points[0]
-                    self.points += self.conflictWinnerPoints()
+                    #self.points += self.conflictWinnerPoints()
                 elif ref == self.user:
                     self.points = self.refereePoints()
+                    self.count_tournament = False
                 else:
                     self.points = self.conflictLoserPoints()
         else:
@@ -252,6 +258,7 @@ class UserPoints(models.Model):
                 else:
                     #lottery creator
                     self.points = self.lotteryCreatorPoints()
+                    self.count_tournament = False
             else:
                 points = self.pointsFromAmount(self.bet.amount, self.bet.accepted_bid.amount, winners and self.bet.author == winners[0])
                 if winners and winners[0] == self.user:
@@ -491,7 +498,7 @@ class Tournament(models.Model):
         self.participants.add(user)
 
     def points(self, user=None, week=None):
-        qs = UserPoints.objects.filter(bet__tournaments=self)
+        qs = UserPoints.objects.filter(bet__tournaments=self, count_tournament=True)
         if user:
             qs = qs.user(user)
         if week is not None:

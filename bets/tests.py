@@ -323,10 +323,9 @@ class BetResourceTest(APITestCase):
         self.assertEqual(bet.bet_state, "closed")
 
         ####### User 5 should get the most points for arbitrating,
-        ####### then user 2 for winning the lottery, then user 3 for participating
-        ####### and finally user 1 with negative points for losing the conflict
-        ranking = [self.username_5, self.username_1, self.username_3, self.username_2]
-        real_ranking = [(p.user.username, p.points) for p in bet.points.all().order_by('-points')]
+        ####### then user 3 for participating, then user 1 for creating the lottery, 
+        ####### and finally user 2 with negative points for losing the conflict
+        ranking = [self.username_5, self.username_3, self.username_1, self.username_2]
         self.assertEqual([p.user.username for p in bet.points.all().order_by('-points')], ranking)
 
         self.logout()
