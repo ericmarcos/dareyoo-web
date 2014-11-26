@@ -467,15 +467,6 @@ angular.module('dareyoo.controllers', []).
     $scope.current_bid_result = "";
     $scope.current_bid_participants = [];
 
-    $scope.betWinner = function() {
-      if($scope.bet.bet_type == 3) {
-        if($scope.bet.referee_claim == 3)
-          return null;
-        return $scope.bet.referee_lottery_winner || $scope.bet.claim_lottery_winner;
-      }
-      return $scope.bet.referee_claim || $scope.bet.claim;
-    };
-
     $scope.betAPIError = function(response, status, headers, config) {
       if(response && response['detail'] == "Authentication credentials were not provided.") {
         $scope.public_bet = true;
@@ -587,12 +578,45 @@ angular.module('dareyoo.controllers', []).
         }).error($scope.betAPIError);
       }
     };
+    $scope.getRivalAmount = function() {
+      if($scope.bet) {
+        return Math.floor($scope.bet.amount*$scope.bet.odds - $scope.bet.amount);
+      }
+      return null;
+    }
+    $scope.getAuthorPoints = function() {
+      if($scope.bet) {
+        if($scope.bet.points >= 0)
+          return "+" + $scope.bet.points;
+        return $scope.bet.points;
+      }
+      return null;
+    };
+    $scope.getRivalPoints = function() {
+      if($scope.bet) {
+        if($scope.bet.accepted_bid.points >= 0)
+          return "+" + $scope.bet.accepted_bid.points;
+        return $scope.bet.accepted_bid.points;
+      }
+      return null;
+    };
+    $scope.getRefereePoints = function() {
+      if($scope.bet) {
+        if($scope.bet.referee_points >= 0)
+          return "+" + $scope.bet.referee_points;
+        return $scope.bet.referee_points;
+      }
+      return null;
+    };
     $scope.getResolvingDeadline = function() {
-      var t = moment($scope.bet.event_deadline).add('days', 1).format();
-      return t;
+      if($scope.bet) {
+        var t = moment($scope.bet.event_deadline).add('days', 1).format();
+        return t;
+      }
+      return null;
     };
     $scope.getResolvedDate = function() {
-      if($scope.bet.resolved_at) {
+      if($scope.bet && $scope.bet.resolved_at) {
         var t = moment($scope.bet.resolved_at).format('D/M/YYYY - HH:mm:ss');
         return t;
       } else {
@@ -624,14 +648,28 @@ angular.module('dareyoo.controllers', []).
       }
     }
     $scope.bidComplained = function() {
-      var i=0, len=$scope.bet.bids.length;
-      for (; i<len; i++) {
-        if ($scope.bet.bids[i].claim) {
-          return $scope.bet.bids[i];
+      if($scope.bet) {
+        for (var i=0; i<$scope.bet.bids.length; i++) {
+          if ($scope.bet.bids[i].claim) {
+            return $scope.bet.bids[i];
+          }
         }
       }
       return null;
     };
+
+    $scope.betWinner = function() {
+      if($scope.bet) {
+        if($scope.isLottery()) {
+          if($scope.bet.referee_claim == 3)
+            return null;
+          return $scope.bet.referee_lottery_winner || $scope.bet.claim_lottery_winner;
+        }
+        return $scope.bet.referee_claim || $scope.bet.claim;
+      }
+      return false;
+    };
+
     $scope.isParticipant = function(userId) {
       var i=0, len=$scope.bet.bids.length;
       for (; i<len; i++) {
@@ -640,6 +678,110 @@ angular.module('dareyoo.controllers', []).
         }
       }
       return null;
+    };
+    $scope.isAuthor = function() { if($scope.bet) { return $scope.bet.author.id == $scope.user.id; } return false };
+    $scope.isRival = function() {
+      if($scope.bet && $scope.bet.accepted_bid)
+        return $scope.bet.accepted_bid.author.id == $scope.user.id;
+      return false;
+    };
+
+    $scope.isBidding = function() { if($scope.bet) { return $scope.bet.bet_state == 'bidding'; } return false };
+    $scope.isEvent = function() { if($scope.bet) { return $scope.bet.bet_state == 'event'; } return false };
+    $scope.isResolving = function() { if($scope.bet) { return $scope.bet.bet_state == 'resolving'; } return false };
+    $scope.isComplaining = function() { if($scope.bet) { return $scope.bet.bet_state == 'complaining'; } return false };
+    $scope.isArbitrating = function() { if($scope.bet) { return $scope.bet.bet_state == 'arbitrating'; } return false };
+    $scope.isClosed = function() { if($scope.bet) { return $scope.bet.bet_state == 'closed'; } return false };
+    $scope.isBasic = function() { if($scope.bet) { return $scope.bet.bet_type == 1; } return false };
+    $scope.isAuction = function() { if($scope.bet) { return $scope.bet.bet_type == 2; } return false };
+    $scope.isLottery = function() { if($scope.bet) { return $scope.bet.bet_type == 3; } return false };
+    
+    $scope.isAuthorWinner = function() { return $scope.betWinner() == 1; };
+    $scope.isRivalWinner = function() { return $scope.betWinner() == 2; };
+    $scope.isNoneWinner = function() { return $scope.betWinner() == 3; };
+
+    $scope.bidClaimLost = function() {
+      if($scope.bet) {
+        if(!$scope.isLottery() && $scope.bet.accepted_bid)
+          return $scope.bet.accepted_bid.claim == 1;
+        if($scope.isLottery())
+          return $scope.bidComplained().claim == 1;
+      }
+      return false;
+    };
+    $scope.bidClaimWin = function() {
+      if($scope.bet) {
+        if(!$scope.isLottery() && $scope.bet.accepted_bid)
+          return $scope.bet.accepted_bid.claim == 2;
+        if($scope.isLottery())
+          return $scope.bidComplained().claim == 2;
+      }
+      return false;
+    };
+    $scope.bidClaimNone = function() {
+      if($scope.bet) {
+        if(!$scope.isLottery() && $scope.bet.accepted_bid)
+          return $scope.bet.accepted_bid.claim == 3;
+        if($scope.isLottery())
+          return $scope.bidComplained().claim == 3;
+      }
+      return false;
+    };
+
+    $scope.refereeClaimAuthorWin = function() { if($scope.bet) { return $scope.bet.referee_claim == 1; } return false; };
+    $scope.refereeClaimRivalWin = function() { if($scope.bet) { return $scope.bet.referee_claim == 2; } return false; };
+    $scope.refereeClaimNoneWin = function() { if($scope.bet) { return $scope.bet.referee_claim == 3; } return false; };
+
+    $scope.canAddResult = function() {
+      return $scope.isBidding() && $scope.isLottery() && ($scope.bet.open_lottery || $scope.isAuthor()) && (!$scope.isParticipant($scope.user.id) || $scope.isAuthor());
+    };
+    $scope.canParticipateResult = function() {
+      return $scope.isLottery() && $scope.isBidding() && !$scope.isParticipant($scope.user.id);
+    };
+    $scope.canAddBid = function() {
+      return !$scope.isAuthor() && $scope.isBidding() && $scope.isBasic();
+    };
+    $scope.canRemoveBid = function() {
+      return $scope.isAuthor() && $scope.isBidding();
+    };
+    $scope.canAcceptBid = function() {
+      return $scope.isAuthor() && $scope.isBidding() && $scope.isAuction();
+    };
+    $scope.canResolve = function() {
+      return $scope.isAuthor() && $scope.isResolving() && !$scope.isLottery();
+    };
+    $scope.canResolveResult = function() {
+      return $scope.isAuthor() && $scope.isResolving() && $scope.isLottery();
+    };
+    $scope.canComplain = function() {
+      return $scope.isComplaining() && $scope.isRival();
+    };
+    $scope.canComplainResult = function(bid) {
+      return !$scope.isAuthor() && $scope.isComplaining() && $scope.isLottery() && $scope.bid.participants.indexOf($scope.user.id) != -1 && $scope.bet.claim_lottery_winner.id != bid.id;
+    };
+    $scope.canComplainNone = function() {
+      return !$scope.isAuthor() && $scope.isComplaining() && $scope.isLottery() && $scope.isParticipant($scope.user.id) && $scope.bet.claim != 3;
+    };
+    $scope.canArbitrate = function() {
+      if($scope.isLottery())
+        return $scope.isArbitrating() && !$scope.isAuthor() && !$scope.isParticipant($scope.user.id);
+      else
+        return $scope.isArbitrating() && !$scope.isAuthor() && !$scope.isRival();
+    };
+    $scope.canArbitrateResult = function(bid) {
+      return $scope.isArbitrating() && $scope.isLottery() && !$scope.isAuthor() && !$scope.isParticipant($scope.user.id);
+    };
+    $scope.showBidList = function() {
+      if($scope.bet) {
+        return ($scope.isAuction() && ($scope.bet.bids.length > 1 && $scope.bet.accepted_bid || $scope.bet.bids.length > 0 && !$scope.bet.accepted_bid)) || ($scope.isLottery() && $scope.bet.bids.length > 0);
+      }
+      return false;
+    };
+    $scope.showPoints = function() {
+      if($scope.bet) {
+        return $scope.isClosed() || $scope.isArbitrating() || $scope.isComplaining();
+      }
+      return false;
     };
 
     $scope.getBet($stateParams.betId);
