@@ -126,6 +126,7 @@ def main(request):
         'prev': int(prev) + 1,
         'next': int(prev) - 1 if int(prev) > 0 else 0,
         'new_real_users': new_real_users,
+        'new_real_users_percent': new_real_users_percent,
         'new_leads': new_leads,
         'active': active,
         'active_percent': active_percent,
