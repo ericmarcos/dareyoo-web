@@ -357,7 +357,7 @@
             </div>
             <div ng-if="showPoints()" class="bet-points">
                 <h4><span class="label pull-right" ng-class="{'label-success-lottery': betWinner().id == bid.id, 'label-default': betWinner().id != bid.id}">
-                    [[bid.points]] puntos&nbsp;&nbsp;&nbsp;<span ng-show="betWinner().id == bid.id" class="glyphicon glyphicon-thumbs-up"></span><span ng-show="betWinner().id != bid.id" class="glyphicon glyphicon-thumbs-down"></span>
+                    [[getBidPoints(bid)]] puntos&nbsp;&nbsp;&nbsp;<span ng-show="betWinner().id == bid.id" class="glyphicon glyphicon-thumbs-up"></span><span ng-show="betWinner().id != bid.id" class="glyphicon glyphicon-thumbs-down"></span>
                 </span></h4>
             </div>
             <div class="pull-right">
