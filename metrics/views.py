@@ -117,7 +117,7 @@ def main(request):
     percent_new_free_coins = int(round(float(new_free_coins) / new_coins * 100)) if new_coins > 0 else 0
     percent_new_paying_coins = int(round(float(new_paying_coins) / new_coins * 100)) if new_coins > 0 else 0
     burnt_coins = 0
-    new_real_users_percent = round(new_real_users / max(n - new_real_users, 1) * 100)
+    new_real_users_percent = int(round(float(new_real_users) / max(n - new_real_users, 1) * 100))
     context = {
         'total_real_users': n,
         'total_fake_users': fake,
