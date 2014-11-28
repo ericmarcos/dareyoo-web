@@ -312,7 +312,7 @@
                 </span>
             </div>
         </div>
-        <div class="arbitrating-bet" ng-if="canArbitrate() && !$scope.isLottery()">
+        <div class="arbitrating-bet" ng-if="canArbitrate() && !isLottery()">
             <div class="row-small" ng-show="!dialogs.arbitrating">
                 <div class="col-small-12 arbitrating-btn">
                     <button type="button" class="btn btn-primary btn-block" ng-click="dialogs.arbitrating=true">Quiero arbitrar y llevarme [[bet.referee_escrow]] Yoos de comisión</button>
