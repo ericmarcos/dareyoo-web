@@ -676,9 +676,10 @@ dy-level-star {
     background-color: @bg-color;
 }
 
-.label-success-basic { .label-variant(@basic-color); }
-.label-success-auction { .label-variant(@auction-color); }
-.label-success-lottery { .label-variant(@lottery-color); }
+.label-points { display: inline-block; line-height: 18px; }
+.label-success-basic { &:extend(.label-points); .label-variant(@basic-color); }
+.label-success-auction { &:extend(.label-points); .label-variant(@auction-color); }
+.label-success-lottery { &:extend(.label-points); .label-variant(@lottery-color); }
 
 .bet-detail {
     .dy-pill();

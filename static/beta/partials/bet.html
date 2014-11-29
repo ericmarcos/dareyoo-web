@@ -65,8 +65,12 @@
             </div>
             <div class="right">
                 <div ng-if="showPoints() && !isLottery()" class="bet-points">
-                    <h4><span class="label" ng-class="{'label-success-basic': isAuthorWinner() && isBasic(), 'label-success-auction': isAuthorWinner() && isAuction(), 'label-success-lottery': isAuthorWinner() && isLottery(), 'label-default': !isAuthorWinner()}">
-                        [[getAuthorPoints()]] puntos&nbsp;&nbsp;&nbsp;<span ng-show="isAuthorWinner()" class="glyphicon glyphicon-thumbs-up"></span><span ng-show="!isAuthorWinner()" class="glyphicon glyphicon-thumbs-down"></span>
+                    <h4 ng-if="isAuthorWinner()"><span class="label" ng-class="{'label-success-basic': isBasic(), 'label-success-auction': isAuction(), 'label-success-lottery': isLottery()}">
+                        [[getAuthorPoints()]] puntos&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-thumbs-up"></span>
+                        <br><span>+[[getWinnerYoos()]] Yoos</span>
+                    </span></h4>
+                    <h4 ng-if="!isAuthorWinner()"><span class="label label-default">
+                        [[getAuthorPoints()]] puntos&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-thumbs-down"></span>
                     </span></h4>
                 </div>
                 <p class="bet-title">[[bet.title]]</p>
@@ -74,6 +78,7 @@
                 <p ng-if="isBasic() && bet.accepted_bid" class="bet-title-basic">Por [[bet.amount]]Y</p>
                 <p ng-if="isAuction()" class="bet-title-auction">Por [[bet.amount]]Y</p>
                 <p ng-if="isLottery()" class="bet-title-lottery">[[bet.amount]]Y por barba</p>
+                <p ng-if="isLottery()" class="bet-title-lottery">[[getPot()]]Y de bote</p>
             </div>
             <div class="clearfix"></div>
         </div>
@@ -90,8 +95,12 @@
                 </div>
                 <div class="right">
                     <div ng-if="showPoints()" class="bet-points">
-                        <h4><span class="label" ng-class="{'label-success-basic': isRivalWinner() && isBasic(), 'label-success-auction': isRivalWinner() && isAuction(), 'label-default': !isRivalWinner()}">
-                            [[getRivalPoints()]] puntos&nbsp;&nbsp;&nbsp;<span ng-show="isRivalWinner()" class="glyphicon glyphicon-thumbs-up"></span><span ng-show="!isRivalWinner()" class="glyphicon glyphicon-thumbs-down"></span>
+                        <h4 ng-if="isRivalWinner()"><span class="label" ng-class="{'label-success-basic': isBasic(), 'label-success-auction': isAuction()}">
+                            [[getRivalPoints()]] puntos&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-thumbs-up"></span>
+                            <br><span>+[[getWinnerYoos()]] Yoos</span>
+                        </span></h4>
+                        <h4 ng-if="!isRivalWinner()"><span class="label label-default">
+                            [[getRivalPoints()]] puntos&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-thumbs-down"></span>
                         </span></h4>
                     </div>
                     <p ng-show="bet.accepted_bid.title" class="bet-title">[[bet.accepted_bid.title]]</p>
@@ -154,7 +163,9 @@
             <div class="col-small-12">
                 <div ng-if="!isLottery()" class="well well-sm bet-description">
                     <h4 class="pull-right"><span class="label" ng-class="{'label-success-basic': isBasic(), 'label-success-auction': isAuction(), 'label-success-lottery': isLottery()}">
-                        [[getRefereePoints()]] puntos&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-ok-circle"></span></span>
+                        [[getRefereePoints()]] puntos&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-ok-circle"></span>
+                        <br><span>+[[bet.referee_escrow]] Yoos</span>
+                        </span>
                     </span>&nbsp;</h4>
                     <strong>[[getArbitratedDate()]]: </strong>
                     <strong ng-if="refereeClaimAuthorWin()">[[bet.referee.username]] ha actuado de árbitro y ha declarado a [[bet.author.username]] ganador de la apuesta.</strong>
@@ -164,7 +175,9 @@
                 </div>
                 <div ng-if="isLottery()" class="well well-sm bet-description">
                     <h4 class="pull-right"><span class="label" ng-class="{'label-success-basic': isBasic(), 'label-success-auction': isAuction(), 'label-success-lottery': isLottery()}">
-                        [[getRefereePoints()]] puntos&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-ok-circle"></span></span>
+                        [[getRefereePoints()]] puntos&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-ok-circle"></span>
+                        <br><span>+[[bet.referee_escrow]] Yoos</span>
+                        </span>
                     </span>&nbsp;</h4>
                     <strong>[[getArbitratedDate()]]: </strong>
                     <strong ng-if="refereeClaimNoneWin()">[[bet.referee.username]] ha actuado de árbitro y ha declarado que la porra es nula.</strong>
@@ -355,9 +368,16 @@
             <div ng-if="isAuction()" class="bid-author">
                 <dy-user-pic-name user="bid.author" size="'micro'" horizontal="true" badges="false"></dy-user-pic-name>
             </div>
-            <div ng-if="showPoints()" class="bet-points">
-                <h4><span class="label pull-right" ng-class="{'label-success-lottery': betWinner().id == bid.id, 'label-default': betWinner().id != bid.id}">
-                    [[getBidPoints(bid)]] puntos&nbsp;&nbsp;&nbsp;<span ng-show="betWinner().id == bid.id" class="glyphicon glyphicon-thumbs-up"></span><span ng-show="betWinner().id != bid.id" class="glyphicon glyphicon-thumbs-down"></span>
+            <div ng-if="isLottery() && isBidParticipant(bid, user.id)" class="bid-author">
+                <dy-user-pic user="user" size="'micro'" badges="false"></dy-user-pic-name>
+            </div>
+            <div ng-if="showPoints() && isLottery()" class="bet-points">
+                <h4 ng-if="betWinner().id == bid.id"><span class="label label-success-lottery pull-right">
+                    [[getBidPoints(bid)]] puntos&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-thumbs-up"></span>
+                    <br><span>+[[getBidYoos(bid)]] Yoos</span>
+                </span></h4>
+                <h4 ng-if="betWinner().id != bid.id"><span class="label label-default pull-right">
+                    [[getBidPoints(bid)]] puntos&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-thumbs-down"></span>
                 </span></h4>
             </div>
             <div class="pull-right">
