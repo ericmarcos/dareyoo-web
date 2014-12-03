@@ -55,9 +55,9 @@ img.grayscale{
 /* Explanation of the following line: http://angular-ui.github.io/bootstrap/ */
 .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
 
-.container {
+/*.container {
   max-width: 1000px;
-}
+}*/
 body {
     background-color: #ddd;
     padding-bottom: 20px;
@@ -816,6 +816,12 @@ dy-level-star {
 
 /******************** TOURNAMENTS *******************/
 
+.tournaments-summary {
+    .dy-pill();
+    margin-top: 15px;
+    padding: 8px 16px;
+}
+
 .tournaments-list {
     .dy-pill();
     margin-top: 30px;
@@ -865,7 +871,7 @@ dy-level-star {
 
 .tournament-detail {
     .dy-pill();
-    margin-top: 30px;
+    margin-top: 15px;
     margin-bottom: 15px;
     padding-bottom: 15px;
     .tournament-top {
@@ -908,6 +914,11 @@ dy-level-star {
     }
     .tournament-nav {
         margin: 15px 0px;
+        border-spacing: 4px;
+        li {
+            background-color: #dddddd;
+            border-radius: @border-radius;
+        }
     }
     .ranking-weeks {
         display: inline-block;

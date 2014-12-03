@@ -1,0 +1,20 @@
+<div ng-show="loaded && tournament_prizes.length > 0" class="prizes-list">
+    <div ng-repeat="prize in tournament_prizes">
+      <div class="row">
+        <div class="col-md-3">
+            <img class="img-rounded" ng-src="[[prize.pic]]" width="100%">    
+        </div>
+        <div class="col-md-9">
+            <h3 style="margin-top:2px;">[[prize.title]]</h3>
+            <p>[[prize.description]]</p>
+        </div>
+      </div>
+    </div>
+    <div ng-show="more_prizes_link && loaded && loaded_more" class="more-prizes">
+        <button type="button" class="btn btn-primary btn-block" ng-click="moreBets()">Cargar más premios...</button>
+    </div>
+</div>
+<div ng-hide="loaded && loaded_more" class="container-fluid text-center" style="padding:10px"><dy-loader></dy-loader></div>
+<div class="leaderboard-row" ng-show="loaded && tournament_prizes.length == 0" style="background-color:#eee">
+    <div class="text-center"><span class="puntos">Este torneo no tiene premios</span></div>
+</div>

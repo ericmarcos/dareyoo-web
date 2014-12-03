@@ -45,6 +45,15 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
         return request.method in permissions.SAFE_METHODS or obj.author == request.user
 
 
+class PrizeViewSet(viewsets.ReadOnlyModelViewSet):
+    model = Prize
+    serializer_class = PrizeSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
+
+    def get_queryset(self):
+        return Prize.objects.all().order_by('-priority')
+
+
 class TournamentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     API endpoint that allows bets to be viewed or created, not modified or destroyed.
@@ -117,6 +126,27 @@ class TournamentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.R
 
         serializer_context = {'request': request}
         serializer = PaginatedBetPointsSerializer(bets, context=serializer_context)
+        return response.Response(serializer.data, status=status.HTTP_200_OK)
+
+    @link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
+    def prizes(self, request, *args, **kwargs):
+        tournament = self.get_object()
+        #http://www.django-rest-framework.org/api-guide/pagination
+        qs = tournament.prizes.all()
+        paginator = Paginator(qs.order_by('-priority'), 10)
+        page = request.QUERY_PARAMS.get('page')
+        try:
+            prizes = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            prizes = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999),
+            # deliver last page of results.
+            prizes = paginator.page(paginator.num_pages)
+
+        serializer_context = {'request': request}
+        serializer = PaginatedPrizeSerializer(prizes, context=serializer_context)
         return response.Response(serializer.data, status=status.HTTP_200_OK)
 
 

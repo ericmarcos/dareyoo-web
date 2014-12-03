@@ -12,6 +12,7 @@ router.register(r'users', DareyooUserBetPointsViewSet)
 router.register(r'bets', BetPointsViewSet)
 router.register(r'bids', BidViewSet)
 router.register(r'tournaments', TournamentViewSet)
+router.register(r'prizes', PrizeViewSet)
 router.register(r'notifications', NotificationViewSet)
 #TODO:
 #/search/

@@ -215,7 +215,33 @@ angular.module('dareyoo.controllers', []).
     };
     $scope.getTournamentBets($stateParams.tournamentId, $scope.state);
   }]).
-  controller('TournamentCtrl', ['$scope', '$http', '$location', '$filter', '$stateParams', function($scope, $http, $location, $filter, $stateParams) {
+  controller('TournamentPrizesCtrl', ['$scope', '$http', '$location', '$filter', '$stateParams', function($scope, $http, $location, $filter, $stateParams) {
+    $scope.tournament_prizes = [];
+    $scope.loaded = false;
+    $scope.loaded_more = true;
+    $scope.more_prizes_link = null;
+    $scope.getTournamentPrizes = function(id) {
+      $scope.loaded = false;
+      $http.get(document.location.origin + "/api/v1/tournaments/" + id + "/prizes").success(function(response) {
+        if(response.results) $scope.tournament_prizes = response.results;
+        else $scope.tournament_prizes = response;
+        $scope.loaded = true;
+        $scope.more_prizes_link = response.next;
+      });
+    };
+    $scope.morePrizes = function() {
+      $scope.loaded_more = false;
+      $http.get($scope.more_prizes_link).success(function(response) {
+        if(response.results) {
+          $scope.tournament_prizes.push.apply($scope.tournament_prizes, response.results);
+          $scope.more_prizes_link = response.next;
+          $scope.loaded_more = true;
+        }
+      });
+    };
+    $scope.getTournamentPrizes($stateParams.tournamentId);
+  }]).
+  controller('TournamentCtrl', ['$scope', '$rootScope', '$http', '$location', '$filter', '$stateParams', function($scope, $rootScope, $http, $location, $filter, $stateParams) {
     $scope.tournament = {};
     $scope.weeks = [];
     $scope.global = $stateParams.tournamentId == 0;
@@ -244,6 +270,10 @@ angular.module('dareyoo.controllers', []).
         return t;
       }
       return null;
+    };
+    $scope.crearApuesta = function() {
+      $('#participate-tournament-modal').modal('hide');
+      $rootScope.$broadcast('create-bet', {tag: $scope.tournament.tag});
     };
     if(!$scope.global) {
       $scope.getTournament($stateParams.tournamentId);
@@ -593,7 +623,7 @@ angular.module('dareyoo.controllers', []).
       return null;
     };
     $scope.getRivalPoints = function() {
-      if($scope.bet) {
+      if($scope.bet && $scope.bet.accepted_bid) {
         if($scope.bet.accepted_bid.points >= 0)
           return "+" + $scope.bet.accepted_bid.points;
         return $scope.bet.accepted_bid.points;
@@ -694,7 +724,11 @@ angular.module('dareyoo.controllers', []).
         if($scope.isLottery()) {
           if($scope.bet.referee_claim == 3)
             return 3;
-          return $scope.bet.referee_lottery_winner || $scope.bet.claim_lottery_winner;
+          if($scope.bet.referee_lottery_winner)
+            return $scope.bet.referee_lottery_winner;
+          if($scope.bet.claim == 3)
+            return 3;
+          return $scope.bet.claim_lottery_winner;
         }
         return $scope.bet.referee_claim || $scope.bet.claim;
       }
@@ -832,29 +866,6 @@ angular.module('dareyoo.controllers', []).
     $scope.getBet($stateParams.betId);
   }])
   .controller('NewBetCtrl', ['$scope', '$http', '$timeout', '$rootScope', function($scope, $http, $timeout, $rootScope) {
-    /*$scope.popover = function(element, text) {
-      var showPopover = function () {
-          $(element).popover('show');
-      }
-      , hidePopover = function () {
-          $(element).popover('hide');
-      };
-      $(element)
-          .popover({
-           content: text,
-           html: true,
-           trigger: 'manual',
-           template: '<div class="popover new-bet-tips"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content">Jajajajaj<p></p></div></div></div>',
-          })
-          .focus(showPopover)
-          .blur(function () {
-              $(this).popover('hide');
-          });
-    };
-
-    $scope.popover("input#title", "eg: Messi will score a hat-trick tonight.");
-    $scope.popover("textarea#description", "eg: If the game is cancelled I will declare this bet null");
-    */
     $scope.betAPIError = function(response, status, headers, config) {
       $('#new-bet-fail-message').text(JSON.stringify(response));
       $('#new-bet-fail-modal').modal('show');
@@ -863,7 +874,7 @@ angular.module('dareyoo.controllers', []).
     $scope.help = function(topic) {
       $scope.help_topic = topic;
       $('#new-bet-help-modal').modal('show');
-    }
+    };
 
     $scope.simpleBetBiddingDeadlineOptions = ['10 minutos',
                                               '20 minutos',
@@ -921,6 +932,12 @@ angular.module('dareyoo.controllers', []).
     }
     $scope.resetWidget();
     $('#extra_yoos').tooltip();
+    $scope.$on('create-bet', function(event, args) {
+        $scope.resetWidget();
+        $scope.newBetFormData.title = args.tag;
+        $scope.expandWidget();
+        $('#title')[0].focus();
+    });
     $scope.expandWidget = function() {
       //$('.new-bet-widget').css({"height":"150px","transition":"0.8s"});
       $('.new-bet-widget').css($scope.transitionStyles);
@@ -929,13 +946,13 @@ angular.module('dareyoo.controllers', []).
       $timeout(function() {
         $('.new-bet-widget').css($scope.focusStyles);
       }, 1000);
-    }
+    };
     $scope.expandDescription = function() {
       $('#description').css({"height":"80px","transition":"1s"});
-    }
+    };
     $scope.pot = function() {
       return $scope.newBetFormData.amount + $scope.newBetFormData.against;
-    }
+    };
     $scope.getTypeName = function() {
       if($scope.newBetFormData.bet_type == 1) {
         return "Básica";
@@ -944,7 +961,7 @@ angular.module('dareyoo.controllers', []).
       } else {
         return "Porra";
       }
-    }
+    };
     $scope.getRefereeFees = function() {
       if($scope.newBetFormData.bet_type == 1) {
         return Math.ceil($scope.pot()*0.02)*2;
@@ -953,14 +970,14 @@ angular.module('dareyoo.controllers', []).
       } else {
         return "?";
       }
-    }
+    };
     $scope.getWinningAmount = function() {
       if($scope.newBetFormData.bet_type == 1) {
         return $scope.pot() - Math.ceil($scope.pot()*0.02);
       } else {
         return "?";
       }
-    }
+    };
     $scope.prevStep = function() {
       $scope.show_comissions = false;
       if($scope.step == 2) {
@@ -968,7 +985,7 @@ angular.module('dareyoo.controllers', []).
       } else if($scope.step == 3) {
         $scope.step = 2;
       }
-    }
+    };
     $scope.nextStep = function(bet_type) {
       $scope.show_comissions = false;
       if($scope.step == 1) {
@@ -981,13 +998,13 @@ angular.module('dareyoo.controllers', []).
           $scope.step = 4;
         }
       }
-    }
+    };
     $scope.setPublic = function(pub) {
       $scope.newBetFormData.public = pub;
-    }
+    };
     $scope.setOpenLottery = function(pub) {
       $scope.newBetFormData.open_lottery = pub;
-    }
+    };
 
     $scope.biddingDeadlineCalendarOpened = false;
     $scope.openBiddingDeadlineCalendar = function($event) {
@@ -1020,14 +1037,14 @@ angular.module('dareyoo.controllers', []).
         case '24 horas': now.setMinutes(now.getMinutes() + 60*24); break;
       }
       return now;
-    }
+    };
 
     $scope.onSelectInvite = function($item, $model, $label) {
       if($model.username) {
         $scope.addInvite($model.username);
         $scope.inviteSelected = null;
       }
-    }
+    };
 
     $scope.onInviteEnter = function(event) {
       if (!event || event.which == 13) {
@@ -1040,20 +1057,20 @@ angular.module('dareyoo.controllers', []).
         }
         $scope.inviteSelected = null;
       }
-    }
+    };
 
     $scope.addInvite = function(inv) {
       if(inv && $scope.invites.indexOf(inv) == -1) {
         $scope.invites.push(inv);
       }
-    }
+    };
 
     $scope.removeInvite = function(inv) {
       var index = $scope.invites.indexOf(inv);
       if(index != -1) {
         $scope.invites.splice(index, 1);
       }
-    }
+    };
 
     $scope.postNewBet = function() {
       if(!$scope.newBetFormData['public'] && $scope.invites.length == 0) {

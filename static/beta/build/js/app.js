@@ -98,23 +98,28 @@ config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'config', f
           templateUrl: config.static_url + "beta/build/partials/rankings.html",
           controller: 'RankingCtrl'
         })
-        .state('tournaments', {
+        .state('main.tournaments', {
           url: "/tournaments",
           templateUrl: config.static_url + "beta/build/partials/tournaments.html",
           controller: 'TournamentsCtrl'
         })
-        .state('tournament-detail', {
+        .state('main.tournament-detail', {
           abstract: true,
           url: "/tournament/:tournamentId",
           templateUrl: config.static_url + "beta/build/partials/tournament-detail.html",
           controller: 'TournamentCtrl'
         })
-        .state('tournament-detail.bets', {
+        .state('main.tournament-detail.bets', {
           url: "/bets",
           templateUrl: config.static_url + "beta/build/partials/tournament-bets.html",
           controller: 'TournamentBetsCtrl'
         })
-        .state('tournament-detail.ranking', {
+        .state('main.tournament-detail.prizes', {
+          url: "/prizes",
+          templateUrl: config.static_url + "beta/build/partials/tournament-prizes.html",
+          controller: 'TournamentPrizesCtrl'
+        })
+        .state('main.tournament-detail.ranking', {
           url: "/ranking",
           templateUrl: config.static_url + "beta/build/partials/tournament-ranking.html",
           controller: 'TournamentRankingCtrl'
@@ -148,6 +153,7 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
     $rootScope.followers_names = [];
     $rootScope.new_notifications = 0;
     $rootScope.notifications = [];
+    $rootScope.tournaments = [];
     $rootScope.q = {'query': ""};
 
     //Removing all modals when navigating to a new page
@@ -218,12 +224,20 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
         note.readed = true;
         $http.post(document.location.origin +'/api/v1/notifications/' + note.id + '/mark_as_readed/');
       }
-    }
+    };
+
+    $rootScope.getTournaments = function() {
+      $http.get(document.location.origin + "/api/v1/tournaments/").success(function(response) {
+        if(response.results) $rootScope.tournaments = response.results;
+        else $rootScope.tournaments = response;
+      });
+    };
 
     $rootScope.getMe();
     $rootScope.getMyFollowers();
     $rootScope.getNotifications();
     $rootScope.getAllUsernames();
+    $rootScope.getTournaments();
 
 }]).
 constant('moment', moment);

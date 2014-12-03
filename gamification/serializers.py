@@ -98,12 +98,31 @@ class RankingSerializer(serializers.Serializer):
             return None
 
 
+class PrizeSerializer(serializers.ModelSerializer):
+    pic = serializers.Field(source='get_pic_url')
+    author = DareyooUserPointsShortSerializer()
+    is_available = serializers.SerializerMethodField('get_is_available')
+
+    def get_is_available(self, obj):
+        return obj.tournament.is_acive()
+
+    class Meta:
+        model = Prize
+        fields = ('id', 'tournament', 'pic', 'title', 'description',)
+
+
+class PaginatedPrizeSerializer(pagination.PaginationSerializer):
+    class Meta:
+        object_serializer_class = PrizeSerializer
+
+
 class TournamentSerializer(serializers.HyperlinkedModelSerializer):
     upload_pic_url = serializers.HyperlinkedIdentityField(view_name='tournament-pic-upload')
     pic = serializers.Field(source='get_pic_url')
     author = DareyooUserPointsShortSerializer()
+    prizes = PrizeSerializer(many=True, read_only=True)
 
     class Meta:
         model = Tournament
         fields = ('url', 'id', 'author', 'public', 'tag', 'start', 'end',
-             'pic', 'title', 'description', 'upload_pic_url', 'only_author')
+             'pic', 'title', 'description', 'upload_pic_url', 'only_author', 'prizes')

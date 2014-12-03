@@ -445,7 +445,7 @@ class Tournament(models.Model):
     tag = models.CharField(max_length=255, blank=True, null=True)
     start = models.DateTimeField(blank=True, null=True, default=None)
     end = models.DateTimeField(blank=True, null=True, default=None)
-    #reset = models.CharField(max_length=255, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
     pic = models.ImageField(upload_to='tournaments', null=True, blank=True)
     title = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True, default="")
@@ -474,6 +474,10 @@ class Tournament(models.Model):
                 t.add_participant(participant)
             else:
                 t.participants.add(*list(bet.participants()))
+
+    def is_active(self):
+        now = timezone.now()
+        return self.start < now < self.end
 
     def check_bet(self, bet):
         '''Checks if a bet matches the conditions of
@@ -517,5 +521,20 @@ class Tournament(models.Model):
     def __unicode__(self):
         return self.title or u"No title"
 
+
+class Prize(models.Model):
+    
+    tournament = models.ForeignKey(Tournament, related_name='prizes', blank=True, null=True)
+    pic = models.ImageField(upload_to='prizes', null=True, blank=True)
+    title = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(blank=True, null=True, default="")
+    priority = models.IntegerField(null=True, blank=True, default=0)
+
+    def get_pic_url(self):
+        if self.pic:
+            return self.pic._get_url()
+        else:
+            return ""
+            
 
 import gamification.signals
