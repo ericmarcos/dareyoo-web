@@ -10,7 +10,10 @@
             </span>
             <span ng-if="!tournament.only_author"><span>Es tan fácil como participar en las apuestas que se muestran en el muro del torneo o creando apuestas con el hashtag [[tournament.tag]]</span></span></p>
             <p>Los puntos que consigas en estas apuestas (y no los Yoos) te posicionarán en los ránkings del torneo. Recuerda que sólo por participar en una apuesta ya obtienes puntos.<span ng-if="!tournament.only_author"> Además, ¡si eres tu quien crea la apuesta ganarás puntos extra!</span></p>
-            <div class="text-center"><button type="button" class="btn btn-primary" ng-click="crearApuesta()">¡Crear apuesta!</button></div>
+            <div class="text-center" ng-if="user"><button type="button" class="btn btn-primary" ng-click="crearApuesta()">¡Crear apuesta!</button></div>
+            <div ng-if="!user">
+                <p id="message" class="register-msg">Necesitas ser usuario de Dareyoo para poder participar en este torneo. Regístrate <a href="http://www.dareyoo.com/register">aquí</a>.</p>
+            </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
