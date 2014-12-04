@@ -122,15 +122,15 @@
             <div class="col-small-12">
                 <div ng-if="!isLottery()" class="well well-sm bet-description">
                     <strong>[[getResolvedDate()]]: </strong>
-                    <strong ng-if="isAuthorWinner()">[[bet.author.username]] se ha declarado ganador de la apuesta.</strong>
-                    <strong ng-if="isRivalWinner()">[[bet.author.username]] ha declarado a [[bet.accepted_bid.author.username]] ganador de la apuesta.</strong>
-                    <strong ng-if="isNoneWinner()">[[bet.author.username]] ha declarado la apuesta nula.</strong>
+                    <strong ng-if="authorClaimWinner()">[[bet.author.username]] se ha declarado ganador de la apuesta.</strong>
+                    <strong ng-if="authorClaimLoser()">[[bet.author.username]] ha declarado a [[bet.accepted_bid.author.username]] ganador de la apuesta.</strong>
+                    <strong ng-if="authorClaimNone()">[[bet.author.username]] ha declarado la apuesta nula.</strong>
                     <span ng-if="bet.claim_message"><br>[[bet.claim_message]]</span>
                 </div>
                 <div ng-if="isLottery()" class="well well-sm bet-description">
                     <strong>[[getResolvedDate()]]: </strong>
-                    <strong ng-if="!isNoneWinner()">[[bet.author.username]] ha declarado que el resultado <em>[[bet.claim_lottery_winner.title]]</em> es el ganador de la porra</strong>
-                    <strong ng-if="isNoneWinner()">[[bet.author.username]] ha declarado que la porra es nula.</strong>
+                    <strong ng-if="!authorClaimNone()">[[bet.author.username]] ha declarado que el resultado <em>[[bet.claim_lottery_winner.title]]</em> es el ganador de la porra</strong>
+                    <strong ng-if="authorClaimNone()">[[bet.author.username]] ha declarado que la porra es nula.</strong>
                     <span ng-if="bet.claim_message"><br>[[bet.claim_message]]</span>
                 </div>
             </div>

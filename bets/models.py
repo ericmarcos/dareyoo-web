@@ -393,6 +393,25 @@ class Bet(models.Model):
     def is_participant(self, user):
         return user in self.participants()
 
+    def lost_conflict(self, user):
+        return user in self.conflict_losers()
+
+    def conflict_losers(self):
+        losers = []
+        if self.is_closed() and self.has_conflict():
+            if self.is_lottery():
+                if self.claim_lottery_winner != self.referee_lottery_winner and self.claim != self.referee_claim:
+                    losers.append(self.author)
+                bid_conflicted = self.bids.filter(claim_author__isnull=False).first()
+                if bid_conflicted and bid_conflicted != self.referee_lottery_winner and bid_conflicted.claim != self.referee_claim:
+                    losers.append(bid_conflicted.claim_author)
+            else:
+                if self.claim != self.referee_claim:
+                    losers.append(self.author)
+                if self.accepted_bid.claim != self.referee_claim:
+                    losers.append(self.accepted_bid.author)
+        return losers
+
     def invite(self, invites):
         if invites and len(invites) > 0:
             recipients = []

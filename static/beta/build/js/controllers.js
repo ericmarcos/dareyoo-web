@@ -765,6 +765,9 @@ angular.module('dareyoo.controllers', []).
     $scope.isAuction = function() { if($scope.bet) { return $scope.bet.bet_type == 2; } return false };
     $scope.isLottery = function() { if($scope.bet) { return $scope.bet.bet_type == 3; } return false };
     
+    $scope.authorClaimWinner = function() { return $scope.bet.claim == 1; };
+    $scope.authorClaimLoser = function() { return $scope.bet.claim == 2; };
+    $scope.authorClaimNone = function() { return $scope.bet.claim == 3; };
     $scope.isAuthorWinner = function() { return $scope.betWinner() == 1; };
     $scope.isRivalWinner = function() { return $scope.betWinner() == 2; };
     $scope.isNoneWinner = function() { return $scope.betWinner() == 3; };

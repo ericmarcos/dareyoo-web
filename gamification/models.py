@@ -336,7 +336,7 @@ class UserBadges(models.Model):
             current_level = user.badges.fair_play
             straight = 0
             for bet in last_bets:
-                if bet.has_conflict():
+                if bet.lost_conflict(user):
                     break
                 straight += 1
             if straight == 0 and current_level != 0:
