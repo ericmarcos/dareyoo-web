@@ -10,6 +10,7 @@ from users.serializers import *
 from .models import *
 from .serializers import BetSerializer, BidSerializer
 
+
 class IsAuthorOrReadOnly(permissions.BasePermission):
     """
     Custom permission to only allow the author to edit the bet.
@@ -24,6 +25,13 @@ class IsAuthenticatedOrIsGlobal(permissions.BasePermission):
 
     def has_permission(self, request, view):
         return request.user.is_authenticated() or request.QUERY_PARAMS.get('global')
+
+
+class CanArbitrate(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        #Introducing circular dependency with gamification module
+        return request.user.points.level() >= settings.REFEREE_MIN_LEVEL
 
 
 class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -140,7 +148,7 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
         except (BetException, DareyooUserException) as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(permission_classes=[permissions.IsAuthenticated], renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
+    @action(permission_classes=[permissions.IsAuthenticated, CanArbitrate], renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
     def arbitrate(self, request, *args, **kwargs):
         bet = self.get_object()
         user = self.request.user
