@@ -660,7 +660,7 @@ angular.module('dareyoo.controllers', []).
       return 0;
     };
     $scope.getBidYoos = function(bid) {
-      if($scope.bet)
+      if($scope.bet && bid.participants.length > 0)
         return Math.floor(($scope.getPot() - $scope.bet.winning_fees) / bid.participants.length);
       return 0;
     };
