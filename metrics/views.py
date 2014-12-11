@@ -67,6 +67,7 @@ def main(request):
         begin_date = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=-prev)
         end_date = timezone.now() if int(prev) == 0 else begin_date + timedelta(days=1)
         new_real_users = DareyooUser.objects.real().joined_day(prev).count()
+        n_users_before = DareyooUser.objects.all().joined_before_day(prev).count()
         new_leads = DareyooUser.objects.all().registered(False).joined_day(prev).count()
         active = DareyooUser.objects.real().active_day().count()
         churn_n = '--'
@@ -83,6 +84,7 @@ def main(request):
         begin_date = today + timedelta(days=-today.weekday() - 7*prev)
         end_date = timezone.now() if int(prev) == 0 else begin_date + timedelta(weeks=1)
         new_real_users = DareyooUser.objects.real().joined_week(prev).count()
+        n_users_before = DareyooUser.objects.all().joined_before_week(prev).count()
         new_leads = DareyooUser.objects.all().registered(False).joined_week(prev).count()
         active = DareyooUser.objects.real().active_week().count()
         churn_n = DareyooUser.objects.real().churn_week().count()
@@ -98,6 +100,7 @@ def main(request):
         begin_date = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0) + relativedelta(months=-prev)
         end_date = timezone.now() if int(prev) == 0 else begin_date + relativedelta(months=1)
         new_real_users = DareyooUser.objects.real().joined_month(prev).count()
+        n_users_before = DareyooUser.objects.all().joined_before_month(prev).count()
         new_leads = DareyooUser.objects.all().registered(False).joined_month(prev).count()
         active = DareyooUser.objects.real().active_month().count()
         churn_n = DareyooUser.objects.real().churn_month().count()
@@ -117,7 +120,7 @@ def main(request):
     percent_new_free_coins = int(round(float(new_free_coins) / new_coins * 100)) if new_coins > 0 else 0
     percent_new_paying_coins = int(round(float(new_paying_coins) / new_coins * 100)) if new_coins > 0 else 0
     burnt_coins = 0
-    new_real_users_percent = int(round(float(new_real_users) / max(n - new_real_users, 1) * 100))
+    new_real_users_percent = int(round(float(new_real_users) / max(n_users_before, 1) * 100))
     context = {
         'total_real_users': n,
         'total_fake_users': fake,
