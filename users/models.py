@@ -73,6 +73,23 @@ class DareyooUserQuerySet(QuerySet):
         last = first + relativedelta(months=1)
         return self.joined_between(first, last)
 
+    def joined_before_day(self, prev_days=0):
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=-prev_days)
+        return self.joined_before(today)
+
+    def joined_before_week(self, prev_weeks=0):
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        monday = today + timedelta(days=-today.weekday(), weeks=-prev_weeks)
+        return self.joined_before(monday)
+
+    def joined_before_month(self, prev_months=0):
+        first = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        first = first + relativedelta(months=-prev_months)
+        return self.joined_before(first)
+
+    def joined_before(self, date):
+        return self.filter(date_joined__lt=date)
+
     def joined_between(self, start, end):
         return self.filter(date_joined__range=(start, end))
 
