@@ -40,20 +40,89 @@ body {
 
 /////////////////////// LANDING SECTION 0: INTRO /////////////////////
 
+.cover() {
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  background-position: center center;
+  //background-repeat: no-repeat no-repeat;
+}
+
 #intro{
   // http://www.patternify.com/
-  background-image:
+  /*background-image:
   url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAHElEQVQIW2NkYGD4D8QNMMwIZNQDMRyABPCrAADxVAYBTWty8wAAAABJRU5ErkJggg=="),
-  url("@{base-url}/beta/build/img/landing/intro/fons1.jpg");
-  background-position: left top, center center;
-  background-repeat: repeat, no-repeat;
-  -webkit-background-size: auto, cover;
-  -moz-background-size: auto, cover;
-  -o-background-size: auto, cover;
-  background-size: auto, cover;
+  url("@{base-url}/beta/build/img/landing/intro/fons1.jpg");*/
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAHElEQVQIW2NkYGD4D8QNMMwIZNQDMRyABPCrAADxVAYBTWty8wAAAABJRU5ErkJggg==");
+  /*background-position: left top, center center;
+  background-repeat: repeat, no-repeat;*/
+  background-position: left top;
+  background-repeat: repeat;
   margin: 0 auto;
   padding: 100px 0px 0px;
   min-height: 500px;
+  box-sizing: border-box;
+  position: relative;
+}
+.carousel-fade {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: -10;
+  overflow: hidden;
+  .carousel-inner {
+    width: 100%;
+    height: 100%;
+    .item {
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition-property: opacity;
+    }
+    .item1 {
+      .cover();
+      background-image: url("@{base-url}/beta/build/img/landing/intro/football.jpg");
+    }
+    .item2 {
+      .cover();
+      background-image: url("@{base-url}/beta/build/img/landing/intro/gaming.jpg");
+    }
+    .item3 {
+      .cover();
+      background-image: url("@{base-url}/beta/build/img/landing/intro/skate.jpg");
+    }
+    .item4 {
+      .cover();
+      background-image: url("@{base-url}/beta/build/img/landing/intro/adventure.jpg");
+    }
+    .item5 {
+      .cover();
+      background-image: url("@{base-url}/beta/build/img/landing/intro/concert.jpg");
+    }
+
+    .active {
+      opacity: 1;
+    }
+
+    .active.left,
+    .active.right {
+      left: 0;
+      opacity: 0;
+      z-index: 1;
+    }
+
+    .next.left,
+    .prev.right {
+      opacity: 1;
+    }
+  }
+
+  .carousel-control {
+    z-index: 2;
+  }
 }
 .social-btns {
   float: right; 
