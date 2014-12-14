@@ -61,6 +61,7 @@ class TournamentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.R
     model = Tournament
     serializer_class = TournamentSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly)
+    paginate_by = None
 
     def get_queryset(self):
         if self.request.user.is_authenticated():
