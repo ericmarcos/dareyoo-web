@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import MethodNotAllowed
 from .models import *
 from .serializers import *
+from .signals import user_activated
 
 
 class IsSelfOrReadOnly(permissions.BasePermission):
@@ -129,6 +130,7 @@ class MeRedirectView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         if not self.request.user.is_authenticated():
             raise Http404
+        user_activated.send(sender=self.__class__, user=self.request.user)
         kwargs.update({'pk': self.request.user.id})
         rest = kwargs.pop('rest', '')
         #https://github.com/django/django/blob/1.6.4/django/views/generic/base.py#L173
