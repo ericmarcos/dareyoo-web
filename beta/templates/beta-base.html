@@ -67,7 +67,7 @@
     </ul>
     {% if user.is_authenticated %}
     <ul class="nav navbar-nav navbar-right">
-      <li><a href="{% url 'beta-home' %}">Bienvenido <b>{{ user.username }}</b>. ¿Jugamos?</b></a></li>
+      <li><a href="/app/main/timeline-global">Bienvenido <b>{{ user.username }}</b>. ¿Jugamos?</b></a></li>
     </ul>
     {% else %}
     <ul class="nav navbar-nav navbar-right">
