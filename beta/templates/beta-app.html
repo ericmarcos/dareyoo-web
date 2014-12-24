@@ -1,6 +1,6 @@
 {% extends "beta-base.html" %}
 {% load i18n %}
-{% block html %}<html ng-app="dareyoo">{% endblock %}
+{% block html %}<html>{% endblock %}
 {% block title %}<title ng-bind="getTitle()">Dareyoo (beta)</title>{% endblock %}
 {% block css %}
 {{ block.super }}
@@ -73,5 +73,8 @@
 <script type="text/javascript">
   angular.module('dareyoo').
   constant('config', {static_url: "{{ STATIC_URL }}", fb_key: "{{ fb_key }}" });
+  angular.element(document).ready(function() {
+    angular.bootstrap(document, ['dareyoo']);
+  });
 </script>
 {% endblock %}
