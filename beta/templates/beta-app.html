@@ -74,8 +74,7 @@
   angular.module('dareyoo').
   constant('config', {static_url: "{{ STATIC_URL }}", fb_key: "{{ fb_key }}" });
   angular.element(document).ready(function() {
-    console.log("Ready");
-    angular.bootstrap(document, ['dareyoo']);
+    while(!angular.bootstrap(document, ['dareyoo']));
   });
 </script>
 {% endblock %}
