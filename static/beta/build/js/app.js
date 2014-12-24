@@ -1,6 +1,6 @@
 'use strict';
 
-
+console.log("Start.");
 // Declare app level module which depends on filters, and services
 var dareyooApp = angular.module('dareyoo', [
   'ngCookies',
@@ -35,6 +35,7 @@ config(['$sceDelegateProvider', function($sceDelegateProvider) {
      FacebookProvider.init(config.fb_key);
 }]).*/
 config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'config', function($stateProvider, $urlRouterProvider, $locationProvider, config) {
+    console.log("Config start.");
     $urlRouterProvider.otherwise("/main/timeline-global");
     $locationProvider.html5Mode(true).hashPrefix('!'); // enable pushState
     $stateProvider
@@ -136,6 +137,7 @@ config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'config', f
         })
 }]).
 run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'config', function run($http, $cookies, $rootScope, $state, $stateParams, $timeout, config) {
+    console.log("Run start.");
     // For CSRF token compatibility with Django
     $http.defaults.headers.post['X-CSRFToken'] = $cookies['csrftoken'];
     $http.defaults.headers.put['X-CSRFToken'] = $cookies['csrftoken'];
@@ -155,6 +157,11 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
     $rootScope.notifications = [];
     $rootScope.tournaments = [];
     $rootScope.q = {'query': ""};
+
+    $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error) {
+      //$dialogs.error("Something went wrong!", error);
+      console.error("$stateChangeError: ", toState, error);
+    });
 
     //Removing all modals when navigating to a new page
     $rootScope.$on('$stateChangeStart', 
