@@ -201,7 +201,8 @@ CELERYBEAT_SCHEDULE = {
 # Not using migrations for the following apps. (strange errors)
 SOUTH_MIGRATION_MODULES = {
     'provider': 'ignore',
-    'oauth2': 'ignore'
+    'oauth2': 'ignore',
+    'default': 'default.south_migrations',
 }
 
 #AUTHENTICATION_BACKENDS = (
