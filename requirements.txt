@@ -9,7 +9,7 @@ django-custom-user==0.2
 django-fsm==1.5.0
 django-haystack==2.1.0
 django-oauth2-provider==0.2.6
-python-social-auth==0.1.23
+python-social-auth==0.2
 django-storages==1.1.8
 django-tastypie==0.10.0
 django-extensions==1.4.4
