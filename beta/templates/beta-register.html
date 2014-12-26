@@ -28,7 +28,7 @@
             <input type="password" id="password2" name="password2" placeholder="repite el password" class="form-control">
             <span class="help-block"></span>
 
-            <input type="text" id="promo_code" name="promo_code" placeholder="Código de promoción (opcional)" class="form-control">
+            <!--<input type="text" id="promo_code" name="promo_code" placeholder="Código de promoción (opcional)" class="form-control">-->
             <span class="help-block"></span>
 
             <button type="submit" class="btn btn-primary">Registrar</button>
@@ -37,11 +37,12 @@
         </div>
         <div class="col-md-3">
             <p>O ahórrate un minuto y regístrate con:</p><br><br>
-            <input type="text" id="promo_code_fb" name="promo_code_fb" placeholder="Código de promoción (opcional)" class="form-control" style="width:226px; margin:10px auto;">
-            <a onclick="add_promo_code(this)" href="{% url 'social:begin' "facebook" %}">
+            <!--<input type="text" id="promo_code_fb" name="promo_code_fb" placeholder="Código de promoción (opcional)" class="form-control" style="width:226px; margin:10px auto;"></input>-->
+            <!--<a onclick="add_promo_code(this)" href="{% url 'social:begin' "facebook" %}">-->
+            <a href="{% url 'social:begin' "facebook" %}">
                 <button class='zocial facebook'>Registrar con Facebook</button>
             </a>
-            <p><small>(nunca publicaremos nada en tu nombre)</small></p>
+            <p><small>(nunca publicaremos nada sin tu permiso)</small></p>
         </div>
     </div>
     <div class="row">
