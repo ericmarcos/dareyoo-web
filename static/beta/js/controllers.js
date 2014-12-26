@@ -967,7 +967,7 @@ angular.module('dareyoo.controllers', []).
         $('.new-bet-widget').css($scope.focusStyles);
       }, 1000);
     };
-    
+
     $scope.expandDescription = function() {
       $('#description').css({"height":"80px","transition":"1s"});
     };
@@ -1120,6 +1120,7 @@ angular.module('dareyoo.controllers', []).
         $scope.new_bet = response;
         $scope.step = 5;
         $scope.invites = [];
+        $rootScope.$broadcast('rebuildTwitter');
         $rootScope.$state.go("main.bet", {betId:$scope.new_bet.id});
       })
       .error(function(response, status, headers, config) {

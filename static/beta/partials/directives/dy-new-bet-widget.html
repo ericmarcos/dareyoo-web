@@ -291,14 +291,15 @@
                 <p class="share-bet-text">Tu apuesta se ha creado correctamente, compártela con tus amigos:</p>
                     <table class="share-bet-btns"><tr>
                         <td>
-                        <a twitter 
+                        <div relink-event="rebuildTwitter">
+                        <a twitter
                             data-lang="es"
                             data-count='none'
                             data-url="http://www.dareyoo.com/app/main/bet/[[new_bet.id]]?utm_source=twitter&utm_medium=viral&utm_campaign=bet-share"
                             data-via='dareyooApp'
                             data-size="large"
                             data-text='[[new_bet.title]]' >
-                        </a>
+                        </a></div>
                         </td><td>
                         <a facebook class="zocial facebook facebook-bet-share" data-url='http://www.dareyoo.com/app/main/bet/[[new_bet.id]]?utm_source=facebook&utm_medium=viral&utm_campaign=bet-share'>Compartir</a>
                         </td></tr>
