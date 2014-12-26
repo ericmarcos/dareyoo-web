@@ -896,7 +896,7 @@ angular.module('dareyoo.controllers', []).
                                             '6 horas',
                                             '12 horas',
                                             '24 horas'];
-
+    $scope.simpleBetEventDeadlineOptionsReduced = {values: $scope.simpleBetEventDeadlineOptions};
     $scope.inviteSelected = null;
     $scope.invites = [];
 
@@ -914,12 +914,11 @@ angular.module('dareyoo.controllers', []).
                         against: 10,
                         bidding_deadline: new Date(),
                         bidding_deadline_simple: '10 minutos',
-                        event_deadline: new Date(),
+                        event_deadline: (new Date()).setHours((new Date()).getHours() + 2),
                         event_deadline_simple: '2 horas',
                         public: true,
                         open_lottery: true};
-      $scope.timeRelativeBidding = true;
-      $scope.timeRelativeEvent = true;
+      $scope.timeRelative = true;
       $scope.minBiddingDeadline = new Date();
       $scope.minEventDeadline = new Date();
       $scope.step = 1;
@@ -934,6 +933,24 @@ angular.module('dareyoo.controllers', []).
       $('#description').css($scope.noFocusTextStyles);
     }
     $scope.resetWidget();
+
+    $scope.$watch('newBetFormData.bidding_deadline_simple', function(newV, oldV) {
+      var i = $scope.simpleBetBiddingDeadlineOptions.indexOf(newV);
+      var j = $scope.simpleBetEventDeadlineOptions.indexOf($scope.newBetFormData.event_deadline_simple);
+      if(i && i - 1 >= j) {
+        $scope.newBetFormData.event_deadline_simple = $scope.simpleBetEventDeadlineOptions[i];
+      }
+      $scope.simpleBetEventDeadlineOptionsReduced.values = $scope.simpleBetEventDeadlineOptions.slice(i);
+    });
+
+    $scope.$watch('newBetFormData.bidding_deadline', function(newV, oldV) {
+      if(newV >= $scope.newBetFormData.event_deadline) {
+        var d = new Date(newV.getTime());
+        d.setHours(d.getHours() + 2);
+        $scope.newBetFormData.event_deadline = d;
+      }
+    }); 
+
     $('#extra_yoos').tooltip();
     $scope.$on('create-bet', function(event, args) {
         $scope.resetWidget();
@@ -950,6 +967,7 @@ angular.module('dareyoo.controllers', []).
         $('.new-bet-widget').css($scope.focusStyles);
       }, 1000);
     };
+    
     $scope.expandDescription = function() {
       $('#description').css({"height":"80px","transition":"1s"});
     };
@@ -1088,13 +1106,11 @@ angular.module('dareyoo.controllers', []).
       if (postData.bet_type == 1) {
         postData.odds = (postData.amount + postData.against) / postData.amount;
       }
-      if($scope.timeRelativeBidding)
+      if($scope.timeRelative) {
         postData.bidding_deadline = $scope.relToAbsTime(postData.bidding_deadline_simple);
-      if($scope.timeRelativeEvent)
         postData.event_deadline = $scope.relToAbsTime(postData.event_deadline_simple);
-      //if(!postData.public) {
-        postData['invites'] = $.map($scope.invites, function(element) { return element.username || element; });
-      //}
+      }
+      postData['invites'] = $.map($scope.invites, function(element) { return element.username || element; });
       
       delete postData.against;
       delete postData.bidding_deadline_simple;
@@ -1104,6 +1120,7 @@ angular.module('dareyoo.controllers', []).
         $scope.new_bet = response;
         $scope.step = 5;
         $scope.invites = [];
+        $rootScope.$state.go("main.bet", {betId:$scope.new_bet.id});
       })
       .error(function(response, status, headers, config) {
         $scope.betAPIError(response, status, headers, config);

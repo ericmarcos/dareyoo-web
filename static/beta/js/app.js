@@ -1,6 +1,6 @@
 'use strict';
 
-console.log("Start.");
+
 // Declare app level module which depends on filters, and services
 var dareyooApp = angular.module('dareyoo', [
   'ngCookies',
@@ -12,7 +12,8 @@ var dareyooApp = angular.module('dareyoo', [
   'dareyoo.services',
   'dareyoo.controllers',
   'dareyoo.directives',
-  'dareyoo.filters'
+  'dareyoo.filters',
+  'djds4rce.angular-socialshare'
 ]).
 config(['$interpolateProvider', function($interpolateProvider) {
   $interpolateProvider.startSymbol('[[');
@@ -35,7 +36,6 @@ config(['$sceDelegateProvider', function($sceDelegateProvider) {
      FacebookProvider.init(config.fb_key);
 }]).*/
 config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'config', function($stateProvider, $urlRouterProvider, $locationProvider, config) {
-    console.log("Config start.");
     $urlRouterProvider.otherwise("/main/timeline-global");
     $locationProvider.html5Mode(true).hashPrefix('!'); // enable pushState
     $stateProvider
@@ -136,8 +136,9 @@ config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'config', f
           controller: 'WhoToFollowCtrl'
         })
 }]).
-run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'config', function run($http, $cookies, $rootScope, $state, $stateParams, $timeout, config) {
-    console.log("Run start.");
+run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', '$FB', 'config', function run($http, $cookies, $rootScope, $state, $stateParams, $timeout, $FB, config) {
+    $FB.init(config.fb_key);
+
     // For CSRF token compatibility with Django
     $http.defaults.headers.post['X-CSRFToken'] = $cookies['csrftoken'];
     $http.defaults.headers.put['X-CSRFToken'] = $cookies['csrftoken'];

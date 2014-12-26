@@ -149,7 +149,7 @@
                 <span class="new-bet-label">Cierre: [<a href="#" ng-click="help('bidding_deadline')">?</a>]</span>
             </div>
         </div>
-        <div class="row-small" ng-show="!timeRelativeBidding">
+        <div class="row-small" ng-show="!timeRelative">
             <div class="col-small-4">
                 <input type="text" class="form-control new-bet-calendar" datepicker-popup="yyyy-MM-dd" ng-model="newBetFormData.bidding_deadline" is-open="biddingDeadlineCalendarOpened" min="minBiddingDeadline" datepicker-options="{'starting-day':1}" show-button-bar="false" show-weeks="false" ng-required="true" close-text="Close" />
             </div>
@@ -159,12 +159,12 @@
                 </span>
             </div>
             <div class="col-small-2">
-                <button class="btn btn-default active" type="button" ng-click="timeRelativeBidding=!timeRelativeBidding">
+                <button class="btn btn-default active" type="button" ng-click="timeRelative=!timeRelative">
                     <span class="glyphicon glyphicon glyphicon-calendar"></span>
                 </button>
             </div>
         </div>
-        <div class="row-small" ng-show="timeRelativeBidding">
+        <div class="row-small" ng-show="timeRelative">
             <div class="col-small-10">
                 <div class="input-group new-bet-widget-input">
                     <span class="input-group-addon">en</span>
@@ -172,7 +172,7 @@
                 </div>
             </div>
             <div class="col-small-2">
-                <button class="btn btn-default" type="button" ng-click="timeRelativeBidding=!timeRelativeBidding">
+                <button class="btn btn-default" type="button" ng-click="timeRelative=!timeRelative">
                     <span class="glyphicon glyphicon glyphicon-calendar"></span>
                 </button>
             </div>
@@ -182,7 +182,7 @@
                 <span class="new-bet-label">Finalización: [<a href="#" ng-click="help('event_deadline')">?</a>]</span>
             </div>
         </div>
-        <div class="row-small" ng-show="!timeRelativeEvent">
+        <div class="row-small" ng-show="!timeRelative">
             <div class="col-small-4">
                 <input type="text" class="form-control new-bet-calendar" datepicker-popup="yyyy-MM-dd" ng-model="newBetFormData.event_deadline" is-open="eventDeadlineCalendarOpened" min="minEventDeadline" datepicker-options="{'starting-day':1}" show-button-bar="false" show-weeks="false" ng-required="true" close-text="Close" />
             </div>
@@ -192,20 +192,20 @@
                 </span>
             </div>
             <div class="col-small-2">
-                <button class="btn btn-default active" type="button" ng-click="timeRelativeEvent=!timeRelativeEvent">
+                <button class="btn btn-default active" type="button" ng-click="timeRelative=!timeRelative">
                     <span class="glyphicon glyphicon glyphicon-calendar"></span>
                 </button>
             </div>
         </div>
-        <div class="row-small" ng-show="timeRelativeEvent">
+        <div class="row-small" ng-show="timeRelative">
             <div class="col-small-10">
                 <div class="input-group new-bet-widget-input">
                     <span class="input-group-addon">en</span>
-                    <select class="form-control new-bet-widget-input" ng-model="newBetFormData.event_deadline_simple" ng-options="option for option in simpleBetEventDeadlineOptions"></select>
+                    <select class="form-control new-bet-widget-input" ng-model="newBetFormData.event_deadline_simple" ng-options="option for option in simpleBetEventDeadlineOptionsReduced.values"></select>
                 </div>
             </div>
             <div class="col-small-2">
-                <button class="btn btn-default" type="button" ng-click="timeRelativeEvent=!timeRelativeEvent">
+                <button class="btn btn-default" type="button" ng-click="timeRelative=!timeRelative">
                     <span class="glyphicon glyphicon glyphicon-calendar"></span>
                 </button>
             </div>
@@ -237,21 +237,13 @@
     <div class="container-fluid-small" ng-show="step==3">
         <div class="row-small">
             <div class="col-small-12">
-                <span class="new-bet-label">Invitar amigos</span>
+                <span class="new-bet-label">Invita a amigos <a id="extra_yoos" href="#" data-toggle="tooltip" title="Te damos 50 Yoos por cada amigo al que invites y se registre en Dareyoo" data-placement="bottom"><small>(¡y consigue Yoos extra!)</small></a></span>
             </div>
         </div>
+
         <div class="row-small">
             <div class="col-small-12">
-                <div ng-repeat="inv in invites" class="label-invites">
-                    <span ng-if="inv.id" class="text-invite">[[inv.username]]</span>
-                    <span ng-if="!inv.id" class="text-invite">[[inv]]</span>
-                    <span class="remove-invite" ng-click="removeInvite(inv)">&times;</span>
-                </div>
-            </div>
-        </div>
-        <div class="row-small">
-            <div class="col-small-12">
-                <div class="input-group">
+                <div class="input-group invite-input">
                     <input type="text" ng-model="inviteSelected" placeholder="username o email" typeahead="f as f.username for f in $root.usernames | filter:{'username': $viewValue}" typeahead-template-url="invitesAutocomplete.html" typeahead-on-select='onSelectInvite($item, $model, $label)' ng-keypress="onInviteEnter($event)" class="form-control new-bet-widget-input" typeahead-min-length="2">
 
                     <span class="input-group-btn">
@@ -259,11 +251,17 @@
                     </span>
                 </div><!-- /input-group -->
             </div>
-            <!-- <p>¿Quieres conseguir 50 Yoos extra? </p> -->
         </div>
         <div class="row-small">
             <div class="col-small-12">
-                <span><br><a id="extra_yoos" href="#" data-toggle="tooltip" title="Te damos 50 Yoos por cada amigo al que invites y se registre en Dareyoo" data-placement="bottom">¿Quieres conseguir Yoos extra?</a><br></span>
+                <div class="invites-box">
+                    <div class="" ng-show="!invites.length">(no has invitado a nadie)</div>
+                    <div ng-repeat="inv in invites" class="label-invites">
+                        <span ng-if="inv.id" class="text-invite">[[inv.username]]</span>
+                        <span ng-if="!inv.id" class="text-invite">[[inv]]</span>
+                        <span class="remove-invite" ng-click="removeInvite(inv)">&times;</span>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row-small action-row">
@@ -289,7 +287,24 @@
     <div class="container-fluid-small" ng-show="step==5">
         <div class="row-small" ng-show="newBetFormData.public">
             <div class="col-small-12">
-                <span class="new-bet-label">Tu apuesta se ha publicado correctamente. Puedes verla <a ui-sref="main.bet({betId:new_bet.id})">aqui</a></span><!--  o compartirla con tus amigos:</span> -->
+                <span class="share-bet-title">¡La suerte está echada!</span>
+                <p class="share-bet-text">Tu apuesta se ha creado correctamente, compártela con tus amigos:</p>
+                    <table class="share-bet-btns"><tr>
+                        <td>
+                        <a twitter 
+                            data-lang="es"
+                            data-count='none'
+                            data-url="http://www.dareyoo.com/app/main/bet/[[new_bet.id]]?utm_source=twitter&utm_medium=viral&utm_campaign=bet-share"
+                            data-via='dareyooApp'
+                            data-size="large"
+                            data-text='[[new_bet.title]]' >
+                        </a>
+                        </td><td>
+                        <a facebook class="zocial facebook facebook-bet-share" data-url='http://www.dareyoo.com/app/main/bet/[[new_bet.id]]?utm_source=facebook&utm_medium=viral&utm_campaign=bet-share'>Compartir</a>
+                        </td></tr>
+                    </table>
+                
+                <!--  o compartirla con tus amigos:</span> -->
                 <!-- http://stackoverflow.com/questions/6138780/facebook-share-button-and-custom-text -->
                 <!-- <div><span><a href="http://www.facebook.com/sharer.php?s=100&p[title]=[[new_bet.title]]&p[summary]=YOUR_SUMMARY&p[url]=http://dareyoo.com/app/main/bet/[[new_bet.id]]&p[images][0]=YOUR_IMAGE_TO_SHARE_OBJECT"
   target="_blank">Facebook</a></span><span><a>Twitter</a></span></div> -->
@@ -297,7 +312,8 @@
         </div>
         <div class="row-small" ng-hide="newBetFormData.public">
             <div class="col-small-12">
-                <span class="new-bet-label">Tu apuesta se ha enviado correctamente. Puedes verla <a ui-sref="main.bet({betId:new_bet.id})">aqui</a>.</span>
+                <span class="share-bet-title">¡La suerte está echada!</span>
+                <p class="share-bet-text">Tu apuesta se ha creado correctamente.</p>
             </div>
         </div>
         <div class="row-small">
