@@ -227,6 +227,7 @@ AUTHENTICATION_BACKENDS = (
 #http://python-social-auth.readthedocs.org/en/latest/configuration/settings.html#urls-options
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/app/main/timeline-global'
 SOCIAL_AUTH_LOGIN_URL = '/login/'
+LOGIN_ERROR_URL = '/login-error/'
 LOGIN_URL = '/login/'
 SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/app/edit-profile?new'
 SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/app/main/timeline-global'

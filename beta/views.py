@@ -113,3 +113,6 @@ def mobile_notification(request):
         data = json.dumps({'message': "OK"})
         return HttpResponse(data, mimetype='application/json')
     return HttpResponseBadRequest()
+
+def login_error(request):
+    return render_to_response('beta-login-error.html', context_instance=RequestContext(request))
