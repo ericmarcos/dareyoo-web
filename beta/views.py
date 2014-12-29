@@ -58,20 +58,21 @@ def register_view(request):
                     user = DareyooUser(email=email)
                     user.set_password(password)
                     user.save()
-                #Social pipeline
-                pipeline_params = {'strategy': None, 'user': user, 'response':None,
-                                'details': None, 'is_new': True, 'request': request}
-                save_profile_picture(**pipeline_params)
-                save_username(**pipeline_params)
-                save_reference_user(**pipeline_params)
-                save_registered(**pipeline_params)
-                save_campaign(**pipeline_params)
-                promo_code(**pipeline_params)
-                #This is kind of a hack... but it works
-                #http://stackoverflow.com/questions/15192808/django-automatic-login-after-user-registration-1-4
-                user.backend = "django.contrib.auth.backends.ModelBackend"
-                login(request, user)
-                return HttpResponseRedirect(reverse('beta-home') + '/edit-profile?new')
+            #Social pipeline
+            pipeline_params = {'strategy': None, 'user': user, 'response':None,
+                            'details': None, 'is_new': True, 'request': request}
+            save_profile_picture(**pipeline_params)
+            save_username(**pipeline_params)
+            save_reference_user(**pipeline_params)
+            save_registered(**pipeline_params)
+            save_campaign(**pipeline_params)
+            #promo_code(**pipeline_params)
+            #This is kind of a hack... but it works
+            #http://stackoverflow.com/questions/15192808/django-automatic-login-after-user-registration-1-4
+            user.backend = "django.contrib.auth.backends.ModelBackend"
+            login(request, user)
+            next_url = request.POST.get('next', reverse('beta-home') + '/edit-profile?new')
+            return HttpResponseRedirect(next_url)
         return render_to_response('beta-register.html', context_instance=RequestContext(request, context))
 
 

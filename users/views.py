@@ -3,17 +3,25 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import Http404
 from django.forms import EmailField
 from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.core.files.base import ContentFile
 from django.views.generic.base import RedirectView
 from django.core.urlresolvers import reverse, NoReverseMatch
+from django.contrib.auth import login
+from social.apps.django_app.utils import psa
+from provider import scope
+from provider.oauth2.models import Client
+from provider.oauth2.views import AccessTokenView
 from StringIO import StringIO
 from rest_framework import viewsets, permissions, renderers, status, generics
+from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.decorators import link, action, api_view
+from rest_framework.decorators import link, action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.exceptions import MethodNotAllowed
 from .models import *
 from .serializers import *
+from .pipelines import *
 from .signals import user_activated
 
 
@@ -117,7 +125,7 @@ class DareyooUserViewSet(viewsets.ModelViewSet):
         follower = request.user
         try:
             follower.unfollow(user)
-            return Response({'status': 'ok'}, status=status.HTTP_201_CREATED)
+            return Response({'status': 'ok'}, status=status.HTTP_204_NO_CONTENT)
         except DareyooUserException as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -168,3 +176,84 @@ class SearchDareyooSuggestedList(generics.ListAPIView):
 
     def get_queryset(self):
         return DareyooUser.objects.filter(is_vip=True).order_by('?')
+
+
+@api_view(['POST',])
+@permission_classes([])
+def register(request, format=None):
+    email = request.DATA.get('email', '')
+    password = request.DATA.get('password', '')
+    password2 = request.DATA.get('password2', '')
+    user = DareyooUser.objects.filter(email=email)
+    try:
+        client = Client.objects.get(client_id=request.DATA.get('client_id'))
+    except:
+        return Response({'detail': 'Wrong client id'}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        validate_email(email)
+    except ValidationError as e:
+        return Response({'detail': 'Please, introduce a valid email'}, status=status.HTTP_400_BAD_REQUEST)
+    if len(user) > 0 and user[0].registered == True:
+        return Response({'detail': 'This email is already registered'}, status=status.HTTP_400_BAD_REQUEST)
+    elif password != password2:
+        return Response({'detail': 'Wrong password'}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        if len(user) > 0:
+            user = user[0]
+        else:
+            user = DareyooUser(email=email)
+            user.set_password(password)
+            user.save()
+        #Social pipeline
+    pipeline_params = {'strategy': None, 'user': user, 'response':None,
+                    'details': None, 'is_new': True, 'request': request}
+    save_profile_picture(**pipeline_params)
+    save_username(**pipeline_params)
+    save_reference_user(**pipeline_params)
+    save_registered(**pipeline_params)
+    save_campaign(**pipeline_params)
+    #promo_code(**pipeline_params)
+    access_token = AccessTokenView().get_access_token(request,
+        user,
+        scope.to_int('read', 'write'),
+        client
+    )
+    return Response(
+        {'access_token': access_token.token,
+        'expires_in': access_token.get_expire_delta(),
+        'refresh_token': access_token.refresh_token.token,
+        'scope': ' '.join(scope.names(access_token.scope))},
+        status=status.HTTP_200_OK
+    )
+
+
+#http://psa.matiasaguirre.net/docs/use_cases.html#signup-by-oauth-access-token
+@api_view(['POST',])
+@permission_classes([])
+@psa('social:complete')
+def register_by_access_token(request, backend, format=None):
+    # This view expects an access_token GET parameter, if it's needed,
+    # request.backend and request.strategy will be loaded with the current
+    # backend and strategy.
+    client_id = request.DATA.get('client_id', None)
+
+    user = request.backend.do_auth(request.DATA.get('access_token'))
+    if user:
+        try:
+            client = Client.objects.get(client_id=client_id)
+            access_token = AccessTokenView().get_access_token(request,
+                user,
+                scope.to_int('read', 'write'),
+                client
+            )
+            return Response(
+                {'access_token': access_token.token,
+                'expires_in': access_token.get_expire_delta(),
+                'refresh_token': access_token.refresh_token.token,
+                'scope': ' '.join(scope.names(access_token.scope))},
+                status=status.HTTP_200_OK
+            )
+        except:
+            return Response({'detail': "Wrong client id"}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response({'detail': "Wrong access token"}, status=status.HTTP_400_BAD_REQUEST)

@@ -20,11 +20,74 @@
     <div class="modal-content">
       <div class="modal-header">
         <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
-        <h4 class="modal-title">Registrate ahora, es gratis!</h4>
+        <h4 class="modal-title">Registrate ahora, ¡es gratis!</h4>
       </div>
-      <div class="modal-body">
-        <p ng-show="public_bet" id="message">Necesitas ser usuario de Dareyoo para poder participar en ésta apuesta.<br><strong><a href="/register">Regístrate aquí</a></strong> y en menos de un minuto ya podrás divertirte apostando con tus amigos.</p>
-        <p ng-hide="public_bet" id="message">Ésta es una apuesta privada, necesitas ser usuario de Dareyoo para poder poder verla.<br><strong><a href="/register">Regístrate aquí</a></strong> y en menos de un minuto ya podrás divertirte apostando con tus amigos.</p>
+      <div class="modal-body" ng-init="register=true">
+        <p ng-show="public_bet" id="message" class="register-msg">Necesitas ser usuario de Dareyoo para poder participar en ésta apuesta.</p>
+        <p ng-hide="public_bet" id="message" class="register-msg">Ésta es una apuesta privada, necesitas ser usuario de Dareyoo para poder verla.</p>
+        <br>
+            <div class="row fill text-center" ng-show="register">
+                <div class="col-md-6 right-divider">
+                    <h4>Crear nueva cuenta:</h4>
+
+                    <form method="post" role="form" name="LoginForm" action="/register/">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="[[csrf_token]]" />
+                    <input type="text" id="email" name="email" class="form-control" placeholder="email">
+                    <span class="help-block"></span>
+
+                    <input type="password" id="password" name="password" placeholder="password" class="form-control">
+                    <span class="help-block"></span>
+
+                    <input type="password" id="password2" name="password2" placeholder="repite el password" class="form-control">
+                    <span class="help-block"></span>
+
+                    <button type="submit" class="btn btn-primary center-block">Registrar</button>
+                    <input type="hidden" name="next" value="/app/main/bet/[[bet.id]]" />
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <h4>O ahórrate un minuto y regístrate con:</h4><br>
+                    <a href="/login/facebook/?next=/app/main/bet/[[bet.id]]">
+                        <button class='zocial facebook'>Registrar con Facebook</button>
+                    </a>
+                    <p><small>(nunca publicaremos nada sin tu permiso)</small></p>
+                </div>
+            </div>
+            <div class="row fill text-center" ng-show="register">
+                <div class="col-md-12 text-center">
+                    <p class="register-msg"><br><br>¿Ya tienes una cuenta? <a href="" ng-click="register=false">Iniciar sesión</a>.</p>
+                </div>
+            </div>
+            <div class="row fill text-center" ng-show="!register">
+                <div class="col-md-6 right-divider">
+                    <h4>Iniciar sesión:</h4>
+
+                    <form method="post" role="form" name="LoginForm" action="/login/">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="[[csrf_token]]" />
+                    <div id="name-group" class="form-group">
+                        <input type="text" id="username" name="username" class="form-control" placeholder="email">
+                        <span class="help-block"></span>
+
+                        <input type="password" id="password" name="password" placeholder="password" class="form-control">
+                        <span class="help-block"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <input type="hidden" name="next" value="/app/main/bet/[[bet.id]]" />
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <h4>O inicia sesión con:</h4><br>
+                    <a href="{% url 'social:begin' "facebook" %}">
+                        <button class='zocial facebook'>Facebook Login</button>
+                    </a>
+                </div>
+            </div>
+            <div class="row fill text-center" ng-show="!register">
+                <div class="col-md-12 text-center">
+                    <p class="register-msg"><br>¿Aún no tienes una cuenta? <a href="" ng-click="register=true">Créala ahora</a>.</p>
+                </div>
+            </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>

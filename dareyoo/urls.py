@@ -26,6 +26,8 @@ extra_api_urls = patterns('',
     url(r'^me/(?P<rest>\w*)', MeRedirectView.as_view(), name='me-user-detail'),
     url(r'^search-facebook-friends/$', SearchFacebookFriendsList.as_view(), name='search-facebook-friends'),
     url(r'^search-dareyoo-suggested/$', SearchDareyooSuggestedList.as_view(), name='search-dareyoo-suggested'),
+    url(r'^register/$', register, name='register'),
+    url(r'^register-by-access-token/(?P<backend>[^/]+)/$', register_by_access_token, name='register_by_access_token'),
 )
 
 from django.contrib import admin
