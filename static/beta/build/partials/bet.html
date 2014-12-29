@@ -261,12 +261,12 @@
                 </div>
             </div>
         </div>
-        <div class="row-small" ng-if="canAddBid()">
+        <div class="row-small" ng-if="canAcceptBet()">
             <div class="col-small-12">
                 <button type="button" class="btn btn-primary btn-lg btn-block bet-btn" ng-click="acceptBet()">Apostar en contra por [[getRivalAmount()]] Yoos!</button>
             </div>
         </div>
-        <div class="row-small" ng-show="isBidding() && isAuction() && bet.author.id != user.id && !dialogs.bid">
+        <div class="row-small" ng-show="canAddBid() && !dialogs.bid">
             <div class="col-small-12">
                 <button type="button" class="btn btn-primary btn-lg btn-block bet-btn" ng-click="dialogs.bid=true">Hacer oferta!</button>
             </div>

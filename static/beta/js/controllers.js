@@ -807,15 +807,18 @@ angular.module('dareyoo.controllers', []).
     $scope.canAddResult = function() {
       if($scope.user)
         return $scope.isBidding() && $scope.isLottery() && ($scope.bet.open_lottery || $scope.isAuthor()) && (!$scope.isParticipant($scope.user.id) || $scope.isAuthor());
-      return false;
+      return $scope.isBidding() && $scope.isLottery() && $scope.bet.open_lottery;
     };
     $scope.canParticipateResult = function() {
       if($scope.user)
         return $scope.isLottery() && $scope.isBidding() && !$scope.isParticipant($scope.user.id);
-      return false;
+      return $scope.isLottery() && $scope.isBidding();
+    };
+    $scope.canAcceptBet = function() {
+      return !$scope.isAuthor() && $scope.isBidding() && $scope.isBasic();
     };
     $scope.canAddBid = function() {
-      return !$scope.isAuthor() && $scope.isBidding() && $scope.isBasic();
+      return !$scope.isAuthor() && $scope.isBidding() && $scope.isAuction();
     };
     $scope.canRemoveBid = function() {
       return $scope.isAuthor() && $scope.isBidding();
