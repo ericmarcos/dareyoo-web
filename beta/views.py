@@ -117,3 +117,8 @@ def mobile_notification(request):
 
 def login_error(request):
     return render_to_response('beta-login-error.html', context_instance=RequestContext(request))
+
+def campaign_ny2015_view(request):
+    handle_campaign(request)
+    context = {'fb_key': settings.SOCIAL_AUTH_FACEBOOK_KEY}
+    return render_to_response('new-year-2015-campaign-landing.html', context_instance=RequestContext(request, context))
