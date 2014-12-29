@@ -227,7 +227,8 @@ AUTHENTICATION_BACKENDS = (
 #http://python-social-auth.readthedocs.org/en/latest/configuration/settings.html#urls-options
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/app/main/timeline-global'
 SOCIAL_AUTH_LOGIN_URL = '/login/'
-SOCIAL_AUTH_LOGIN_ERROR_URL = '/login-error/'
+#SOCIAL_AUTH_LOGIN_ERROR_URL = '/login-error/'
+SOCIAL_AUTH_LOGIN_ERROR_URL = '/login/'
 LOGIN_URL = '/login/'
 SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/app/edit-profile?new'
 SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/app/main/timeline-global'
@@ -248,6 +249,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.auth_allowed',
     'social.pipeline.social_auth.social_user',
     'social.pipeline.user.get_username',
+    'social.pipeline.social_auth.associate_by_email',
     'social.pipeline.user.create_user',
     'social.pipeline.social_auth.associate_user',
     'social.pipeline.social_auth.load_extra_data',
@@ -257,6 +259,7 @@ SOCIAL_AUTH_PIPELINE = (
     'users.pipelines.save_reference_user',
     'users.pipelines.save_registered',
     'users.pipelines.save_campaign',
+    #'users.pipelines.promo_code',
 )
 
 ### Haystack ###
