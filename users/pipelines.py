@@ -13,7 +13,7 @@ from requests import request, HTTPError
 
 from django.core.files.base import ContentFile
 from django.conf import settings
-from .models import DareyooUser, PromoCode
+from .models import DareyooUser, PromoCode, UserRefill
 
 #http://stackoverflow.com/questions/19890824/save-facebook-profile-picture-in-model-using-python-social-auth
 def save_profile_picture(strategy, user, response, details,
@@ -79,8 +79,21 @@ def save_reference_user(strategy, user, response, details,
             user.save()
             ref_user.coins_available += 50
             ref_user.save()
+            ur = UserRefill()
+            ur.user = user.reference_user
+            ur.amount = 50
+            ur.refill_type = 'invite'
+            ur.save()
         except:
             pass
+    else:
+        user.reference_user.coins_available += 50
+        user.reference_user.save()
+        ur = UserRefill()
+        ur.user = user.reference_user
+        ur.amount = 50
+        ur.refill_type = 'invite'
+        ur.save()
 
 def save_registered(strategy, user, response, details,
                     is_new=False, *args, **kwargs):
