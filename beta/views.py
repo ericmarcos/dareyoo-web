@@ -61,6 +61,9 @@ def register_view(request):
                     user = DareyooUser(email=email)
                     user.set_password(password)
                     user.save()
+            if context['errors']:
+                #redirect to register page
+                return HttpResponseRedirect(reverse('beta-register'))
             #Social pipeline
             pipeline_params = {'strategy': None, 'user': user, 'response':None,
                             'details': None, 'is_new': True, 'request': request}
@@ -75,7 +78,6 @@ def register_view(request):
             user.backend = "django.contrib.auth.backends.ModelBackend"
             login(request, user)
             next_url = request.POST.get('next', request.GET.get('next', reverse('beta-home') + '/edit-profile?new'))
-            print next_url
             return HttpResponseRedirect(next_url)
         return render_to_response('beta-register.html', context_instance=RequestContext(request, context))
 
