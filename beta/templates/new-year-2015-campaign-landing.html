@@ -15,9 +15,11 @@
         overflow: hidden;
     }
     .main-container {
-        position: relative;
         height: 100%;
         overflow: auto;
+    }
+    .main-wrapper {
+        position: relative;
     }
     .bases {
         position: absolute;
@@ -86,6 +88,10 @@
     .anadir {
         height: 50px;
     }
+    button.no-radius {
+        border-bottom-right-radius: 0px;
+        border-top-right-radius: 0px;
+    }
     .otros {
         color: #fff;
         font-size: 19px;
@@ -95,6 +101,7 @@
     }
     .bets-reel {
         margin-top: 6px;
+        height: 100px;
     }
     .invites {
         max-height: 140px;
@@ -390,6 +397,7 @@
       </div>
     </div>
     <div class="container text-center main-container">
+        <div class="main-wrapper">
         <div class="social-btns">
             <a href="http://www.facebook.com/DareyooApp"><div class="fb"></div></a>
             <a href="http://twitter.com/DareyooApp"><div class="twitter"></div></a>
@@ -406,7 +414,7 @@
               <div class="input-group">
                 <input type="text" id="title" maxlength="140" placeholder="Escribe tu propósito con el hashtag #proposito2015 aquí" ng-model="newBetFormData.title">
                 <span class="input-group-btn">
-                    <button class="btn btn-primary rand" type="button" ng-click="random()">Generar<br>al azar</button>
+                    <button class="btn btn-primary rand no-radius" type="button" ng-click="random()">Generar<br>al azar</button>
                 </span>
               </div>
               <!--<button type="button" class="btn btn-primary" ng-click="random()">Genérame un propósito al azar</button>-->
@@ -424,7 +432,7 @@
             <div class="input-group">
                 <input type="email" ng-model="invite" placeholder="email de la persona que quieras invitar"class="form-control" ng-keypress="onInviteEnter($event)" id="email">
                 <span class="input-group-btn">
-                    <button class="btn btn-primary anadir" type="button" ng-click="onInviteEnter()">Añadir</button>
+                    <button class="btn btn-primary anadir no-radius" type="button" ng-click="onInviteEnter()">Añadir</button>
                 </span>
             </div><!-- /input-group -->
             <h5>Cuanta más gente invites, más opciones de ganar un premio.</h5>
@@ -480,6 +488,7 @@
             </div>
         </div>
         <div class="bases"><a data-toggle="modal" data-target="#bases-modal">Bases del concurso</a></div>
+    </div>
     </div>
 </div>
 {% endblock %}
