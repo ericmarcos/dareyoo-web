@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import re
 import json
 from django.core.urlresolvers import reverse
@@ -5,13 +7,14 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.http import *
+from django.utils import timezone
 from django.shortcuts import render_to_response,redirect, get_object_or_404
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from users.models import DareyooUser
 from users.pipelines import *
-from bets.models import Bet
+from bets.models import Bet, Bid
 from .models import *
 
 def handle_campaign(request):
@@ -71,7 +74,8 @@ def register_view(request):
             #http://stackoverflow.com/questions/15192808/django-automatic-login-after-user-registration-1-4
             user.backend = "django.contrib.auth.backends.ModelBackend"
             login(request, user)
-            next_url = request.POST.get('next', reverse('beta-home') + '/edit-profile?new')
+            next_url = request.POST.get('next', request.GET.get('next', reverse('beta-home') + '/edit-profile?new'))
+            print next_url
             return HttpResponseRedirect(next_url)
         return render_to_response('beta-register.html', context_instance=RequestContext(request, context))
 
@@ -120,5 +124,24 @@ def login_error(request):
 
 def campaign_ny2015_view(request):
     handle_campaign(request)
-    context = {'fb_key': settings.SOCIAL_AUTH_FACEBOOK_KEY}
+    bets = Bet.objects.all().bidding().filter(title__icontains="#proposito2015").public().extra(where=["CHAR_LENGTH(title) > 30 AND CHAR_LENGTH(title) < 120"]).order_by('?')[:10]
+    context = {'fb_key': settings.SOCIAL_AUTH_FACEBOOK_KEY, 'bets':bets, 'logged_in': 'false', 'bet_id':'0', 'title': "" }
+    if request.user.is_authenticated():
+        context['logged_in'] = 'true'
+    if request.GET.get('title') and request.user.is_authenticated():
+        b = Bet()
+        b.author = request.user
+        b.title = request.GET.get('title')
+        b.bet_type = 3
+        b.bidding_deadline = timezone.datetime(2015,1,31)
+        b.event_deadline = timezone.datetime(2015,2,28)
+        b.public = True
+        b.amount = 10
+        b.open_lottery = True
+        b.save()
+        b.invite(request.GET.get('invites', "").split(','))
+        Bid.objects.create(title="Lo siento pero... ¡No lo conseguirás!", author=request.user, bet_id=b.id, amount=b.amount)
+        Bid.objects.create(title="Claro que sí, ¡Tú puedes!", author=request.user, bet_id=b.id, amount=b.amount)
+        context['bet_id'] = b.id
+        context['title'] = b.title
     return render_to_response('new-year-2015-campaign-landing.html', context_instance=RequestContext(request, context))
