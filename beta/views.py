@@ -130,7 +130,7 @@ def campaign_ny2015_view(request):
         context['logged_in'] = 'true'
     if request.GET.get('title') and \
         request.user.is_authenticated() and \
-        not Bet.objects.created_by(request.user).filter(title=request.GET.get('title')).exists():
+        not Bet.objects.all().created_by(request.user).filter(title=request.GET.get('title')).exists():
         b = Bet()
         b.author = request.user
         b.title = request.GET.get('title')
