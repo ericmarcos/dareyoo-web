@@ -137,7 +137,7 @@
     -o-background-size: cover;
     background-size: cover;
     background-position: center center;
-    background-image: url("/static/beta/build/img/ny2015/item1.jpg");
+    background-image: url("http://s3-eu-west-1.amazonaws.com/dareyoo-pro/beta/build/img/ny2015/item1.jpg");
 }
 .carousel-fade>.carousel-inner>.item2 {
     -webkit-background-size: cover;
@@ -145,7 +145,7 @@
     -o-background-size: cover;
     background-size: cover;
     background-position: center center;
-    background-image: url("/static/beta/build/img/ny2015/item2.jpg");
+    background-image: url("http://s3-eu-west-1.amazonaws.com/dareyoo-pro/beta/build/img/ny2015/item2.jpg");
 }
 .carousel-fade>.carousel-inner>.item3 {
     -webkit-background-size: cover;
@@ -153,7 +153,7 @@
     -o-background-size: cover;
     background-size: cover;
     background-position: center center;
-    background-image: url("/static/beta/build/img/ny2015/item3.jpg");
+    background-image: url("http://s3-eu-west-1.amazonaws.com/dareyoo-pro/beta/build/img/ny2015/item3.jpg");
 }
 .carousel-fade>.carousel-inner>.item4 {
     -webkit-background-size: cover;
@@ -161,7 +161,7 @@
     -o-background-size: cover;
     background-size: cover;
     background-position: center center;
-    background-image: url("/static/beta/build/img/ny2015/item4.jpg");
+    background-image: url("http://s3-eu-west-1.amazonaws.com/dareyoo-pro/beta/build/img/ny2015/item4.jpg");
 }
 .carousel-fade>.carousel-inner>.item5 {
     -webkit-background-size: cover;
@@ -169,7 +169,7 @@
     -o-background-size: cover;
     background-size: cover;
     background-position: center center;
-    background-image: url("/static/beta/build/img/ny2015/item5.jpg");
+    background-image: url("http://s3-eu-west-1.amazonaws.com/dareyoo-pro/beta/build/img/ny2015/item5.jpg");
 }
 .carousel-fade>.carousel-inner>.item6 {
     -webkit-background-size: cover;
@@ -177,7 +177,7 @@
     -o-background-size: cover;
     background-size: cover;
     background-position: center center;
-    background-image: url("/static/beta/build/img/ny2015/item6.jpg");
+    background-image: url("http://s3-eu-west-1.amazonaws.com/dareyoo-pro/beta/build/img/ny2015/item6.jpg");
 }
 
 #circleG {
@@ -499,9 +499,20 @@ var dareyooApp = angular.module('dareyoo_promesa2015', [
   'ui.keypress',
   'djds4rce.angular-socialshare'
 ]).
-config(['$interpolateProvider', function($interpolateProvider) {
+config(['$interpolateProvider', '$sceDelegateProvider', function($interpolateProvider, $sceDelegateProvider) {
   $interpolateProvider.startSymbol('[[');
   $interpolateProvider.endSymbol(']]');
+  $sceDelegateProvider.resourceUrlWhitelist([
+    // Allow same origin resource loads.
+    'self',
+    // Allow loading from outer templates domain.
+    'http://s3-eu-west-1.amazonaws.com/dareyoo/**',
+    'http://s3-eu-west-1.amazonaws.com/dareyoo-pro/**',
+    'http://s3-eu-west-1.amazonaws.com/dareyoo-pre/**',
+    'https://s3-eu-west-1.amazonaws.com/dareyoo/**',
+    'https://s3-eu-west-1.amazonaws.com/dareyoo-pro/**',
+    'https://s3-eu-west-1.amazonaws.com/dareyoo-pre/**'
+  ]); 
 }]).
 run(['$http', '$cookies', '$FB', 'config', function($http, $cookies, $FB, config) {
     $http.defaults.headers.post['X-CSRFToken'] = $cookies['csrftoken'];
