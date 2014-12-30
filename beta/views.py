@@ -128,7 +128,9 @@ def campaign_ny2015_view(request):
     context = {'fb_key': settings.SOCIAL_AUTH_FACEBOOK_KEY, 'bets':bets, 'logged_in': 'false', 'bet_id':'0', 'title': "" }
     if request.user.is_authenticated():
         context['logged_in'] = 'true'
-    if request.GET.get('title') and request.user.is_authenticated():
+    if request.GET.get('title') and
+        request.user.is_authenticated() and
+        not Bet.objects.created_by(request.user).filter(title=request.GET.get('title')).exists():
         b = Bet()
         b.author = request.user
         b.title = request.GET.get('title')
