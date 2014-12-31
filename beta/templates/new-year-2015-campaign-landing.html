@@ -1,9 +1,14 @@
 {% extends "beta-base.html" %}
 {% block html %}<html lang="es" ng-controller="mainCtrl">{% endblock %}
 
+{% block title %}<title>¡Tu propósito para 2015 tiene premio! | Dareyoo</title>{% endblock %}
+
+{% block meta_desc %}<meta name="description" content="Es fácil, escribe tu propósito, envíaselo a tus amigos para que apuesten a favor o en contra y gana un mes de gym gratis cortesía de Gymadvisor o una licencia pro de 8fit." />{% endblock %}
+
 {% block css %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/landing.all.min.css?new">
+<link rel="image_src" href="http://s3-eu-west-1.amazonaws.com/dareyoo-pro/beta/build/img/ny2015/item2.jpg" />
 <!--<link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/dareyoo_app.all.min.css">-->
 <style type="text/css">
     html, body {
