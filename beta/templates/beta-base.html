@@ -1,5 +1,4 @@
-{% load i18n %}
-<!DOCTYPE html>
+{% load i18n %}<!DOCTYPE html>
 {% block html %}<html lang="es">{% endblock %}
 <head>
 {% block head %}
@@ -14,12 +13,6 @@
   {% endblock %}
   {% block title %}<title>Dareyoo (beta)</title>{% endblock %}
   {% block css %}
-  {% endblock %}
-  {% block heapanalytics %}
-    <script type="text/javascript">
-      window.heap=window.heap||[];heap.load=function(a){window._heapid=a;var b=document.createElement("script");b.type="text/javascript",b.async=!0,b.src=("https:"===document.location.protocol?"https:":"http:")+"//cdn.heapanalytics.com/js/heap.js";var c=document.getElementsByTagName("script")[0];c.parentNode.insertBefore(b,c);var d=function(a){return function(){heap.push([a].concat(Array.prototype.slice.call(arguments,0)))}},e=["identify","track"];for(var f=0;f<e.length;f++)heap[e[f]]=d(e[f])};
-      heap.load("3892300645");
-    </script>
   {% endblock %}
   {% block googleanalytics %}
   <script type="text/javascript">
@@ -62,13 +55,13 @@
   <!-- Collect the nav links, forms, and other content for toggling -->
   <div class="collapse navbar-collapse" id="landing-navbar-collapse">
     <ul class="nav navbar-nav navbar-left">
-      <li {% if request.resolver_match.url_name == "beta-como" %}class="active"{% endif %}><a href="#">CÓMO FUNCIONA</a></li>
-      <li {% if request.resolver_match.url_name == "beta-quienes" %}class="active"{% endif %}><a href="#">QUIÉNES SOMOS</a></li>
-      <li {% if request.resolver_match.url_name == "beta-faq" %}class="active"{% endif %}><a href="#">FAQ</a></li>
+      <li {% if request.resolver_match.url_name == "beta-como" %}class="active"{% endif %}><a href="{% url 'beta-how-to' %}">CÓMO FUNCIONA</a></li>
+      <!--<li {% if request.resolver_match.url_name == "beta-quienes" %}class="active"{% endif %}><a href="#">QUIÉNES SOMOS</a></li> -->
+      <li {% if request.resolver_match.url_name == "beta-faq" %}class="active"{% endif %}><a href="{% url 'beta-faq' %}">FAQ</a></li>
     </ul>
     {% if user.is_authenticated %}
     <ul class="nav navbar-nav navbar-right">
-      <li><a href="{% url 'beta-home' %}">APP</a></li>
+      <li><a href="{% url 'beta-home' %}">Bienvenido <b>{{ user.username }}</b>. ¿Jugamos?</b></a></li>
     </ul>
     {% else %}
     <ul class="nav navbar-nav navbar-right">

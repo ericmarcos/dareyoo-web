@@ -102,22 +102,25 @@ class BetQuerySet(QuerySet):
             raise BetException('Invalid bet state (valid types: ' + str(dict(Bet.BET_STATE_CHOICES).values()) + ')')
 
     def bidding(self):
-        return self.filter(bet_state='bidding')
+        return self.state('bidding')
+
+    def not_bidding(self):
+        return self.exclude(bet_state='bidding')
 
     def event(self):
-        return self.filter(bet_state='event')
+        return self.state('event')
 
     def resolving(self):
-        return self.filter(bet_state='resolving')
+        return self.state('resolving')
 
     def complaining(self):
-        return self.filter(bet_state='complaining')
+        return self.state('complaining')
 
     def arbitrating(self):
-        return self.filter(bet_state='arbitrating')
+        return self.state('arbitrating')
 
     def closed(self):
-        return self.filter(bet_state='closed')
+        return self.state('closed')
 
     def open(self):
         return self.exclude(bet_state='closed')
@@ -390,6 +393,25 @@ class Bet(models.Model):
     def is_participant(self, user):
         return user in self.participants()
 
+    def lost_conflict(self, user):
+        return user in self.conflict_losers()
+
+    def conflict_losers(self):
+        losers = []
+        if self.is_closed() and self.has_conflict():
+            if self.is_lottery():
+                if self.claim_lottery_winner != self.referee_lottery_winner and self.claim != self.referee_claim:
+                    losers.append(self.author)
+                bid_conflicted = self.bids.filter(claim_author__isnull=False).first()
+                if bid_conflicted and bid_conflicted != self.referee_lottery_winner and bid_conflicted.claim != self.referee_claim:
+                    losers.append(bid_conflicted.claim_author)
+            else:
+                if self.claim != self.referee_claim:
+                    losers.append(self.author)
+                if self.accepted_bid.claim != self.referee_claim:
+                    losers.append(self.accepted_bid.author)
+        return losers
+
     def invite(self, invites):
         if invites and len(invites) > 0:
             recipients = []
@@ -446,7 +468,7 @@ class Bet(models.Model):
         return pot
 
     def winners(self):
-        if self.is_closed() and not self.is_desert():
+        if (self.is_complaining() or self.is_arbitrating() or self.is_closed()) and not self.is_desert():
             claim = self.referee_claim or self.claim
             if self.is_lottery():
                 if claim != Bet.CLAIM_NULL:
@@ -559,6 +581,8 @@ class Bet(models.Model):
             raise BetException("Can't accept a bid from this bet because it's not on bidding sate (current state:%s)" % self.bet_state)
 
     def resolve(self, claim=None, claim_lottery_winner=None, claim_message=""):
+        if self.is_event():
+            self.next_state()
         if self.is_resolving():
             if self.is_simple() or self.is_auction():
                 if claim in dict(Bet.BET_CLAIM_CHOICES).keys():
@@ -572,6 +596,7 @@ class Bet(models.Model):
                     self.claim_message = claim_message
                 elif claim == Bet.CLAIM_NULL:
                     self.claim = Bet.CLAIM_NULL
+                    self.claim_message = claim_message
                 else:
                     raise BetException("Invalid claim")
             self.resolved_at = timezone.now()

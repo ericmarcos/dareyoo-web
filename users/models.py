@@ -1,5 +1,6 @@
 import re
 import hashlib
+import random
 
 try:
     from urllib.parse import urljoin, urlencode
@@ -71,6 +72,23 @@ class DareyooUserQuerySet(QuerySet):
         first = first + relativedelta(months=-prev_months)
         last = first + relativedelta(months=1)
         return self.joined_between(first, last)
+
+    def joined_before_day(self, prev_days=0):
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=-prev_days)
+        return self.joined_before(today)
+
+    def joined_before_week(self, prev_weeks=0):
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        monday = today + timedelta(days=-today.weekday(), weeks=-prev_weeks)
+        return self.joined_before(monday)
+
+    def joined_before_month(self, prev_months=0):
+        first = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        first = first + relativedelta(months=-prev_months)
+        return self.joined_before(first)
+
+    def joined_before(self, date):
+        return self.filter(date_joined__lt=date)
 
     def joined_between(self, start, end):
         return self.filter(date_joined__range=(start, end))
@@ -240,7 +258,7 @@ class DareyooUser(AbstractEmailUser):
         if self.facebook_uid:
             return "http://graph.facebook.com/%s/picture" % self.facebook_uid
         
-        default_avatar = urljoin(settings.STATIC_URL, "alpha/img/profile_%s.png" % (self.id or 1 % 10))
+        default_avatar = urljoin(settings.STATIC_URL, "alpha/img/profile_%s.png" % ((self.id or 1) % 10))
 
         if settings.AVATAR_GRAVATAR_BACKUP:
             params = {'s': str(size), 'd': default_avatar}
@@ -253,7 +271,7 @@ class DareyooUser(AbstractEmailUser):
         if self.profile_pic:
             return self.profile_pic._get_url()
         else:
-            return ""
+            return settings.STATIC_URL + "beta/build/img/default_profile_pics/profile_%s.png" % ((self.id or 1 )% 10)
 
     def get_fb_friends(self):
         social_user = self.social_auth.filter(
@@ -290,6 +308,7 @@ class DareyooUser(AbstractEmailUser):
             }
             
             send_task('send_email', kwargs=kwargs)
+            send_task('register_email_mailchimp', kwargs={'user_id':self.id})
 
     def __unicode__(self):
         return "%s - %s" % (self.email, self.username)
@@ -346,3 +365,27 @@ class UserRefill(models.Model):
 
     def __unicode__(self):
         return "%s - %s [%s]" % (self.date, self.user, self.refill_type)
+
+
+class PromoCode(models.Model):
+    code = models.CharField(max_length=63, blank=True, null=True)
+    extra_coins = models.IntegerField(default=0)
+    users = models.ManyToManyField(DareyooUser, blank=True)
+
+    def exchange(self, user):
+        if not self.users.filter(id=user.id).exists():
+            user.coins_available += self.extra_coins
+            user.save()
+            self.users.add(user)
+
+    @staticmethod
+    def generate_random(extra_coins, n=1, prefix=""):
+        codes = []
+        for i in xrange(n):
+            code = str(random.random())[-4:]
+            pc = PromoCode.objects.create(code=prefix + code, extra_coins=extra_coins)
+            codes.append(pc)
+        return codes
+
+    def __unicode__(self):
+        return self.code

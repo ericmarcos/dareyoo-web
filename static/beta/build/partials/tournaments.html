@@ -3,25 +3,29 @@
         <div class="tournaments-list-header">
             <span>Torneos y premios</span>
         </div>
-        <div class="row tournament-row">
+        <!--<div class="row tournament-row">
             <div class="col-sm-12">
                 <div class="tournament-img">
-                    <img class="img-rounded" ng-src="[[$root.config.static_url + 'tournaments/global.jpg']]">
+                    <a href="" ui-sref="tournament-detail.ranking({tournamentId:0})">
+                        <img class="img-rounded" ng-src="[[$root.config.static_url + 'tournaments/global.jpg']]">
+                    </a>
                 </div>
                 <div class="tournament-info">
-                    <h3><a href="" ui-sref="tournament-detail({tournamentId:0})">Clasificación Global</a></h3>
+                    <h3><a href="" ui-sref="tournament-detail.bets({tournamentId:0})">Clasificación Global</a></h3>
                     <p></p>
                 </div>
                 <div class="clearfix"></div>
             </div>
-        </div>
+        </div>-->
         <div class="row tournament-row" ng-repeat="t in tournaments">
             <div class="col-sm-12">
                 <div class="tournament-img">
-                    <img class="img-rounded" ng-src="[[t.pic]]">
+                    <a href="" ui-sref="tournament-detail.ranking({tournamentId:t.id})">
+                        <img class="img-rounded" ng-src="[[t.pic]]">
+                    </a>
                 </div>
                 <div class="tournament-info">
-                    <h3><a href="" ui-sref="tournament-detail({tournamentId:t.id})">[[t.title]]</a></h3>
+                    <h3><a href="" ui-sref="tournament-detail.bets({tournamentId:t.id})">[[t.title]]</a></h3>
                     <p>[[t.description]]</p>
                     <div class="tournament-small-info"><small>Del [[getStartDate(t)]] al [[getEndDate(t)]]</small></div>
                     <span class="tournament-small-info" ng-if="t.only_author">

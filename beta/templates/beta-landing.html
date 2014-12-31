@@ -2,14 +2,86 @@
 
 {% block css %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/landing.all.min.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/landing.all.min.css?new">
 {% endblock %}
 
 {% block content %}
 {{ block.super }}
 
-<!-- <div id="design"></div> -->
-<header id="intro">
+<!-- Modal -->
+<div class="modal fade" id="android-notification" tabindex="-1" role="dialog" aria-labelledby="AndroidNotification" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
+        <h4 class="modal-title" id="AndroidNotification">Ten paciencia...</h4>
+      </div>
+      <div class="modal-body">
+        <div id="android-notification-text-1">
+            <p>Nuestra aplicación Android aún no está disponible, ¡pero está en camino! Si quieres, puedes dejarnos tu email y te avisaremos cuando salga.</p>
+            <form id="android-notification-form" role="form" class="center-text">
+            {% csrf_token %}
+              <div class="form-group">
+                <label for="email-android-notification"></label>
+                <input type="email" class="form-control" id="email-android-notification" placeholder="Tu email">
+              </div>
+              <button type="submit" class="btn btn-default center-block">¡Avísame!</button>
+            </form>
+        </div>
+        <div id="android-notification-text-2">
+            <p>¡Gracias por tu interés! Mientras tanto, puedes <a href="{% url 'beta-register' %}">empezar a crear tus apuestas</a> en nuestra web.</p>
+            <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cerrar</button>
+            <div class="clearfix"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="ios-notification" tabindex="-1" role="dialog" aria-labelledby="iOSNotification" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="iOSNotification">Ten paciencia...</h4>
+      </div>
+      <div class="modal-body">
+        <div id="ios-notification-text-1">
+            <p>Nuestra aplicación para iOS aún no está disponible, ¡pero está en camino! Si quieres, puedes dejarnos tu email y te avisaremos cuando salga.</p>
+            <form id="ios-notification-form" role="form" class="center-text">
+              <div class="form-group">
+                <label for="email-ios-notification"></label>
+                <input type="email" class="form-control" id="email-ios-notification" placeholder="Tu email">
+              </div>
+              <button type="submit" class="btn btn-default center-block">¡Avísame!</button>
+            </form>
+        </div>
+        <div id="ios-notification-text-2">
+            <p>¡Gracias por tu interés! Mientras tanto, puedes <a href="{% url 'beta-register' %}">empezar a crear tus apuestas</a> en nuestra web.</p>
+            <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cerrar</button>
+            <div class="clearfix"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="intro">
+    <!-- carousel -->
+    <div id="carousel-intro" class="carousel slide carousel-fade" data-ride="carousel" data-interval="6000" data-pause="none">
+      <div class="carousel-inner" role="listbox">
+        <div class="item item1 active">
+        </div>
+        <div class="item item2">
+        </div>
+        <div class="item item3">
+        </div>
+        <div class="item item4">
+        </div>
+        <div class="item item5">
+        </div>
+      </div>
+    </div>
     <div class="container text-center">
         <div class="social-btns">
             <a href="http://www.facebook.com/DareyooApp"><div class="fb"></div></a>
@@ -17,36 +89,43 @@
         </div>
         <div class="logo-claim">
             <img src="{{ STATIC_URL }}beta/build/img/landing/intro/dareyoo_logo_white.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/intro/dareyoo_logo_white@2x.png">
-            <h2>Demuestra que sabes apostar</h2>
+            <h2>Apuesta por diversión</h2>
+            <h3></h3>
         </div>
-        <div class="features">
-            <a href="#free" class="feature">
-                <img src="{{ STATIC_URL }}beta/build/img/landing/intro/free_picto.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/intro/free_picto@2x.png" alt="libre">
-                <p>Libre</p>
-            </a>
-            <a href="#social_a" class="feature">
-                <img src="{{ STATIC_URL }}beta/build/img/landing/intro/social_picto.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/intro/social_picto@2x.png" alt="Social">
-                <p>Social</p>
-            </a>
-            <a href="#democratic" class="feature">
-                <img src="{{ STATIC_URL }}beta/build/img/landing/intro/democratic_picto.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/intro/democratic_picto@2x.png" alt="Democrático">
-                <p>Democrático</p>
-            </a>
-            <a href="#fun" class="feature" id="fun_feature">
-                <img src="{{ STATIC_URL }}beta/build/img/landing/intro/fun_picto.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/intro/fun_picto@2x.png" alt="Divertido">
-                <p>Divertido</p>
-            </a>
+        <div class="bets-reel">
+            <div id="bets-carousel" class="carousel slide" data-ride="carousel">
+              <!-- Wrapper for slides -->
+              <div class="carousel-inner">
+                <div class="item active">
+                    <h3>Una red social donde podrás apostar con tus amigos en total libertad.</h3>
+                </div>
+                {% for b in bets %}
+                <div class="item">
+                    <a href="/app/main/bet/{{ b.id }}"><h3>"{{ b.title }}"</h3></a>
+                    <a href="/app/profile/{{ b.author.id }}/bets">
+                    <div class="bet-signature">
+                        <img src="{{ b.author.get_profile_pic_url }}" width="32" class="img-circle">
+                        <p>{{ b.author.username }}</p>
+                    </div>
+                    </a>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
         </div>
-        <div class="video-btn">
+        <div id="ver-video" class="video-btn">
             <a role="button" class="btn btn-video" href="https://www.youtube.com/watch?v=m7fujFOFaLU">Ver vídeo</a>
         </div>
+        <div class="video-btn">
+            <a role="button" class="btn btn-video" href="{% url 'beta-register' %}">Empieza a jugar, ¡es gratis!</a>
+        </div>
         <div class="app-btns">
-            <a href=""><img src="{{ STATIC_URL }}beta/build/img/landing/google_play.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/google_play@2x.png"></a>
-            <a href=""><img src="{{ STATIC_URL }}beta/build/img/landing/app_store.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/app_store@2x.png"></a>
+            <a href="" data-toggle="modal" data-target="#android-notification"><img src="{{ STATIC_URL }}beta/build/img/landing/google_play.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/google_play@2x.png"></a>
+            <a href="" data-toggle="modal" data-target="#ios-notification"><img src="{{ STATIC_URL }}beta/build/img/landing/app_store.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/app_store@2x.png"></a>
             <div class="clearfix"></div>
         </div>
     </div>
-</header>
+</div>
 
 <a id="free"></a>
 <section id="open">
@@ -54,21 +133,27 @@
         <h1 class="text-center">Crea libremente tus apuestas, <strong>juega a lo que tu quieras</strong></h1>
         <p class="text-center">Bienvenido a la primera red social de apuestas totalmente libre. Al contrario que en las casas de apuestas tradicionales, aquí sois los propios usuarios los que creáis las apuestas, sin límites ni restricciones.<br>Tienes tres modalidades de apuesta para elegir:</p>
         <div class="row text-center">
+            <a href="{% url 'beta-how-to' %}#basica">
             <div class="col-sm-4">
                 <img id="apuesta-basica-img" src="{{ STATIC_URL }}beta/build/img/landing/free/apuesta_basica.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/free/apuesta_basica@2x.png" width="260">
                 <h4>Apuesta básica</h4>
-                <p>El primero en aceptar será tu rival</p>
+                <p class="nolink">El primero en aceptar será tu rival</p>
             </div>
+            </a>
+            <a href="{% url 'beta-how-to' %}#subhasta">
             <div class="col-sm-4">
                 <img id="subasta-img" src="{{ STATIC_URL }}beta/build/img/landing/free/subasta.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/free/subasta@2x.png" width="220">
                 <h4>Subasta</h4>
-                <p>Tú eliges la mejor oferta</p>
+                <p class="nolink">Tú eliges la mejor oferta</p>
             </div>
+            </a>
+            <a href="{% url 'beta-how-to' %}#porra">
             <div class="col-sm-4">
                 <img id="porra-img" src="{{ STATIC_URL }}beta/build/img/landing/free/porra.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/free/porra@2x.png" width="180">
                 <h4>Porra</h4>
-                <p>La de toda la vida</p>
+                <p class="nolink">La de toda la vida</p>
             </div>
+            </a>
         </div>
     </div>
 </section>
@@ -81,7 +166,7 @@
         <div class="row">
             <div id="social-text" class="col-sm-6 col-sm-offset-1">
                 <h1><strong>Reta a tus amigos,</strong><br>elige a tu rival</h1>
-                <p>Sigue a tus amigos para enterarte de a qué estan jugando o envíales <a href="">apuestas privadas</a>. Busca los <a href="">eventos del momento</a> para encontrar apuestas más allá de tu círculo y juega contra usuarios de todo el mundo!</p> 
+                <p>Sigue a tus amigos para enterarte de a qué estan jugando o envíales <a href="{% url 'beta-how-to' %}#publicavsprivada">apuestas privadas</a>. Busca los eventos del momento para encontrar apuestas más allá de tu círculo y juega contra usuarios de todo el mundo!</p> 
             </div>
             <div class="col-sm-4 text-right">
                 <img src="{{ STATIC_URL }}beta/build/img/landing/social/social.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/social/social@2x.png" height="380">
@@ -99,7 +184,7 @@
             </div>
             <div id="democratic-text" class="col-sm-6">
                 <h1>Toma el control del juego,<br><strong>tu eres el protagonista</strong></h1>
-                <p>Como creador de una apuesta tendrás la responsabilidad de <a href="">resolverla</a> y como participante siempre tendrás derecho a <a href="">reclamar</a>.<br><br>En caso de conflicto, la apuesta será resuelta por otro usuario que actuará de <a href="">árbitro</a>, ¡cuida tu reputación para llegar a ser uno de ellos!</p> 
+                <p>Como creador de una apuesta tendrás la responsabilidad de <a href="{% url 'beta-how-to' %}#reclamaciones">resolverla</a> y como participante siempre tendrás derecho a <a href="{% url 'beta-how-to' %}#reclamaciones">reclamar</a>.<br><br>En caso de conflicto, la apuesta será resuelta por otro usuario que actuará de <a href="{% url 'beta-how-to' %}#arbitraje">árbitro</a>, ¡cuida tu reputación para llegar a ser uno de ellos!</p> 
             </div>
         </div>
     </div>
@@ -113,8 +198,8 @@
         <div class="row">
             <div id="fun-text" class="col-sm-6">
                 <h1><strong>¿Eres el mejor?</strong><br>¡Demuéstralo y consigue<br>fantásticos premios!</h1>
-                <p>Juega gratis con nuestra moneda virtual, <a href="">el Yoo</a>. Consigue victorias, puntos y sé el primero en los ránkings. Participa en los torneos patrocinados y hazte con los <a href="">premios</a> más increíbles.</p>
-                <p>¿Quieres <a href="">patrocinar un torneo</a>?</p> 
+                <p>Juega gratis con nuestra moneda virtual, <a href="{% url 'beta-faq' %}#comofunciona">el Yoo</a>. Consigue victorias, puntos y sé el primero en los ránkings. Participa en los torneos patrocinados y hazte con los premios más increíbles.</p>
+                <p>¿Quieres <a href="mailto:hi@dareyoo.com">patrocinar un torneo</a>?</p> 
             </div>
         </div>
     </div>
@@ -128,9 +213,9 @@
             <div class="closing-right-content">
                 <img src="{{ STATIC_URL }}beta/build/img/landing/closing/dareyoo_imago_white.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/closing/dareyoo_imago_white@2x.png" height="52">
                 <h1>¿A qué estás esperando?</h1>
-                <p>Ha nacido una nueva forma de apostar online.<br>Regístrate ahora y descúbrela.<br><br>Con nuestra aplicación móvil podrás apostar<br>donde y cuando quieras.</p>
-                <a href=""><img src="{{ STATIC_URL }}beta/build/img/landing/google_play.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/google_play@2x.png"></a>
-                <a href=""><img src="{{ STATIC_URL }}beta/build/img/landing/app_store.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/app_store@2x.png"></a>
+                <p>Ha nacido una nueva forma de apostar online.<br><a class="white-link" href="{% url 'beta-register' %}">Regístrate ahora</a> y descúbrela.<br><br>Con nuestra aplicación móvil podrás apostar<br>donde y cuando quieras.</p>
+                <a href="#" data-toggle="modal" data-target="#android-notification"><img src="{{ STATIC_URL }}beta/build/img/landing/google_play.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/google_play@2x.png"></a>
+                <a href="#" data-toggle="modal" data-target="#ios-notification"><img src="{{ STATIC_URL }}beta/build/img/landing/app_store.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/app_store@2x.png"></a>
             </div>
         </div>
     </div>
@@ -144,5 +229,5 @@
 
 {% block js %}
 {{ block.super }}
-<script type="text/javascript" src="{{ STATIC_URL }}beta/build/js/dareyoo_landing.all.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}beta/build/js/dareyoo_landing.all.min.js?new"></script>
 {% endblock %}

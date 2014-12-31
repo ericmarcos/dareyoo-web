@@ -9,9 +9,11 @@ django-custom-user==0.2
 django-fsm==1.5.0
 django-haystack==2.1.0
 django-oauth2-provider==0.2.6
-python-social-auth==0.1.23
+#python-social-auth==0.2
+git+git://github.com/omab/python-social-auth.git
 django-storages==1.1.8
 django-tastypie==0.10.0
+django-extensions==1.4.4
 gunicorn==18.0
 httplib2==0.8
 #librabbitmq==1.5.2 #it doesn't support heartbeat
@@ -32,3 +34,5 @@ djrill==1.1.1
 SQLAlchemy==0.9.6
 django-password-reset==0.7
 django-sslify==0.2.3
+django-cors-headers==0.13
+django-mailchimp-v1.3==1.3.1

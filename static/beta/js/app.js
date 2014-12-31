@@ -12,7 +12,8 @@ var dareyooApp = angular.module('dareyoo', [
   'dareyoo.services',
   'dareyoo.controllers',
   'dareyoo.directives',
-  'dareyoo.filters'
+  'dareyoo.filters',
+  'djds4rce.angular-socialshare'
 ]).
 config(['$interpolateProvider', function($interpolateProvider) {
   $interpolateProvider.startSymbol('[[');
@@ -98,15 +99,31 @@ config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'config', f
           templateUrl: config.static_url + "beta/build/partials/rankings.html",
           controller: 'RankingCtrl'
         })
-        .state('tournaments', {
+        .state('main.tournaments', {
           url: "/tournaments",
           templateUrl: config.static_url + "beta/build/partials/tournaments.html",
           controller: 'TournamentsCtrl'
         })
-        .state('tournament-detail', {
+        .state('main.tournament-detail', {
+          abstract: true,
           url: "/tournament/:tournamentId",
           templateUrl: config.static_url + "beta/build/partials/tournament-detail.html",
           controller: 'TournamentCtrl'
+        })
+        .state('main.tournament-detail.bets', {
+          url: "/bets",
+          templateUrl: config.static_url + "beta/build/partials/tournament-bets.html",
+          controller: 'TournamentBetsCtrl'
+        })
+        .state('main.tournament-detail.prizes', {
+          url: "/prizes",
+          templateUrl: config.static_url + "beta/build/partials/tournament-prizes.html",
+          controller: 'TournamentPrizesCtrl'
+        })
+        .state('main.tournament-detail.ranking', {
+          url: "/ranking",
+          templateUrl: config.static_url + "beta/build/partials/tournament-ranking.html",
+          controller: 'TournamentRankingCtrl'
         })
         .state('edit-profile', {
           url: "/edit-profile",
@@ -119,7 +136,9 @@ config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'config', f
           controller: 'WhoToFollowCtrl'
         })
 }]).
-run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'config', function run($http, $cookies, $rootScope, $state, $stateParams, $timeout, config) {
+run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', '$FB', 'config', function run($http, $cookies, $rootScope, $state, $stateParams, $timeout, $FB, config) {
+    $FB.init(config.fb_key);
+
     // For CSRF token compatibility with Django
     $http.defaults.headers.post['X-CSRFToken'] = $cookies['csrftoken'];
     $http.defaults.headers.put['X-CSRFToken'] = $cookies['csrftoken'];
@@ -128,6 +147,7 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
     // so that you can access them from any scope within your applications.For example,
     // <li ng-class="{ active: $state.includes('contacts.list') }"> will set the <li>
     // to active whenever 'contacts.list' or one of its decendents is active.
+    $rootScope.csrf_token = $cookies['csrftoken'];
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
     $rootScope.config = config;
@@ -137,7 +157,13 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
     $rootScope.followers_names = [];
     $rootScope.new_notifications = 0;
     $rootScope.notifications = [];
+    $rootScope.tournaments = [];
     $rootScope.q = {'query': ""};
+
+    $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error) {
+      //$dialogs.error("Something went wrong!", error);
+      console.error("$stateChangeError: ", toState, error);
+    });
 
     //Removing all modals when navigating to a new page
     $rootScope.$on('$stateChangeStart', 
@@ -207,12 +233,20 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', 'c
         note.readed = true;
         $http.post(document.location.origin +'/api/v1/notifications/' + note.id + '/mark_as_readed/');
       }
-    }
+    };
+
+    $rootScope.getTournaments = function() {
+      $http.get(document.location.origin + "/api/v1/tournaments/").success(function(response) {
+        if(response.results) $rootScope.tournaments = response.results;
+        else $rootScope.tournaments = response;
+      });
+    };
 
     $rootScope.getMe();
     $rootScope.getMyFollowers();
     $rootScope.getNotifications();
     $rootScope.getAllUsernames();
+    $rootScope.getTournaments();
 
 }]).
 constant('moment', moment);

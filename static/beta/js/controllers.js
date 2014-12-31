@@ -160,9 +160,90 @@ angular.module('dareyoo.controllers', []).
 
     $scope.getTournaments();
   }]).
-  controller('TournamentCtrl', ['$scope', '$http', '$location', '$filter', '$stateParams', function($scope, $http, $location, $filter, $stateParams) {
-    $scope.tournament = {};
+  controller('TournamentRankingCtrl', ['$scope', '$http', '$location', '$filter', '$stateParams', function($scope, $http, $location, $filter, $stateParams) {
     $scope.leaderboard = {};
+    $scope.week = '0';
+    $scope.loaded = false;
+    $scope.getLeaderboard = function(id, week) {
+      $scope.leaderboard = {};
+      var data = {};
+      $scope.loaded = false;
+      if(!isNaN(week)) {
+        $scope.week = String(week);
+        data["params"] = {"week": $scope.week};
+      } else {
+        $scope.week = null;
+      }
+      $http.get(document.location.origin + "/api/v1/tournaments/" + id + "/leaderboard", data).success(function(response) {
+        if(response.results) $scope.leaderboard = response.results;
+        else $scope.leaderboard = response;
+        $scope.loaded = true;
+      });
+    };
+    if($scope.global) {
+      $scope.getLeaderboard(0);
+    } else {
+      $scope.getLeaderboard($stateParams.tournamentId, $scope.week); //by default we get current week
+    }
+  }]).
+  controller('TournamentBetsCtrl', ['$scope', '$http', '$location', '$filter', '$stateParams', function($scope, $http, $location, $filter, $stateParams) {
+    $scope.tournament_bets = [];
+    $scope.global = $stateParams.tournamentId == 0;
+    $scope.loaded = false;
+    $scope.loaded_more = true;
+    $scope.more_bets_link = null;
+    $scope.state = "bidding"; //{bidding, closed}
+    $scope.getTournamentBets = function(id, state) {
+      $scope.loaded = false;
+      $scope.state = state;
+      $http.get(document.location.origin + "/api/v1/tournaments/" + id + "/bets", {"params": {"state": state}}).success(function(response) {
+        if(response.results) $scope.tournament_bets = response.results;
+        else $scope.tournament_bets = response;
+        $scope.loaded = true;
+        $scope.more_bets_link = response.next;
+      });
+    };
+    $scope.moreBets = function() {
+      $scope.loaded_more = false;
+      $http.get($scope.more_bets_link).success(function(response) {
+        if(response.results) {
+          $scope.tournament_bets.push.apply($scope.tournament_bets, response.results);
+          $scope.more_bets_link = response.next;
+          $scope.loaded_more = true;
+        }
+      });
+    };
+    $scope.getTournamentBets($stateParams.tournamentId, $scope.state);
+  }]).
+  controller('TournamentPrizesCtrl', ['$scope', '$http', '$location', '$filter', '$stateParams', function($scope, $http, $location, $filter, $stateParams) {
+    $scope.tournament_prizes = [];
+    $scope.loaded = false;
+    $scope.loaded_more = true;
+    $scope.more_prizes_link = null;
+    $scope.getTournamentPrizes = function(id) {
+      $scope.loaded = false;
+      $http.get(document.location.origin + "/api/v1/tournaments/" + id + "/prizes").success(function(response) {
+        if(response.results) $scope.tournament_prizes = response.results;
+        else $scope.tournament_prizes = response;
+        $scope.loaded = true;
+        $scope.more_prizes_link = response.next;
+      });
+    };
+    $scope.morePrizes = function() {
+      $scope.loaded_more = false;
+      $http.get($scope.more_prizes_link).success(function(response) {
+        if(response.results) {
+          $scope.tournament_prizes.push.apply($scope.tournament_prizes, response.results);
+          $scope.more_prizes_link = response.next;
+          $scope.loaded_more = true;
+        }
+      });
+    };
+    $scope.getTournamentPrizes($stateParams.tournamentId);
+  }]).
+  controller('TournamentCtrl', ['$scope', '$rootScope', '$http', '$location', '$filter', '$stateParams', function($scope, $rootScope, $http, $location, $filter, $stateParams) {
+    $scope.tournament = {};
+    $scope.weeks = [];
     $scope.global = $stateParams.tournamentId == 0;
     $scope.loaded = false;
     $scope.getTournament = function(id) {
@@ -170,13 +251,10 @@ angular.module('dareyoo.controllers', []).
         if(response.results) $scope.tournament = response.results;
         else $scope.tournament = response;
         $scope.loaded = true;
-      });
-    };
-    $scope.getLeaderboard = function(id) {
-      $http.get(document.location.origin + "/api/v1/tournaments/" + id + "/leaderboard").success(function(response) {
-        if(response.results) $scope.leaderboard = response.results;
-        else $scope.leaderboard = response;
-        $scope.loaded = true;
+        var now = new Date(Date.now());
+        for (var d = new Date($scope.tournament.start); d <= now; d.setDate(d.getDate() + 7)) {
+            $scope.weeks.push(new Date(d));
+        }
       });
     };
     $scope.getStartDate = function() {
@@ -193,11 +271,12 @@ angular.module('dareyoo.controllers', []).
       }
       return null;
     };
-    if($scope.global) {
-      $scope.getLeaderboard(0);
-    } else {
+    $scope.crearApuesta = function() {
+      $('#participate-tournament-modal').modal('hide');
+      $rootScope.$broadcast('create-bet', {tag: $scope.tournament.tag});
+    };
+    if(!$scope.global) {
       $scope.getTournament($stateParams.tournamentId);
-      $scope.getLeaderboard($stateParams.tournamentId);
     }
   }]).
   controller('TimelineCtrl', ['$scope', '$http', '$location', '$filter', function($scope, $http, $location, $filter) {
@@ -435,15 +514,6 @@ angular.module('dareyoo.controllers', []).
     $scope.current_bid_result = "";
     $scope.current_bid_participants = [];
 
-    $scope.betWinner = function() {
-      if($scope.bet.bet_type == 3) {
-        if($scope.bet.referee_claim == 3)
-          return null;
-        return $scope.bet.referee_lottery_winner || $scope.bet.claim_lottery_winner;
-      }
-      return $scope.bet.referee_claim || $scope.bet.claim;
-    };
-
     $scope.betAPIError = function(response, status, headers, config) {
       if(response && response['detail'] == "Authentication credentials were not provided.") {
         $scope.public_bet = true;
@@ -555,12 +625,76 @@ angular.module('dareyoo.controllers', []).
         }).error($scope.betAPIError);
       }
     };
+    $scope.getRivalAmount = function() {
+      if($scope.bet) {
+        return Math.floor($scope.bet.amount*$scope.bet.odds - $scope.bet.amount);
+      }
+      return null;
+    }
+    $scope.getAuthorPoints = function() {
+      if($scope.bet) {
+        if($scope.bet.points >= 0)
+          return "+" + $scope.bet.points;
+        return $scope.bet.points;
+      }
+      return null;
+    };
+    $scope.getRivalPoints = function() {
+      if($scope.bet && $scope.bet.accepted_bid) {
+        if($scope.bet.accepted_bid.points >= 0)
+          return "+" + $scope.bet.accepted_bid.points;
+        return $scope.bet.accepted_bid.points;
+      }
+      return null;
+    };
+    $scope.getBidPoints = function(bid) {
+      if(bid.points >= 0)
+        return "+" + bid.points;
+      return bid.points;
+    };
+    $scope.getRefereePoints = function() {
+      if($scope.bet) {
+        if($scope.bet.referee_points >= 0)
+          return "+" + $scope.bet.referee_points;
+        return $scope.bet.referee_points;
+      }
+      return null;
+    };
+    $scope.getPot = function() {
+      if($scope.bet) {
+        if($scope.isLottery()) {
+          var pot = 0;
+          for (var i = $scope.bet.bids.length - 1; i >= 0; i--) {
+            pot += $scope.bet.bids[i].participants.length * $scope.bet.amount;
+          };
+          return pot;
+        } else {
+          if($scope.bet.accepted_bid)
+            return $scope.bet.amount + $scope.bet.accepted_bid.amount;
+          return $scope.bet.amount;
+        }
+      }
+      return 0;
+    };
+    $scope.getBidYoos = function(bid) {
+      if($scope.bet && bid.participants.length > 0)
+        return Math.floor(($scope.getPot() - $scope.bet.winning_fees) / bid.participants.length);
+      return 0;
+    };
+    $scope.getWinnerYoos = function() {
+      if($scope.bet)
+        return Math.floor($scope.getPot() - $scope.bet.winning_fees);
+      return 0;
+    };
     $scope.getResolvingDeadline = function() {
-      var t = moment($scope.bet.event_deadline).add('days', 1).format();
-      return t;
+      if($scope.bet) {
+        var t = moment($scope.bet.event_deadline).add('days', 1).format();
+        return t;
+      }
+      return null;
     };
     $scope.getResolvedDate = function() {
-      if($scope.bet.resolved_at) {
+      if($scope.bet && $scope.bet.resolved_at) {
         var t = moment($scope.bet.resolved_at).format('D/M/YYYY - HH:mm:ss');
         return t;
       } else {
@@ -592,14 +726,36 @@ angular.module('dareyoo.controllers', []).
       }
     }
     $scope.bidComplained = function() {
-      var i=0, len=$scope.bet.bids.length;
-      for (; i<len; i++) {
-        if ($scope.bet.bids[i].claim) {
-          return $scope.bet.bids[i];
+      if($scope.bet) {
+        for (var i=0; i<$scope.bet.bids.length; i++) {
+          if ($scope.bet.bids[i].claim) {
+            return $scope.bet.bids[i];
+          }
         }
       }
       return null;
     };
+
+    $scope.betWinner = function() {
+      if($scope.bet) {
+        if($scope.isLottery()) {
+          if($scope.bet.referee_claim == 3)
+            return 3;
+          if($scope.bet.referee_lottery_winner)
+            return $scope.bet.referee_lottery_winner;
+          if($scope.bet.claim == 3)
+            return 3;
+          return $scope.bet.claim_lottery_winner;
+        }
+        return $scope.bet.referee_claim || $scope.bet.claim;
+      }
+      return false;
+    };
+
+    $scope.isBidParticipant = function(bid, userId) {
+      return bid.participants.indexOf(userId) != -1;
+    };
+
     $scope.isParticipant = function(userId) {
       var i=0, len=$scope.bet.bids.length;
       for (; i<len; i++) {
@@ -609,36 +765,138 @@ angular.module('dareyoo.controllers', []).
       }
       return null;
     };
+    $scope.isAuthor = function() { if($scope.bet && $scope.user) { return $scope.bet.author.id == $scope.user.id; } return false };
+    $scope.isRival = function() {
+      if($scope.bet && $scope.bet.accepted_bid)
+        return $scope.bet.accepted_bid.author.id == $scope.user.id;
+      return false;
+    };
+
+    $scope.isBidding = function() { if($scope.bet) { return $scope.bet.bet_state == 'bidding'; } return false };
+    $scope.isEvent = function() { if($scope.bet) { return $scope.bet.bet_state == 'event'; } return false };
+    $scope.isResolving = function() { if($scope.bet) { return $scope.bet.bet_state == 'resolving'; } return false };
+    $scope.isComplaining = function() { if($scope.bet) { return $scope.bet.bet_state == 'complaining'; } return false };
+    $scope.isArbitrating = function() { if($scope.bet) { return $scope.bet.bet_state == 'arbitrating'; } return false };
+    $scope.isClosed = function() { if($scope.bet) { return $scope.bet.bet_state == 'closed'; } return false };
+    $scope.isBasic = function() { if($scope.bet) { return $scope.bet.bet_type == 1; } return false };
+    $scope.isAuction = function() { if($scope.bet) { return $scope.bet.bet_type == 2; } return false };
+    $scope.isLottery = function() { if($scope.bet) { return $scope.bet.bet_type == 3; } return false };
+    
+    $scope.authorClaimWinner = function() { return $scope.bet.claim == 1; };
+    $scope.authorClaimLoser = function() { return $scope.bet.claim == 2; };
+    $scope.authorClaimNone = function() { return $scope.bet.claim == 3; };
+    $scope.isAuthorWinner = function() { return $scope.betWinner() == 1; };
+    $scope.isRivalWinner = function() { return $scope.betWinner() == 2; };
+    $scope.isNoneWinner = function() { return $scope.betWinner() == 3; };
+
+    $scope.bidClaimLost = function() {
+      if($scope.bet) {
+        if(!$scope.isLottery() && $scope.bet.accepted_bid)
+          return $scope.bet.accepted_bid.claim == 1;
+        if($scope.isLottery())
+          return $scope.bidComplained().claim == 1;
+      }
+      return false;
+    };
+    $scope.bidClaimWin = function() {
+      if($scope.bet) {
+        if(!$scope.isLottery() && $scope.bet.accepted_bid)
+          return $scope.bet.accepted_bid.claim == 2;
+        if($scope.isLottery())
+          return $scope.bidComplained().claim == 2;
+      }
+      return false;
+    };
+    $scope.bidClaimNone = function() {
+      if($scope.bet) {
+        if(!$scope.isLottery() && $scope.bet.accepted_bid)
+          return $scope.bet.accepted_bid.claim == 3;
+        if($scope.isLottery())
+          return $scope.bidComplained().claim == 3;
+      }
+      return false;
+    };
+
+    $scope.refereeClaimAuthorWin = function() { if($scope.bet) { return $scope.bet.referee_claim == 1; } return false; };
+    $scope.refereeClaimRivalWin = function() { if($scope.bet) { return $scope.bet.referee_claim == 2; } return false; };
+    $scope.refereeClaimNoneWin = function() { if($scope.bet) { return $scope.bet.referee_claim == 3; } return false; };
+
+    $scope.canAddResult = function() {
+      if($scope.user)
+        return $scope.isBidding() && $scope.isLottery() && ($scope.bet.open_lottery || $scope.isAuthor()) && (!$scope.isParticipant($scope.user.id) || $scope.isAuthor());
+      return $scope.isBidding() && $scope.isLottery() && $scope.bet.open_lottery;
+    };
+    $scope.canParticipateResult = function() {
+      if($scope.user)
+        return $scope.isLottery() && $scope.isBidding() && !$scope.isParticipant($scope.user.id);
+      return $scope.isLottery() && $scope.isBidding();
+    };
+    $scope.canAcceptBet = function() {
+      return !$scope.isAuthor() && $scope.isBidding() && $scope.isBasic();
+    };
+    $scope.canAddBid = function() {
+      return !$scope.isAuthor() && $scope.isBidding() && $scope.isAuction();
+    };
+    $scope.canRemoveBid = function() {
+      return $scope.isAuthor() && $scope.isBidding();
+    };
+    $scope.canAcceptBid = function() {
+      return $scope.isAuthor() && $scope.isBidding() && $scope.isAuction();
+    };
+    $scope.canResolve = function() {
+      return $scope.isAuthor() && ($scope.isEvent() || $scope.isResolving()) && !$scope.isLottery();
+    };
+    $scope.canResolveResult = function() {
+      return $scope.isAuthor() && ($scope.isEvent() || $scope.isResolving()) && $scope.isLottery();
+    };
+    $scope.canComplain = function() {
+      return $scope.isComplaining() && $scope.isRival();
+    };
+    $scope.canComplainResult = function(bid) {
+      if($scope.bet && $scope.user)
+        return !$scope.isAuthor() && $scope.isComplaining() && $scope.isLottery() && $scope.bid.participants.indexOf($scope.user.id) != -1 && $scope.bet.claim_lottery_winner.id != bid.id;
+      return false;
+    };
+    $scope.canComplainNone = function() {
+      if($scope.bet && $scope.user)
+        return !$scope.isAuthor() && $scope.isComplaining() && $scope.isLottery() && $scope.isParticipant($scope.user.id) && $scope.bet.claim != 3;
+      return false;
+    };
+    $scope.canArbitrate = function() {
+      if($scope.isLottery() && $scope.user)
+        return $scope.isArbitrating() && !$scope.isAuthor() && !$scope.isParticipant($scope.user.id);
+      else
+        return $scope.isArbitrating() && !$scope.isAuthor() && !$scope.isRival();
+    };
+    $scope.canArbitrateResult = function(bid) {
+      if($scope.user)
+        return $scope.isArbitrating() && $scope.isLottery() && !$scope.isAuthor() && !$scope.isParticipant($scope.user.id);
+      return false;
+    };
+    $scope.showBidList = function() {
+      if($scope.bet) {
+        return ($scope.isAuction() && ($scope.bet.bids.length > 1 && $scope.bet.accepted_bid || $scope.bet.bids.length > 0 && !$scope.bet.accepted_bid)) || ($scope.isLottery() && $scope.bet.bids.length > 0);
+      }
+      return false;
+    };
+    $scope.showPoints = function() {
+      if($scope.bet) {
+        return $scope.isClosed() || $scope.isArbitrating() || $scope.isComplaining();
+      }
+      return false;
+    };
 
     $scope.getBet($stateParams.betId);
   }])
   .controller('NewBetCtrl', ['$scope', '$http', '$timeout', '$rootScope', function($scope, $http, $timeout, $rootScope) {
-    /*$scope.popover = function(element, text) {
-      var showPopover = function () {
-          $(element).popover('show');
-      }
-      , hidePopover = function () {
-          $(element).popover('hide');
-      };
-      $(element)
-          .popover({
-           content: text,
-           html: true,
-           trigger: 'manual',
-           template: '<div class="popover new-bet-tips"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content">Jajajajaj<p></p></div></div></div>',
-          })
-          .focus(showPopover)
-          .blur(function () {
-              $(this).popover('hide');
-          });
-    };
-
-    $scope.popover("input#title", "eg: Messi will score a hat-trick tonight.");
-    $scope.popover("textarea#description", "eg: If the game is cancelled I will declare this bet null");
-    */
     $scope.betAPIError = function(response, status, headers, config) {
       $('#new-bet-fail-message').text(JSON.stringify(response));
       $('#new-bet-fail-modal').modal('show');
+    };
+
+    $scope.help = function(topic) {
+      $scope.help_topic = topic;
+      $('#new-bet-help-modal').modal('show');
     };
 
     $scope.simpleBetBiddingDeadlineOptions = ['10 minutos',
@@ -658,7 +916,7 @@ angular.module('dareyoo.controllers', []).
                                             '6 horas',
                                             '12 horas',
                                             '24 horas'];
-
+    $scope.simpleBetEventDeadlineOptionsReduced = {values: $scope.simpleBetEventDeadlineOptions};
     $scope.inviteSelected = null;
     $scope.invites = [];
 
@@ -676,12 +934,11 @@ angular.module('dareyoo.controllers', []).
                         against: 10,
                         bidding_deadline: new Date(),
                         bidding_deadline_simple: '10 minutos',
-                        event_deadline: new Date(),
+                        event_deadline: (new Date()).setHours((new Date()).getHours() + 2),
                         event_deadline_simple: '2 horas',
                         public: true,
                         open_lottery: true};
-      $scope.timeRelativeBidding = true;
-      $scope.timeRelativeEvent = true;
+      $scope.timeRelative = true;
       $scope.minBiddingDeadline = new Date();
       $scope.minEventDeadline = new Date();
       $scope.step = 1;
@@ -696,7 +953,31 @@ angular.module('dareyoo.controllers', []).
       $('#description').css($scope.noFocusTextStyles);
     }
     $scope.resetWidget();
+
+    $scope.$watch('newBetFormData.bidding_deadline_simple', function(newV, oldV) {
+      var i = $scope.simpleBetBiddingDeadlineOptions.indexOf(newV);
+      var j = $scope.simpleBetEventDeadlineOptions.indexOf($scope.newBetFormData.event_deadline_simple);
+      if(i && i - 1 >= j) {
+        $scope.newBetFormData.event_deadline_simple = $scope.simpleBetEventDeadlineOptions[i];
+      }
+      $scope.simpleBetEventDeadlineOptionsReduced.values = $scope.simpleBetEventDeadlineOptions.slice(i);
+    });
+
+    $scope.$watch('newBetFormData.bidding_deadline', function(newV, oldV) {
+      if(newV >= $scope.newBetFormData.event_deadline) {
+        var d = new Date(newV.getTime());
+        d.setHours(d.getHours() + 2);
+        $scope.newBetFormData.event_deadline = d;
+      }
+    }); 
+
     $('#extra_yoos').tooltip();
+    $scope.$on('create-bet', function(event, args) {
+        $scope.resetWidget();
+        $scope.newBetFormData.title = args.tag;
+        $scope.expandWidget();
+        $('#title')[0].focus();
+    });
     $scope.expandWidget = function() {
       //$('.new-bet-widget').css({"height":"150px","transition":"0.8s"});
       $('.new-bet-widget').css($scope.transitionStyles);
@@ -705,13 +986,14 @@ angular.module('dareyoo.controllers', []).
       $timeout(function() {
         $('.new-bet-widget').css($scope.focusStyles);
       }, 1000);
-    }
+    };
+
     $scope.expandDescription = function() {
       $('#description').css({"height":"80px","transition":"1s"});
-    }
+    };
     $scope.pot = function() {
       return $scope.newBetFormData.amount + $scope.newBetFormData.against;
-    }
+    };
     $scope.getTypeName = function() {
       if($scope.newBetFormData.bet_type == 1) {
         return "Básica";
@@ -720,7 +1002,7 @@ angular.module('dareyoo.controllers', []).
       } else {
         return "Porra";
       }
-    }
+    };
     $scope.getRefereeFees = function() {
       if($scope.newBetFormData.bet_type == 1) {
         return Math.ceil($scope.pot()*0.02)*2;
@@ -729,14 +1011,14 @@ angular.module('dareyoo.controllers', []).
       } else {
         return "?";
       }
-    }
+    };
     $scope.getWinningAmount = function() {
       if($scope.newBetFormData.bet_type == 1) {
         return $scope.pot() - Math.ceil($scope.pot()*0.02);
       } else {
         return "?";
       }
-    }
+    };
     $scope.prevStep = function() {
       $scope.show_comissions = false;
       if($scope.step == 2) {
@@ -744,7 +1026,7 @@ angular.module('dareyoo.controllers', []).
       } else if($scope.step == 3) {
         $scope.step = 2;
       }
-    }
+    };
     $scope.nextStep = function(bet_type) {
       $scope.show_comissions = false;
       if($scope.step == 1) {
@@ -757,13 +1039,13 @@ angular.module('dareyoo.controllers', []).
           $scope.step = 4;
         }
       }
-    }
+    };
     $scope.setPublic = function(pub) {
       $scope.newBetFormData.public = pub;
-    }
+    };
     $scope.setOpenLottery = function(pub) {
       $scope.newBetFormData.open_lottery = pub;
-    }
+    };
 
     $scope.biddingDeadlineCalendarOpened = false;
     $scope.openBiddingDeadlineCalendar = function($event) {
@@ -796,14 +1078,14 @@ angular.module('dareyoo.controllers', []).
         case '24 horas': now.setMinutes(now.getMinutes() + 60*24); break;
       }
       return now;
-    }
+    };
 
     $scope.onSelectInvite = function($item, $model, $label) {
       if($model.username) {
         $scope.addInvite($model.username);
         $scope.inviteSelected = null;
       }
-    }
+    };
 
     $scope.onInviteEnter = function(event) {
       if (!event || event.which == 13) {
@@ -816,20 +1098,20 @@ angular.module('dareyoo.controllers', []).
         }
         $scope.inviteSelected = null;
       }
-    }
+    };
 
     $scope.addInvite = function(inv) {
       if(inv && $scope.invites.indexOf(inv) == -1) {
         $scope.invites.push(inv);
       }
-    }
+    };
 
     $scope.removeInvite = function(inv) {
       var index = $scope.invites.indexOf(inv);
       if(index != -1) {
         $scope.invites.splice(index, 1);
       }
-    }
+    };
 
     $scope.postNewBet = function() {
       if(!$scope.newBetFormData['public'] && $scope.invites.length == 0) {
@@ -844,13 +1126,11 @@ angular.module('dareyoo.controllers', []).
       if (postData.bet_type == 1) {
         postData.odds = (postData.amount + postData.against) / postData.amount;
       }
-      if($scope.timeRelativeBidding)
+      if($scope.timeRelative) {
         postData.bidding_deadline = $scope.relToAbsTime(postData.bidding_deadline_simple);
-      if($scope.timeRelativeEvent)
         postData.event_deadline = $scope.relToAbsTime(postData.event_deadline_simple);
-      //if(!postData.public) {
-        postData['invites'] = $.map($scope.invites, function(element) { return element.username || element; });
-      //}
+      }
+      postData['invites'] = $.map($scope.invites, function(element) { return element.username || element; });
       
       delete postData.against;
       delete postData.bidding_deadline_simple;
@@ -860,6 +1140,8 @@ angular.module('dareyoo.controllers', []).
         $scope.new_bet = response;
         $scope.step = 5;
         $scope.invites = [];
+        $rootScope.$broadcast('rebuildTwitter');
+        $rootScope.$state.go("main.bet", {betId:$scope.new_bet.id});
       })
       .error(function(response, status, headers, config) {
         $scope.betAPIError(response, status, headers, config);

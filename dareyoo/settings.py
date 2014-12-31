@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     'south',
     'gunicorn',
     'storages',
+    'corsheaders',
     'rest_framework',
     #'kombu.transport.django',
     'djkombu',
@@ -58,7 +59,9 @@ INSTALLED_APPS = (
     'social.apps.django_app.default',
 #    'social.apps.django_app.me',
     'avatar',
+    'mailchimp',
     'djrill',
+    'django_extensions',
     'dareyoo',
     'bets',
     'users',
@@ -73,6 +76,7 @@ INSTALLED_APPS = (
 MIDDLEWARE_CLASSES = (
     #'sslify.middleware.SSLifyMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -159,6 +163,7 @@ WINNING_FEES_RATIO = 0.02
 REFEREE_FEES_RATIO = 0.02
 LOTTERY_REFEREE_FEES = 6
 MISSED_DEADLINES_PERIOD = 60*60*6
+REFEREE_MIN_LEVEL = 3
 
 ######### CELERY SETUP ###########
 #sudo rabbitmq-server -detached
@@ -196,7 +201,8 @@ CELERYBEAT_SCHEDULE = {
 # Not using migrations for the following apps. (strange errors)
 SOUTH_MIGRATION_MODULES = {
     'provider': 'ignore',
-    'oauth2': 'ignore'
+    'oauth2': 'ignore',
+    'default': 'default.south_migrations',
 }
 
 #AUTHENTICATION_BACKENDS = (
@@ -221,10 +227,12 @@ AUTHENTICATION_BACKENDS = (
 #http://python-social-auth.readthedocs.org/en/latest/configuration/settings.html#urls-options
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/app/main/timeline-global'
 SOCIAL_AUTH_LOGIN_URL = '/login/'
+#SOCIAL_AUTH_LOGIN_ERROR_URL = '/login-error/'
+SOCIAL_AUTH_LOGIN_ERROR_URL = '/login/'
 LOGIN_URL = '/login/'
 SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/app/edit-profile?new'
-SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/new-association-redirect-url/'
-SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/account-disconnected-redirect-url/'
+SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/app/main/timeline-global'
+SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/app/main/timeline-global'
 SOCIAL_AUTH_INACTIVE_USER_URL = '/inactive-user/'
 
 SOCIAL_AUTH_STRATEGY = 'social.strategies.django_strategy.DjangoStrategy'
@@ -233,12 +241,15 @@ SOCIAL_AUTH_STORAGE = 'social.apps.django_app.default.models.DjangoStorage'
 AUTH_USER_MODEL = 'users.DareyooUser'
 SOCIAL_AUTH_USER_MODEL = 'users.DareyooUser'
 
+SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['promo_code',]
+
 SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.social_details',
     'social.pipeline.social_auth.social_uid',
     'social.pipeline.social_auth.auth_allowed',
     'social.pipeline.social_auth.social_user',
     'social.pipeline.user.get_username',
+    'social.pipeline.social_auth.associate_by_email',
     'social.pipeline.user.create_user',
     'social.pipeline.social_auth.associate_user',
     'social.pipeline.social_auth.load_extra_data',
@@ -248,6 +259,7 @@ SOCIAL_AUTH_PIPELINE = (
     'users.pipelines.save_reference_user',
     'users.pipelines.save_registered',
     'users.pipelines.save_campaign',
+    #'users.pipelines.promo_code',
 )
 
 ### Haystack ###
@@ -276,6 +288,13 @@ REST_FRAMEWORK = {
     'PAGINATE_BY': 10
 }
 
+## MAILCHIMP ##
+MAILCHIMP_API_KEY = '5c8d8f1dd4ca262475403502425f914a-us9'
+MAILCHIMP_LISTS = {
+    'Dareyoo': 'a731d54b3a',
+    'Dareyoo News': 'e9a48ad632'
+}
+
 ### DJRILL ###
 
 MANDRILL_API_KEY = os.environ.get('MANDRILL_APIKEY')
@@ -283,3 +302,7 @@ EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
 
 DEFAULT_FROM_ADDR = 'Dareyoo <no-reply@dareyoo.com>'
 DEFAULT_FROM_EMAIL = 'Dareyoo <no-reply@dareyoo.com>'
+
+### CORS ###
+CORS_URLS_REGEX = r'^/api/v1.*$'
+CORS_ORIGIN_ALLOW_ALL = True

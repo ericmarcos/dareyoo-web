@@ -8,6 +8,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.template import Context
 from django.template.loader import render_to_string
 
+import mailchimp
+
 @shared_task(name='free_coins')
 def free_coins(**kwargs):
     '''Recurrent task that gives free free coins
@@ -26,6 +28,7 @@ def free_coins(**kwargs):
         ur.amount = amount
         ur.refill_type = 'free'
         ur.save()
+
 
 @shared_task(name='send_email')
 def send_email(**kwargs):
@@ -54,3 +57,18 @@ def send_email(**kwargs):
                                 to=[to_addr], body=text_body)
     msg.attach_alternative(html_body, "text/html")
     msg.send(fail_silently=True)
+
+
+@shared_task(name='register_email_mailchimp')
+def register_email_mailchimp(**kwargs):
+    user_id = kwargs.get('user_id')
+    user = DareyooUser.objects.get(id=user_id)
+    if user and user.email:
+        try:
+            conn = mailchimp.utils.get_connection()
+            dy_main_list = conn.get_list_by_id(settings.MAILCHIMP_LISTS.get('Dareyoo'))
+            dy_main_list.subscribe(user.email, {'EMAIL': user.email, 'FNAME': user.username}, double_optin=False)
+            dy_news_list = conn.get_list_by_id(settings.MAILCHIMP_LISTS.get('Dareyoo News'))
+            dy_news_list.subscribe(user.email, {'EMAIL': user.email, 'FNAME': user.username}, double_optin=False)
+        except:
+            pass

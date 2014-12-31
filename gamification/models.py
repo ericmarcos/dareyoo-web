@@ -51,6 +51,17 @@ class UserPointsQuerySet(TimeRangeQuerySet, TagQuerySet):
         ie: user.points.week().sum() '''
         return self.aggregate(total_points=Sum('points')).get('total_points', 0) or 0
 
+    def sum_pos(self, user):
+        points = self.user(user).sum()
+        if points > 0:
+            pos = self.values('user').annotate(total_points=Sum('points')).filter(total_points__gt=points).count()
+            return (points, pos + 1)
+        else:
+            return None
+
+    def user(self, user):
+        return self.filter(user=user)
+
     def ranking(self):
         qs = self.values('user')
         qs = qs.annotate(total_points=Sum('points'))
@@ -134,20 +145,22 @@ class UserPointsFactory:
     @staticmethod
     def fromBet(bet):
         if bet.is_lottery():
+            author_participated = False
             for bid in bet.bids.all():
                 for p in bid.participants.all():
                     u = UserPoints()
                     u.bet = bet
                     u.user = p
                     u.calculatePointsFromBet(bid)
-
+                    if p == bet.author:
+                        author_participated = True
                     u.save()
-            #TODO: the creator of the lottery should get some extra points
-            #u = UserPoints()
-            #u.bet = bet
-            #u.user = bet.author
-            #u.points = u.lotteryCreatorPoints()
-            #u.save()
+            if not author_participated:
+                u = UserPoints()
+                u.bet = bet
+                u.user = bet.author
+                u.calculatePointsFromBet()
+                u.save()
         else:
             u = UserPoints()
             u.bet = bet
@@ -173,6 +186,7 @@ class UserPoints(models.Model):
     bid = models.ForeignKey(Bid, related_name='points', blank=True, null=True)
     points = models.FloatField(blank=True, null=True, default=0)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True, editable=False)
+    count_tournament = models.BooleanField(default=True)
 
     @staticmethod
     def level(points):
@@ -207,15 +221,19 @@ class UserPoints(models.Model):
             if self.bet.is_lottery():
                 if ref == self.user:
                     self.points = self.refereePoints()
-                elif self.user == bid.claim_author:
-                    if self.bet.referee_lottery_winner == bid or (self.bet.referee_claim == Bet.CLAIM_NULL and bid.claim == Bet.CLAIM_NULL):
+                    self.count_tournament = False
+                elif bid and self.user == bid.claim_author:
+                    if (self.bet.referee_lottery_winner == bid and bid.claim == Bet.CLAIM_LOST) or (self.bet.referee_claim == Bet.CLAIM_NULL and bid.claim == Bet.CLAIM_NULL):
                         self.points = self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.bet.referee_lottery_winner == bid)
-                        self.points += self.conflictWinnerPoints()
+                        #self.points += self.conflictWinnerPoints()
                     else:
                         self.points = self.conflictLoserPoints()
                 elif self.user == self.bet.author:
                     if self.bet.referee_lottery_winner == self.bet.claim_lottery_winner or (self.bet.referee_claim == Bet.CLAIM_NULL and self.bet.claim == Bet.CLAIM_NULL):
-                        self.points = self.conflictWinnerPoints()
+                        #self.points = self.conflictWinnerPoints()
+                        #lottery creator
+                        self.points = self.lotteryCreatorPoints()
+                        self.count_tournament = False
                         '''the author wins the conflict, but maybe he hasn't participated'''
                         if self.user in self.bet.participants():
                             self.points += self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.user in winners)
@@ -227,14 +245,20 @@ class UserPoints(models.Model):
                 points = self.pointsFromAmount(self.bet.amount, self.bet.accepted_bid.amount, winners and self.bet.author == winners[0])
                 if winners and winners[0] == self.user:
                     self.points = points[0]
-                    self.points += self.conflictWinnerPoints()
+                    #self.points += self.conflictWinnerPoints()
                 elif ref == self.user:
                     self.points = self.refereePoints()
+                    self.count_tournament = False
                 else:
                     self.points = self.conflictLoserPoints()
         else:
             if self.bet.is_lottery():
-                self.points = self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.user in winners)
+                if bid:
+                    self.points = self.pointsFromAmountLottery(self.bet.pot(), bid.participants.count(), len(self.bet.participants()), self.user in winners)
+                else:
+                    #lottery creator
+                    self.points = self.lotteryCreatorPoints()
+                    self.count_tournament = False
             else:
                 points = self.pointsFromAmount(self.bet.amount, self.bet.accepted_bid.amount, winners and self.bet.author == winners[0])
                 if winners and winners[0] == self.user:
@@ -312,7 +336,7 @@ class UserBadges(models.Model):
             current_level = user.badges.fair_play
             straight = 0
             for bet in last_bets:
-                if bet.has_conflict():
+                if bet.lost_conflict(user):
                     break
                 straight += 1
             if straight == 0 and current_level != 0:
@@ -421,7 +445,7 @@ class Tournament(models.Model):
     tag = models.CharField(max_length=255, blank=True, null=True)
     start = models.DateTimeField(blank=True, null=True, default=None)
     end = models.DateTimeField(blank=True, null=True, default=None)
-    #reset = models.CharField(max_length=255, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
     pic = models.ImageField(upload_to='tournaments', null=True, blank=True)
     title = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True, default="")
@@ -451,6 +475,10 @@ class Tournament(models.Model):
             else:
                 t.participants.add(*list(bet.participants()))
 
+    def is_active(self):
+        now = timezone.now()
+        return self.start < now < self.end
+
     def check_bet(self, bet):
         '''Checks if a bet matches the conditions of
         the tournament and adds it if true'''
@@ -459,7 +487,7 @@ class Tournament(models.Model):
         if bet.author != self.author and self.only_author:
             #raise GamificationException("Can't add a bet by another author")
             return False
-        if self.tag and not self.tag in bet.title:
+        if self.tag and not self.tag.lower() in bet.title.lower():
             return False
         if not self.public and not bet.author in self.participants.all():
             return False
@@ -473,8 +501,16 @@ class Tournament(models.Model):
     def add_participant(self, user):
         self.participants.add(user)
 
-    def leaderboard(self):
-        return UserPoints.objects.filter(bet__tournaments=self).ranking()
+    def points(self, user=None, week=None):
+        qs = UserPoints.objects.filter(bet__tournaments=self, count_tournament=True)
+        if user:
+            qs = qs.user(user)
+        if week is not None:
+            qs = qs.week(week)
+        return qs
+
+    def leaderboard(self, week=None):
+        return self.points(week=week).ranking()
 
     def get_pic_url(self):
         if self.pic:
@@ -485,5 +521,20 @@ class Tournament(models.Model):
     def __unicode__(self):
         return self.title or u"No title"
 
+
+class Prize(models.Model):
+    
+    tournament = models.ForeignKey(Tournament, related_name='prizes', blank=True, null=True)
+    pic = models.ImageField(upload_to='prizes', null=True, blank=True)
+    title = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(blank=True, null=True, default="")
+    priority = models.IntegerField(null=True, blank=True, default=0)
+
+    def get_pic_url(self):
+        if self.pic:
+            return self.pic._get_url()
+        else:
+            return ""
+            
 
 import gamification.signals

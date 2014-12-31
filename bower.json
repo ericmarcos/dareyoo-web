@@ -31,7 +31,8 @@
     "magnific-popup": "~0.9.9",
     "hello": "~0.2.2",
     "angular-smarty": "*",
-    "angular-ui-utils": "bower"
+    "angular-ui-utils": "bower",
+    "angular-socialshare": "~0.0.6"
   },
   "resolutions": {
     "angular": "~1.2.15"

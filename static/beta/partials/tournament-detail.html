@@ -1,6 +1,30 @@
+<div id="participate-tournament-modal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Como participar en el torneo</h4>
+      </div>
+      <div class="modal-body">
+            <p><span ng-if="tournament.only_author">
+                <span>Es tan fácil como participar en las apuestas de [[tournament.author.username]] que se muestran en el muro del torneo.</span>
+            </span>
+            <span ng-if="!tournament.only_author"><span>Es tan fácil como participar en las apuestas que se muestran en el muro del torneo o creando apuestas con el hashtag [[tournament.tag]]</span></span></p>
+            <p>Los puntos que consigas en estas apuestas (y no los Yoos) te posicionarán en los ránkings del torneo. Recuerda que sólo por participar en una apuesta ya obtienes puntos.<span ng-if="!tournament.only_author"> Además, ¡si eres tu quien crea la apuesta ganarás puntos extra!</span></p>
+            <div class="text-center" ng-if="user && !tournament.only_author"><button type="button" class="btn btn-primary" ng-click="crearApuesta()">¡Crear apuesta!</button></div>
+            <div ng-if="!user">
+                <p id="message" class="register-msg">Necesitas ser usuario de Dareyoo para poder participar en este torneo. Regístrate <a href="http://www.dareyoo.com/register">aquí</a>.</p>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <div ng-hide="loaded" class="container-fluid container-loading"><h4>Cargando...</h4><br><dy-loader></dy-loader></div>
 <div ng-show="loaded" class="row">
-    <div class="col-sm-8 col-sm-offset-2 tournament-detail">
+    <div class="col-sm-12 tournament-detail">
         <div class="row">
             <div class="col-sm-12 tournament-top">
                 <div class="tournament-dates" ng-if="getStartDate()">Del [[getStartDate()]]<br>al [[getEndDate()]]</div>
@@ -14,19 +38,26 @@
                 <div class="tournament-desc" ng-if="tournament.description">
                     [[tournament.description]]
                     <br><br>
-                    <span ng-if="t.only_author">
+                    <!--<span ng-if="t.only_author">
                         <span ng-if="tournament.tag">Entra participando en apuestas de [[tournament.username]] que lleven el hashtag [[tournament.tag]]</span>
                         <span ng-if="!tournament.tag">Entra participando en apuestas de [[tournament.username]]</span>
                     </span>
-                    <span ng-if="!tournament.only_author && tournament.tag"><span>Entra creando apuestas con el hashtag [[tournament.tag]]</span></span>
+                    <span ng-if="!tournament.only_author && tournament.tag"><span>Entra creando apuestas con el hashtag [[tournament.tag]]</span></span>-->
                 </div>
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#participate-tournament-modal">¡Participar!</button>
             </div>
         </div>
-        <div class="leaderboard-row" ng-repeat="l in leaderboard">
-            <div class="leaderboard-pos">#[[$index + 1]]</div>
-            <div class="leaderboard-user"><dy-user-pic-name user="l.user" size="'small'" horizontal='true' badges='false'></dy-user-pic-name></div>
-            <div class="leaderboard-points">[[l.points]] <span class="puntos">PUNTOS</span></div>
-            <div class="clearfix"></div>
-        </div>
+        <ul class="nav nav-pills nav-justified tournament-nav">
+            <li ng-class="{ 'active': $state.includes('main.tournament-detail.bets') }">
+                <a href="#" ui-sref="main.tournament-detail.bets({tournamentId:tournament.id || '0'})">Apuestas</a>
+            </li>
+            <li ng-if="tournament.prizes" ng-class="{ 'active': $state.includes('main.tournament-detail.prizes') }">
+                <a href="#" ui-sref="main.tournament-detail.prizes({tournamentId:tournament.id || '0'})">Premios</a>
+            </li>
+            <li ng-class="{ 'active': $state.includes('main.tournament-detail.ranking') }">
+                <a href="#" ui-sref="main.tournament-detail.ranking({tournamentId:tournament.id || '0'})">Ránking</a>
+            </li>
+        </ul>
+        <ui-view></ui-view>
     </div>
 </div>

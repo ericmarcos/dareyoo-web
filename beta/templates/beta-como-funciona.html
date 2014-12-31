@@ -1,0 +1,387 @@
+{% extends "beta-base.html" %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/landing.all.min.css">
+<!-- <link rel="stylesheet" href="{{ STATIC_URL }}beta/lib/bootstrap/dist/css/bootstrap.min.css"> -->
+<style type="text/css">
+    /*body, html { height: 100%; overflow: hidden; }*/
+    body {
+      position: relative;
+      padding-bottom: 100px;
+    }
+    h4 {
+        text-align: left;
+    }
+    .main-container {
+        /*overflow: scroll;*/
+        margin-top: 100px;
+        /*height: calc(100%-100px);
+        height: -moz-calc(100% - 100px);
+        height: -webkit-calc(100% - 100px);
+        height: -o-calc(100% - 100px);*/
+        height: 100%;
+        position: relative;
+    }
+    .dy-docs-sidebar>li>a { border-left: 5px transparent solid; font-size: 19px; font-weight: 300; }
+    .dy-docs-sidebar>li.active>a, .dy-docs-sidebar>li:hover>a {
+        border-left: 5px #fdd solid;
+        background-color: transparent;
+        font-weight: 400;
+    }
+    .dy-docs-sidebar>li>ul { display: none; font-size: 17px; font-weight: 300; }
+    .dy-docs-sidebar>li.active>ul { display: inline; }
+    .dy-docs-sidebar>li>ul>li>a { border-left: 5px transparent solid; padding: 4px 30px 0px; }
+    .dy-docs-sidebar>li>ul>li.active>a, .dy-docs-sidebar>li>ul>li:hover>a {
+        border-left: 5px #fdd solid;
+        background-color: transparent;
+        font-weight: 400;
+    }
+
+    .bs-callout {
+        padding: 20px;
+        margin: 20px 0;
+        border: 1px solid #eee;
+        border-left-width: 5px;
+        border-radius: 3px;
+    }
+    .bs-callout-info { border-left-color: #5bc0de; }
+    .bs-callout h4 { margin-top: 0; margin-bottom: 5px; }
+    .bs-callout-info h4 { color: #5bc0de; }
+
+    h1 { margin-top: 0px; }
+    p { margin: 10px 0px; }
+    ul.big-list { font-size: 19px; font-weight: 300; }
+    dl:last-child { margin-bottom: 0px; }
+    dt, dd { font-size: 16px; }
+    .dy-docs-sidebar { max-width: 300px; }
+    section{display: block; position: relative; top: -80px; }
+    #main-content { top: 80px; }
+
+</style>
+{% endblock %}
+
+{% block body %}<body data-spy="scroll" data-target=".sidebar" data-offset="120">{% endblock %}
+
+{% block content %}
+{{ block.super }}
+
+<div class="container main-container">
+    <div class="row">
+        <div id="sidebar" class="col-md-3 sidebar">
+            <ul class="nav nav-list dy-docs-sidebar affix">
+                <li class="active">
+                    <a href="#introduccion">Introducción</a>
+                </li>
+                <li>
+                    <a href="#tiposdeapuesta">Tipos de apuesta</a>
+                    <ul class="nav nav-stacked">
+                        <li>
+                            <a href="#basica">Apuesta básica</a>
+                        </li>
+                        <li>
+                            <a href="#subhasta">Subhasta</a>
+                        </li>
+                        <li>
+                            <a href="#porra">Porra</a>
+                        </li>
+                        <li>
+                            <a href="#fechaslimite">Fecha de cierre vs fecha de finalización</a>
+                        </li>
+                        <li>
+                            <a href="#publicavsprivada">Apuestas públicas vs privadas</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#quegano">¿Qué gano cuando gano una apuesta?</a>
+                </li>
+                <li>
+                    <a href="#reclamaciones">Reclamar un resultado</a>
+                </li>
+                <li>
+                    <a href="#arbitraje">Sistema de arbitraje</a>
+                </li>
+                <li>
+                    <a href="#puntos">Puntos</a>
+                </li>
+                <li>
+                    <a href="#torneos">Torneos</a>
+                </li>
+                <li>
+                    <a href="#pasoapaso">Paso a paso</a>
+                    <ul class="nav nav-stacked">
+                        <li>
+                            <a href="#ejemplo">Ejemplo</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div id="main-content" class="col-md-9" role="main">
+            <section id="introduccion">
+            <h1>¿Cómo funciona?</h1>
+            <p>Dareyoo no es una casa de apuestas. Dareyoo es una plataforma de apuestas donde los usuarios apuestan entre sí con total libertad, sin dinero real. Esto significa que la apuesta la creas tú y cualquiera puede ser tu rival. En Dareyoo se apuesta con una moneda virtual: el Yoo. Siempre tendrás Yoos disponibles para apostar gratis (un máximo de 100 al día) , aunque puedes comprar recargas si necesitas más Yoos. Las monedas utilizadas en Dareyoo en ningún momento pueden intercambiarse por moneda legal ni tienen valor alguno fuera de la plataforma.</p>
+            </section>
+
+            <section id="tiposdeapuesta">
+            <h3>Tipos de apuestas</h3>
+            <p>En Dareyoo existen tres tipos de apuesta: la básica, la subhasta y la porra. En todas ellas es el creador el que tiene que definir, mediante un pequeño texto, sobre qué se apuesta y debe introducir las fechas de cierre y finalización.</p>
+            </section>
+
+            <section id="basica">
+            <h4>La Básica</h4>
+            <p>En este tipo de apuesta, el usuario que la crea lo decide todo. Además del texto y las fechas, el creador decide cuántos Yoos se juega él y cuántos su futuro rival. Si alguien acepta la apuesta, significa que juega en contra de lo que el texto indica. Por ejemplo: Pepe apuesta “El Recreativo de Juerga ganará la Copa” por 10Y contra 20Y. Su amigo Juan acepta la apuesta, por consiguiente, Juan está apostando 20Y a que no la ganarán. El ganador de la apuesta se llevará el total del bote: 30Y.</p>
+            </section>
+
+            <section id="subhasta">
+            <h4>La Subhasta</h4>
+            <p>A diferencia de la básica, en este tipo de apuesta el creador sólo especifica por cuánto quiere jugar, dejando abierta la cantidad apostada por su futuro rival. De esta forma, los posibles rivales pujan con sus ofertas, que se componen de un texto y una cantidad de Yoos. Al final, el creador elige la oferta que más le seduce para jugar en contra. Por ejemplo: Juan apuesta: “El Rayo Vayacaño fichará un defensa” por 10Y. Su amigo Pepe responde con una contraoferta “No será un defensa, sino un delantero” por 6Y, mientras que Manu dice “No tenéis ni idea, ficharán a un entrenador” por 20Y. Juan decide jugar contra Manu ya que su oferta le gusta más, quedando así definida la apuesta. Esta vez, Pepe se queda en el banquillo.</p>
+            </section>
+
+            <section id="porra">
+            <h4>La Porra</h4>
+            <p>En las porras el creador propone un tema y la cantidad a apostar por cada jugador. Luego, él mismo puede añadir posibles resultados a la porra. Si quiere que otros jugadores puedan añadir más resultados, deberá definirla como Abierta; en caso contrario cómo Cerrada.</p>
+
+            <div class="bs-callout-info bs-callout">
+                <h4>Recuerda:</h4>
+                <dl class="dl-horizontal">
+                  <dt>Porra Abierta</dt>
+                  <dd>Los jugadores que quieran jugar pueden añadir su resultado, o participar en alguno de los ya creados.</dd>
+                </dl>
+                <dl class="dl-horizontal">
+                  <dt>Porra Cerrada</dt>
+                  <dd>Los jugadores solamente pueden participar en los resultados añadidos por el creador.</dd>
+                </dl>
+            </div>
+            </section>
+
+            <section id="fechaslimite">
+            <h3>Fecha de cierre vs fecha de finalización</h3>
+            <div class="bs-callout-info bs-callout">
+                <dl class="dl-horizontal">
+                  <dt>Fecha de cierre</dt>
+                  <dd>Momento a partir del cual no se aceptarán más participantes en la apuesta, quedando así cerrada, a la espera de resolución. Se suele definir como el momento en el que empieza el evento sobre el que se está apostando. Si no se define esta fecha cuando se crea una apuesta se asumirá que es la misma que la fecha de finalización.</dd>
+                </dl>
+                <dl class="dl-horizontal">
+                  <dt>Fecha de finalización</dt>
+                  <dd>Momento en el que finaliza el evento sobre el que se está apostando. A partir de entonces el creador tiene 24 horas para solucionar la apuesta, o sea, para indicar quién es el ganador. Si no lo hace dentro de este plazo el sistema resolverá automáticamanete que el creador ha perdido</dd>
+                </dl>
+            </div>
+            </section>
+
+            <section id="publicavsprivada">
+            <h4>Apuesta pública vs apuesta privada</h4>
+            <div class="bs-callout-info bs-callout">
+                <dl class="dl-horizontal">
+                  <dt>Apuesta Pública</dt>
+                  <dd>Cualquier usuario podrá ver la apuesta y participar en ella.</dd>
+                </dl>
+                <dl class="dl-horizontal">
+                  <dt>Apuesta Privada</dt>
+                  <dd>Sólo aquellos usuarios invitados por el creador podrán ver la apuesta y participar en ella.</dd>
+                </dl>
+            </div>
+            </section>
+
+            <section id="quegano">
+            <h3>¿Qué gano cuando gano una apuesta?</h3>
+            <p>Cuando ganas una apuesta, a parte de llevarte el bote de la apuesta, ganas puntos de experiencia. Estos puntos tienen una doble utilidad. Primero, sirven para posicionarte en los ránkings de los torneos y optar a premios. Segundo, a medida que acumulas puntos vas subiendo de nivel y desbloqueando nuevas funcionalidades. Los puntos que ganas en una apuesta van en función del bote (más dinero apostado igual a más puntos ganados) y del ratio de tu resultado en la apuesta (a mayor riesgo, más puntos ganados). Recuerda que aunque pierdas la apuesta también te llevarás algunos puntos de experiencia.</p>
+            </section>
+            
+            <section id="reclamaciones">
+            <h3>Reclamar un resultado</h3>
+            <p>El camino más corto hacia la victoria es siempre el de la verdad. Si el creador de una apuesta se adjudica la victoria o se equivoca al escoger al ganador los rivales pueden reclamar el resultado durante el periodo de reclamaciones.</p>
+
+            <p>Recuerda que si tu no has ganado la apuesta no podrás reclamar correctamente porque te preguntaremos quién es el verdadero ganador y solo podrás elegir entre “tú” y “nadie”. Debe ser el usuario que ha acertado el que debe reclamar.</p>
+
+            <p>Una vez la fecha de finalización ha vencido, la apuesta pasa al estado “pendiente de resolución”. El creador tiene 24h para resolverla, sea del tipo que sea, de lo contrario la apuesta se convierte en nula. Los participantes de una apuesta que ha sido declarada nula pueden reclamar si no estan de acuerdo ya que el creador de la misma puede haber descuidado la resolución. Si se resuelve sin conflicto la apuesta se da por finalizada y el ganador se lleva las monedas y los puntos. Perder no significa no llevarse nada, jugar limpio tiene recompensa en forma de puntos.</p>
+
+            <p>Cada vez que una apuesta en la que participas termina y es resuelta por su creador tendrás 24h para reclamar si estás en desacuerdo con el resultado. ¡Cuidado!, si reclamas y pierdes la reclamación también perderás muchos más puntos. Asegúrate de que podrás demostrar que eres el ganador.</p>
+
+            <p>Al reclamar, la apuesta entra en estado de “arbitraje” a la espera de que otro usuario con los requisitos necesarios para arbitrar acepte mediar en la apuesta. En ese momento el tercero en discordia dispone de otras 24h para emitir su veredicto. Si el árbitro es incapaz de determinar quién ha ganado declarará la apuesta nula. Se repartirán las monedas menos la comisión de arbitraje que será para el árbitro. Aún te queda una opción para reclamar un mal arbitraje, pero si decides utilizar esa opción y no tienes razón la penalización será mucho mayor.</p>
+
+            <p>En el caso de que un árbitro no actuara correctamente sería penalizado con la pérdida de la capacidad de arbitrar, la pérdida de gran cantidad de su experiencia y le serían arrebatados todos los logros asociados al juego limpio.</p>
+
+            <p>Finalmente si el arbitraje es aceptado por los participantes la apuesta se resuelve y termina en modo “finalizada”.</p>
+            </section>
+
+            <section id="arbitraje">
+            <h3>Sistema de arbitraje</h3>
+
+            <p>Una vez se ha resuelto una apuesta, los usuarios rivales tienen la oportunidad de impugnar el resultado si creen que el creador se ha equivocado o ha hecho trampas. El periodo de reclamaciones es de 24 horas a partir del momento en que el creador resuelve.</p>
+            <p>Sólo hace falta que haya una reclamación para que la apuesta entre en conflicto, en cuyo caso otro usuario de Dareyoo con buena reputación y experiencia suficiente actuará de mediador, llevandose una comisión en Yoos (que irá en función del bote de la apuesta) y un incentivo en forma de puntos de experiencia.</p>
+            <p>Requisitos para poder arbitrar:</p>
+            <ul class="big-list">
+            <li>Nivel 3 de experiencia</li>
+            <li>Logro "fair play" activado</li>
+            </ul>
+
+            <p>El árbitro tiene 24h a partir de la reclamación para determinar quién ha ganado la apuesta. Una vez emitido el veredicto existen 3 posibilidades:</p>
+            <ul class="big-list">
+            <li>Gana el creador de la apuesta</li>
+            <li>Gana el usuario que reclama</li>
+            <li>La apuesta se declara nula*</li>
+            </ul>
+
+            <p>En la 1a y 2a, el que gana obtiene las monedas en juego, los puntos correspondientes. El jugador que pierde** deberá abonar el 100% de la comisión de arbitraje y además será penalizado con una reducción considerable de su reputación, sumando puntos negativos de experiencia y perdiendo el logro "fair play".</p>
+            <div class="bs-callout-info bs-callout">
+                <h4>Recuerda:</h4>
+                <p>Un usuario puede tener una baja reputación por dos motivos: si lleva poco tiempo jugando a Dareyoo o si habitualmente genera conflictos. Antes de aceptar a un rival desconocido pásate por su perfil y comprueba que tipo de apostador es.</p>
+            </div>
+
+            <p>*Las apuestas que no puedan ser fácilmente comprobables serán declaradas nulas, por ejemplo las de carácter personal. En ese caso se devuelven las monedas jugadas menos la comisión de arbitraje y la penalización. Dicha penalización es para evitar que los usuarios realicen apuestas que no puedan ser resueltas, así que, acepta nuestro consejo y crea o acepta sólo esas apuestas que puedan ser comprobadas de forma rápida y sencilla.</p>
+
+            <p>**Aunque el árbitro te declare perdedor de un conflicto, si tienes razón, puedes reclamar directamente al staff de Dareyoo escribiendo un correo a soporte@dareyoo.com. Nosotros arbitraremos el conflicto y determinaremos quién tiene la razón. En el caso de que un árbitro actúe de forma fraudulenta perderá inmediatamente la capacidad de arbitrar y podría llegar a ser expulsado del sistema. Si un jugador pierde ambas reclamaciones perderá todos los puntos y, si reincide, puede ser expulsado de Dareyoo.</p>
+            </section>
+
+            <section id="puntos">
+            <h3>Puntos</h3>
+
+            <p>Tu forma de apostar te define. Como usuario de Dareyoo debes saber que tu reputación como jugador te permitirá desbloquear nuevas funcionalidades, conseguir logros y acceder a mejores premios o por el contrario, si tienes una mala reputación, alejará a los posibles rivales convirtiéndote en un náufrago en un mar de jugadores.</p>
+
+            <h4>Puntos vs niveles</h4>
+            <p>Es sencillo, los niveles de experiencia están basados en los puntos que consigues jugando. Para que nos entendamos, cuando juegas consigues puntos que se van acumulando y cuando llegas a determinados puntos eres un usuario de x nivel. Ej: los usuarios que tengan entre 0 y 1000 puntos de reputación son usuarios de nivel 1. Cada vez te costará más subir de nivel pero todo esfuerzo tiene su recompensa.</p>
+
+            <!--<p>Quieres consultar la formula? Aquí la tienes.</p>-->
+
+            <p>En que situaciones gano puntos:
+            <ul class="big-list">
+            <li>Ganar una apuesta</li>
+            <li>Perder una apuesta sin generar conflicto</li>
+            <li>Ganar un conflicto</li>
+            <!--<li>Crear una apuesta con "x" respuestas</li>-->
+            <!--<li>Crear un torneo con más de x participantes</li>-->
+            <li>Arbitrar una apuesta</li>
+            <!--<li>Desbloquear x logro</li>-->
+            <li>Invitar a un amigo</li>
+            <!--<li>Ser recomendado por otro usuario de mayor reputación (no se, ja ho comentarem)</li>-->
+            </ul>
+            </p>
+
+            <p>En que situaciones pierdo puntos:
+            <ul class="big-list">
+            <li>Perder un conflicto</li>
+            <!--<li>Crear una apuesta sin ninguna respuesta</li>-->
+            <!--<li>Estar más de x dias inactivo</li>-->
+            <li>Ser expulsado de un torneo</li>
+            <li>Ser bloqueado por otro usuario</li>
+            </ul>
+            </p>
+
+            <!--<p>Recuerda que para ganar puntos no sólo cuentan las victorias, si juegas limpio serás recompensado. Con los puntos que consigues jugando en Dareyoo elaboramos nuestros rankings donde el ganador obtiene increíbles premios. Estos rankings se actualizan periódicamente (cada mes) y se crean en función de distintas variables:</p>
+            <ul class="big-list">
+            <li>Cantidad de puntos obtenidos</li>
+            <li>Cantidad de monedas obtenidas</li>
+            <li>Cantidad de apuestas ganadas</li>
+            <li>Cantidad de apuestas perdidas</li>
+            </ul>-->
+
+            <!--<p>Los rankings de cada torneo tienen en cuenta exclusivamente los puntos que ganas en las apuestas que pertenecen al torneo. Comparte tus resultados en tus redes sociales para que tus amigos sepan a qué apuestas y en qué pueden retarte!</p>-->
+            </section>
+
+            <section id="torneos">
+            <h3>Torneos</h3>
+            <p>Un torneo es una competición donde lo único que cuenta son los puntos de experiencia conseguidos durante un periodo determinado de tiempo. La forma de participar en un torneo es diferente según su tipología.</p>
+
+
+            <div class="bs-callout-info bs-callout">
+                <dl class="dl-horizontal">
+                  <dt>Torneos abiertos</dt>
+                  <dd>Las apuestas que entran en los torneos abiertos son todas aquellas que contienen en su título el hashtag del torneo, de forma que cualquier usuario puede crear apuestas que entren en él.</dd>
+                </dl>
+                <dl class="dl-horizontal">
+                  <dt>Torneos cerrados</dt>
+                  <dd>Sólo las apuestas creadas por el anfitrión formarán parte del torneo. Cualquier usuario que participe en sus apuestas entrará en el ránking.</dd>
+                </dl>
+            </div>
+            </section>
+
+            <section id="pasoapaso">
+            <h3>Paso a paso</h3>
+
+            <p>Para ser un usuario de Dareyoo solo necesitamos algunos datos como tu nombre, tu correo electronico y que aceptes los términos i condiciones legales. En ellos declaras que eres mayor de edad y que conoces bajo que condiciones funciona nuestra plataforma de apuestas.</p>
+
+            <p>Registrarte en Dareyoo es gratuito. Elige un apodo, una imagen para tu perfil y descríbete para que todo el mundo sepa cuales son tus intereses. No te preocupes si la inspiración te abandona, puedes editar tu perfil tantas veces como quieras.</p>
+
+            <p>Cada día recargamos tu cuenta de forma gratuita con 100Y. No tengas ningún reparo en gastartelos todos ya que cada 2 horas te damos 10 Y más hasta volver a llegar a los 100Y. Si te quedas sin monedas puedes esperar hasta la siguiente recarga o, si prefieres jugar a lo grande, puedes comprar "packs" de monedas.</p>
+
+            <p>A la hora crear una apuesta debes definir las variables siguientes:
+            <ul class="big-list">
+            <li>Título de la apuesta</li>
+            <li>Detalles adicionales (opcional)</li>
+            <li>Si la apuesta es pública o privada</li>
+            <li>Qué tipo de apuesta vas a crear (básica / subhasta / porra)</li>
+            <li>Hasta cuando aceptas posibles rivales (fecha de cierre)</li>
+            <li>Cuando termina el evento sobre el que estás apostando (fecha de finalización)</li>
+            <li>Cuantas monedas te vas a jugar (y contra cuantas, en caso de la apuesta básica)</li>
+            <li>Si es una porra, si es abierta o cerrada.</li>
+            <li>Invitaciones: los usuarios a los que quieres enviar la apuesta. Si la apuesta es privada, sólamente ellos podrán participar. Puedes invitar por nombre de usuario o por email.</li>
+            </ul>
+            </p>
+
+            <p>Una vez la apuesta ha sido creada con éxito se bloquean las monedas que deseas apostar.</p>
+
+            <p>Una apuesta pasa por distintos estados. No, no son sólido, líquido y gaseoso, estas funcionan de un modo distinto. Mapa de estados de la apuesta:</p>
+
+            <p>Activa - Evento - Pendiente de resolución - Periodo de reclamación - Pendiente de arbitraje - Finalizada</p>
+
+            <p>Si has introducido todas las opciones correctamente tu apuesta se crea y se convierte en "activa". Dependiendo de cómo la hayas definido aparecerá en el muro público o se mandará directamente a los rivales con los que hayas decidido compartirla.</p>
+            <p>El tipo de apuesta creada determinará los siguientes pasos a seguir:</p>
+            <ul class="big-list">
+            <li>Si la apuesta es básica tu rival solo deberá aceptarla. Una vez lo haga, ésta pasa al estado "evento".</li>
+            <li>Si es una apuesta subhasta recibirás distintas ofertas y deberás aceptar la que más te guste para que la apuesta pase al estado "evento". Si no has aceptado ninguna oferta cuando llegue la fecha de cierre, ésta pasará al estado finalizado.</li>
+
+            <li>En la porra los usuarios irán uniéndose y añadiendo sus apuestas hasta que llegue la fecha de cierre. Al llegar dicha fecha, la porra queda cerrada y se convierte al estado "evento".</li>
+            </ul>
+
+            <p>Entonces hay que esperar a que el evento termine y se cumpla la fecha de finalización para determinar quién resulta el ganador. Si nadie acepta jugar contra ti durante el período activo, la apuesta pasa al estado "finalizada" y se devuelven las monedas al creador.</p>
+
+            <section id="ejemplo">
+            <h4>Te lo resumimos con un sencillo ejemplo:</h4>
+
+            <p>Mañana dia 04/03/2018 a las 21:00 se celebra la entrega de premios al mejor chiste de borrachos del año. El usuario que quiera apostar sobre este evento creará una porra y establecerá que solo se puede votar una vez por usuario. La fecha de cierre de la porra será  04/03/2018 a las 20:00 (una hora antes que empiece el certamen) y la fecha de finalización de la porra será 04/03/2018 a las 24:00 (cuando termina la entrega y por supuesto se sabe quién ha resultado ganador).</p>
+            </section>
+            </section>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <!-- <p>Dareyoo Gaming. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>-->
+</footer>
+
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}beta/build/js/jquery.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}beta/build/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    
+$(document).ready(function(){
+    $("#sidebar").on("activate.bs.scrollspy", function () {
+        var currentItem = $(".nav li.active > a").text();
+        //console.log("hola", currentItem);
+        //$("#info").empty().html("Currently you are viewing - " + currentItem);
+    });
+    $('li>a').click(function(event) {
+        //event.preventDefault();
+        //$('#sidebar').removeClass('sidebar');
+        var elemId = event.target.hash;
+        $('body').animate({
+            scrollTop: $(elemId).parent().scrollTop() + $(elemId).offset().top - $(elemId).parent().offset().top + 80
+        }, {
+            duration: 300,
+            specialEasing: {
+                width: 'linear',
+                height: 'easeOutBounce'
+            },
+            complete: function () {
+                //$('#sidebar').addClass('sidebar');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

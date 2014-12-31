@@ -36,6 +36,6 @@ def bet_auto_queue_deadlines_tasks(sender, **kwargs):
         if transition == 'complaining':
             send_task('complaining_deadline', [bet.id], countdown=settings.COMPLAINING_COUNTDOWN)
 
-        if transition == 'arbitrating':
-            send_task('arbitrating_deadline', [bet.id], countdown=settings.ARBITRATING_COUNTDOWN)
+        #if transition == 'arbitrating':
+        #    send_task('arbitrating_deadline', [bet.id], countdown=settings.ARBITRATING_COUNTDOWN)
             

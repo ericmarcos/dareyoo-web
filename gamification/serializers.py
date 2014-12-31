@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, pagination
 from users.models import DareyooUser
 from users.serializers import *
 from bets.serializers import *
@@ -74,23 +74,55 @@ class BetPointsSerializer(BetSerializer):
         model = BetSerializer.Meta.model
         fields = BetSerializer.Meta.fields + ('points', 'referee_points')
 
+
 class UserField(DareyooUserPointsShortSerializer):
     def to_native(self, obj):
         user = DareyooUser.objects.get(pk=obj)
         return super(UserField, self).to_native(user)
 
 
+class PaginatedBetPointsSerializer(pagination.PaginationSerializer):
+    class Meta:
+        object_serializer_class = BetPointsSerializer
+
+
 class RankingSerializer(serializers.Serializer):
     user = UserField()
     points = serializers.FloatField(source='total_points')
+    position = serializers.SerializerMethodField('get_position')
+
+    def get_position(self, obj):
+        if hasattr(obj, 'position'):
+            return obj.position
+        else:
+            return None
+
+
+class PrizeSerializer(serializers.ModelSerializer):
+    pic = serializers.Field(source='get_pic_url')
+    author = DareyooUserPointsShortSerializer()
+    is_available = serializers.SerializerMethodField('get_is_available')
+
+    def get_is_available(self, obj):
+        return obj.tournament.is_acive()
+
+    class Meta:
+        model = Prize
+        fields = ('id', 'tournament', 'pic', 'title', 'description',)
+
+
+class PaginatedPrizeSerializer(pagination.PaginationSerializer):
+    class Meta:
+        object_serializer_class = PrizeSerializer
 
 
 class TournamentSerializer(serializers.HyperlinkedModelSerializer):
     upload_pic_url = serializers.HyperlinkedIdentityField(view_name='tournament-pic-upload')
     pic = serializers.Field(source='get_pic_url')
     author = DareyooUserPointsShortSerializer()
+    prizes = PrizeSerializer(many=True, read_only=True)
 
     class Meta:
         model = Tournament
         fields = ('url', 'id', 'author', 'public', 'tag', 'start', 'end',
-             'pic', 'title', 'description', 'upload_pic_url', 'only_author')
+             'pic', 'title', 'description', 'upload_pic_url', 'only_author', 'prizes')

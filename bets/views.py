@@ -11,6 +11,7 @@ from .models import *
 from .serializers import BetSerializer, BidSerializer, PaginatedBetSerializer
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+
 class IsAuthorOrReadOnly(permissions.BasePermission):
     """
     Custom permission to only allow the author to edit the bet.
@@ -19,6 +20,19 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed to any request
         return request.method in permissions.SAFE_METHODS or obj.author == request.user
+
+
+class IsAuthenticatedOrIsGlobal(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        return request.user.is_authenticated() or request.QUERY_PARAMS.get('global')
+
+
+class CanArbitrate(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        #Introducing circular dependency with gamification module
+        return request.user.points.level() >= settings.REFEREE_MIN_LEVEL
 
 
 class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -120,7 +134,10 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
     def resolve(self, request, *args, **kwargs):
         bet = self.get_object()
         user = self.request.user
-        claim = request.DATA.get('claim', None)
+        try:
+            claim = int(request.DATA.get('claim'))
+        except:
+            claim = request.DATA.get('claim')
         claim_lottery_winner = request.DATA.get('claim_lottery_winner', None)
         claim_message = request.DATA.get('claim_message', "")
         try:
@@ -132,11 +149,14 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
         except (BetException, DareyooUserException) as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(permission_classes=[permissions.IsAuthenticated], renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
+    @action(permission_classes=[permissions.IsAuthenticated, CanArbitrate], renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
     def arbitrate(self, request, *args, **kwargs):
         bet = self.get_object()
         user = self.request.user
-        referee_claim = request.DATA.get('claim', None)
+        try:
+            referee_claim = int(request.DATA.get('claim'))
+        except:
+            referee_claim = request.DATA.get('claim')
         referee_lottery_winner = request.DATA.get('claim_lottery_winner', None)
         referee_message = request.DATA.get('claim_message', "")
         try:
@@ -186,7 +206,10 @@ class BidViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
     def complain(self, request, *args, **kwargs):
         bid = self.get_object()
         user = self.request.user
-        claim = request.DATA.get('claim', None)
+        try:
+            claim = int(request.DATA.get('claim'))
+        except:
+            claim = request.DATA.get('claim')
         claim_message = request.DATA.get('claim_message', "")
         try:
             if claim == bid.bet.claim and not bid.bet.is_lottery():
@@ -225,7 +248,7 @@ class SearchBetsList(generics.ListAPIView):
 class TimelineList(generics.ListAPIView):
     model = Bet
     serializer_class = BetSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrIsGlobal,)
 
     def get_queryset(self):
         user = self.request.user
@@ -236,7 +259,10 @@ class TimelineList(generics.ListAPIView):
         qs = Bet.objects.all()
         if all_bets:
             #Global timeline: all public bets plus private bets where user is involved
-            qs = qs.involved(user) | qs.public()
+            if self.request.user.is_authenticated():
+                qs = qs.involved(user) | qs.public()
+            else:
+                qs = qs.public()
         else:
             #User timeline
             qs = qs.involved(user) | qs.following(user)

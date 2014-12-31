@@ -1,0 +1,18 @@
+<div class="text-center">
+    <div class="ranking-weeks">
+        <span class="label label-as-badge pointer" ng-class="{'label-primary': state=='bidding', 'label-default': state != 'bidding'}" ng-click="getTournamentBets(tournament.id, 'bidding')">ABIERTAS</span>
+        <span class="label label-default label-as-badge pointer" ng-click="getTournamentBets(tournament.id, 'closed')" ng-class="{'label-primary': state=='closed', 'label-default': state!='closed'}">CERRADAS</span>
+    </div>
+</div>
+<div ng-show="loaded && tournament_bets.length > 0" class="bets-list">
+    <div ng-repeat="bet in tournament_bets">
+      <dy-bet-list-item bet="bet"></dy-bet-list-item>
+    </div>
+    <div ng-show="more_bets_link && loaded && loaded_more" class="more-bets">
+        <button type="button" class="btn btn-primary btn-block" ng-click="moreBets()">Cargar más apuestas...</button>
+    </div>
+</div>
+<div ng-hide="loaded && loaded_more" class="container-fluid text-center" style="padding:10px"><dy-loader></dy-loader></div>
+<div class="leaderboard-row" ng-show="loaded && tournament_bets.length == 0" style="background-color:#eee">
+    <div class="text-center"><span class="puntos">No hay apuestas que mostrar</span></div>
+</div>
