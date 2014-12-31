@@ -74,17 +74,29 @@ class BetResource(ModelResource):
 
     def prepend_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/(?P<pk>\w[\w/-]*)/children%s$" %
+            url(
+                r"^(?P<resource_name>%s)/(?P<pk>\w[\w/-]*)/children%s$" %
                 (self._meta.resource_name, trailing_slash()),
-                self.wrap_view('get_children'), name="api_get_children"),
-            url(r"^(?P<user_id>me|\d+)/(?P<resource_name>%s)s%s$" %
+                self.wrap_view('get_children'),
+                name="api_get_children"
+            ),
+            url(
+                r"^(?P<user_id>me|\d+)/(?P<resource_name>%s)s%s$" %
                 (self._meta.resource_name, trailing_slash()),
-                self.wrap_view('get_user_bets'), name="api_get_user_bets"),
+                self.wrap_view('get_user_bets'),
+                name="api_get_user_bets"
+            ),
             url(r"^(?P<user_id>me|\d+)/(?P<resource_name>%s)s/(?P<state>%s)%s$" %
                 (self._meta.resource_name, "|".join([b[0] for b in BET_STATE_CHOICES]), trailing_slash()),
-                self.wrap_view('get_user_bets'), name="api_get_user_bets"),
-            url(r"^(?P<resource_name>%s)/search%s$" %
-                (self._meta.resource_name, trailing_slash()), self.wrap_view('get_search'), name="api_get_search"),
+                self.wrap_view('get_user_bets'),
+                name="api_get_user_bets"
+            ),
+            url(
+                r"^(?P<resource_name>%s)/search%s$" %
+                (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('get_search'),
+                name="api_get_search"
+            ),
         ]
 
     def get_children(self, request, **kwargs):

@@ -399,12 +399,29 @@ angular.module('dareyoo.controllers', []).
     $scope.getFollowing($stateParams.userId);
   }])
   .controller('ProfileBetsCtrl', ['$scope', '$rootScope', '$http', '$stateParams', function($scope, $rootScope, $http, $stateParams) {
+    $scope.bets = [];
+    $scope.more_bets_link = null;
+
     $scope.getBets = function(id, params, callback) {
       params = params || {};
-      callback = callback || function(response) { if(response.results) $scope.bets = response.results; else $scope.bets = response; };
+      callback = callback || function(response) {
+        if(response.results) {
+          $scope.bets = response.results;
+          $scope.more_bets_link = response.next;
+        } else {
+          $scope.bets = response;
+        }
+      };
       $http.get(document.location.origin + "/api/v1/users/" + id + "/bets/", {'params': params}).success(callback);
     };
-
+    $scope.moreBets = function() {
+      $http.get($scope.more_bets_link).success(function(response) {
+        if(response.results) {
+          $scope.bets.push.apply($scope.bets, response.results);
+          $scope.more_bets_link = response.next;
+        }
+      });
+    };
     $scope.getBets($stateParams.userId, {'all':true});
   }])
   .controller('BetCtrl', ['$scope', '$http', '$stateParams', function($scope, $http, $stateParams) {

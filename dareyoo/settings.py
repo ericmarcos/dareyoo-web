@@ -49,7 +49,8 @@ INSTALLED_APPS = (
     'gunicorn',
     'storages',
     'rest_framework',
-#    'kombu.transport.django',
+    #'kombu.transport.django',
+    'djkombu',
 #    'haystack',
     'provider',
     'provider.oauth2',
@@ -164,12 +165,11 @@ MISSED_DEADLINES_PERIOD = 60*60*6
 
 
 BROKER_POOL_LIMIT = 1
-
 BROKER_URL = os.environ.get('CLOUDAMQP_URL', 'django://')
 BROKER_HEARTBEAT = 30
+
 CELERY_IGNORE_RESULT = True
 CELERY_ACCEPT_CONTENT = ['json']
-
 CELERY_TASK_SERIALIZER = 'json'
 
 
