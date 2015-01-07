@@ -10,7 +10,8 @@ django-fsm==1.5.0
 django-haystack==2.1.0
 django-oauth2-provider==0.2.6
 #python-social-auth==0.2
-git+git://github.com/omab/python-social-auth.git
+#git+git://github.com/omab/python-social-auth.git
+git+git://github.com/omab/python-social-auth.git@6d97ff65ffca7aefae85f76e1734fa7c75b66f28#egg=social
 django-storages==1.1.8
 django-tastypie==0.10.0
 django-extensions==1.4.4

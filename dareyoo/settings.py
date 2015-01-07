@@ -202,7 +202,7 @@ CELERYBEAT_SCHEDULE = {
 SOUTH_MIGRATION_MODULES = {
     'provider': 'ignore',
     'oauth2': 'ignore',
-    'default': 'default.south_migrations',
+    'default': 'social.apps.django_app.default.south_migrations',
 }
 
 #AUTHENTICATION_BACKENDS = (
