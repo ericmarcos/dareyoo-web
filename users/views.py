@@ -63,9 +63,6 @@ class DareyooUserViewSet(viewsets.ModelViewSet):
         if request.user.username != username and DareyooUser.objects.filter(username=username).exists():
             raise MethodNotAllowed("This username already exists.")
         ret = super(DareyooUserViewSet, self).update(request, pk)
-        if request.QUERY_PARAMS.get('new'):
-            user = self.get_object()
-            user.send_welcome_email()
         return ret
 
     @link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])

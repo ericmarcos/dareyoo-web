@@ -100,6 +100,7 @@ def save_registered(strategy, user, response, details,
     if not user.registered:
         user.registered = True
         user.save()
+    user.send_welcome_email()
 
 def save_campaign(strategy, user, response, details,
                     is_new=False, *args, **kwargs):
