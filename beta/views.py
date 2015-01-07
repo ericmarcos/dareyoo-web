@@ -79,7 +79,7 @@ def register_view(request):
             login(request, user)
             next_url = request.POST.get('next', request.GET.get('next'))
             if not next_url:
-                next_url = reverse('beta-home') + '/edit-profile?new')
+                next_url = reverse('beta-home') + '/edit-profile?new'
             return HttpResponseRedirect(next_url)
         return render_to_response('beta-register.html', context_instance=RequestContext(request, context))
 
