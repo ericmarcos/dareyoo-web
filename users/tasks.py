@@ -78,6 +78,7 @@ def send_template_email(**kwargs):
                    to=[to_addr,])
     msg.template_name = template_name
     msg.global_merge_vars = template_data
+    msg.inline_css = True
     msg.send(fail_silently=True)
 
 
