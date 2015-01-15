@@ -204,6 +204,7 @@ SOUTH_MIGRATION_MODULES = {
     'oauth2': 'ignore',
     'default': 'social.apps.django_app.default.south_migrations',
 }
+SOUTH_TESTS_MIGRATE = False
 
 #AUTHENTICATION_BACKENDS = (
 #    'social_auth.backends.facebook.FacebookBackend',
