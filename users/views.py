@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.http import Http404
+from django.shortcuts import redirect
 from django.forms import EmailField
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
@@ -126,7 +127,7 @@ class DareyooUserViewSet(viewsets.ModelViewSet):
         except DareyooUserException as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-
+'''
 class MeRedirectView(RedirectView):
     permanent = False
     query_string = True
@@ -155,7 +156,23 @@ class MeRedirectView(RedirectView):
         if self.request.is_secure():
             url = 'https://' + url
         return url
+'''
+class MeRedirectView(APIView):
+    """
+    View to list all users in the system.
 
+    * Requires token authentication.
+    * Only admin users are able to access this view.
+    """
+    model = DareyooUser
+    def get(self, request, format=None):
+        """
+        Return a list of all users.
+        """
+        if not self.request.user.is_authenticated():
+            raise Http404
+        user_activated.send(sender=self.__class__, user=self.request.user)
+        return redirect('dareyoouser-detail', pk=self.request.user.id)
 
 class SearchFacebookFriendsList(generics.ListAPIView):
     model = DareyooUser
