@@ -15,7 +15,7 @@ class NotificationFactory:
         n = Notification()
         n.recipient = recipient
         n.notification_type = Notification.TYPE_NEW_FOLLOWER
-        n.subject = "%s ha empezado a seguirte!" % follower.username
+        n.subject = u"%s ha empezado a seguirte!" % follower.username
         n.user = follower
         return n
 
@@ -24,7 +24,7 @@ class NotificationFactory:
         n = Notification()
         n.recipient = recipient
         n.notification_type = Notification.TYPE_BET_RECEIVED
-        n.subject = "%s te ha enviado una apuesta: \"%s\"" % (bet.author.username, bet.title)
+        n.subject = u"%s te ha enviado una apuesta: \"%s\"" % (bet.author.username, bet.title)
         n.bet = bet
         return n
 
@@ -33,7 +33,7 @@ class NotificationFactory:
         n = Notification()
         n.recipient = bet.author
         n.notification_type = Notification.TYPE_BET_ACCEPTED
-        n.subject = "%s ha aceptado tu apuesta \"%s\"" % (bet.accepted_bid.author.username, bet.title)
+        n.subject = u"%s ha aceptado tu apuesta \"%s\"" % (bet.accepted_bid.author.username, bet.title)
         n.bet = bet
         n.user = bet.accepted_bid.author
         return n
@@ -58,9 +58,9 @@ class NotificationFactory:
         n.recipient = bid.author
         n.notification_type = Notification.TYPE_BID_DELETED
         if bid.bet.is_auction():
-            n.subject = "%s ha borrado tu oferta \"%s\"" % (bid.bet.author.username, bid.title)
+            n.subject = u"%s ha borrado tu oferta \"%s\"" % (bid.bet.author.username, bid.title)
         elif bid.bet.is_lottery():
-            n.subject = "%s ha borrado tu resultado \"%s\"" % (bid.bet.author.username, bid.title)
+            n.subject = u"%s ha borrado tu resultado \"%s\"" % (bid.bet.author.username, bid.title)
         n.bet = bid.bet
         n.user = bid.bet.author
         return n
@@ -70,7 +70,7 @@ class NotificationFactory:
         n = Notification()
         n.recipient = bid.author
         n.notification_type = Notification.TYPE_BID_ACCEPTED
-        n.subject = "%s ha aceptado tu oferta \"%s\" en la apuesta \"%s\"" % (bid.bet.author.username, bid.title, bid.bet.title)
+        n.subject = u"%s ha aceptado tu oferta \"%s\" en la apuesta \"%s\"" % (bid.bet.author.username, bid.title, bid.bet.title)
         n.bet = bid.bet
         return n
 
@@ -79,7 +79,7 @@ class NotificationFactory:
         n = Notification()
         n.recipient = bet.author
         n.notification_type = Notification.TYPE_BET_EVENT_FINISHED
-        n.subject = "Tu apuesta \"%s\" ha finalizado! Tienes 24h para resolverla." % bet.title
+        n.subject = u"Tu apuesta \"%s\" ha finalizado! Tienes 24h para resolverla." % bet.title
         n.bet = bet
         return n
 
@@ -93,7 +93,7 @@ class NotificationFactory:
                 n.subject = u"Que lástima... has perdido la apuesta \"%s\"." % bet.title
             elif bet.claim == Bet.CLAIM_LOST:
                 n.notification_type = Notification.TYPE_BET_RESOLVING_FINISHED_AUTHOR_LOST
-                n.subject = "¡Felicidades! Eres el ganador de la apuesta \"%s\"." % bet.title
+                n.subject = u"¡Felicidades! Eres el ganador de la apuesta \"%s\"." % bet.title
             elif bet.claim == Bet.CLAIM_NULL:
                 n.notification_type = Notification.TYPE_BET_RESOLVING_FINISHED_NULL
                 n.subject = u"Que lástima... has perdido la apuesta \"%s\"." % bet.title
@@ -106,7 +106,7 @@ class NotificationFactory:
                 n.subject = u"Que lástima... has perdido la porra \"%s\"." % bet.title
             elif recipient in bet.claim_lottery_winner.participants.all():
                 n.notification_type = Notification.TYPE_BET_RESOLVING_FINISHED_AUTHOR_LOST
-                n.subject = "¡Felicidades! Eres el ganador de la porra \"%s\"." % bet.title
+                n.subject = u"¡Felicidades! Eres el ganador de la porra \"%s\"." % bet.title
             else:
                 n.notification_type = Notification.TYPE_BET_RESOLVING_FINISHED_AUTHOR_WON
                 n.subject = u"Que lástima... has perdido la porra \"%s\"." % bet.title
@@ -160,33 +160,33 @@ class NotificationFactory:
                 winner = winners[0] if winners else None
                 if winner == recipient:
                     n.notification_type = Notification.TYPE_BET_ARBITRATING_FINISHED_AUTHOR_WON
-                    n.subject = "%s ha arbitrado tu apuesta \"%s\" y ha decidido que has ganado." % (bet.referee.username, bet.title)
+                    n.subject = u"%s ha arbitrado tu apuesta \"%s\" y ha decidido que has ganado." % (bet.referee.username, bet.title)
                 elif winner == None:
                     n.notification_type = Notification.TYPE_BET_ARBITRATING_FINISHED_AUTHOR_LOST
-                    n.subject = "%s ha arbitrado tu apuesta \"%s\" y ha decidido que la apuesta es nula." % (bet.referee.username, bet.title)
+                    n.subject = u"%s ha arbitrado tu apuesta \"%s\" y ha decidido que la apuesta es nula." % (bet.referee.username, bet.title)
                 else:
                     n.notification_type = Notification.TYPE_BET_ARBITRATING_FINISHED_AUTHOR_LOST
-                    n.subject = "%s ha arbitrado tu apuesta \"%s\" y ha decidido que has perdido." % (bet.referee.username, bet.title)
+                    n.subject = u"%s ha arbitrado tu apuesta \"%s\" y ha decidido que has perdido." % (bet.referee.username, bet.title)
             elif recipient == bet.accepted_bid.author:
                 winners = bet.winners()
                 winner = winners[0] if winners else None
                 if winner == recipient:
                     n.notification_type = Notification.TYPE_BET_ARBITRATING_FINISHED_AUTHOR_WON
-                    n.subject = "%s ha arbitrado la apuesta de %s \"%s\" y ha decidido que has ganado." % (bet.referee.username, bet.author.username, bet.title)
+                    n.subject = u"%s ha arbitrado la apuesta de %s \"%s\" y ha decidido que has ganado." % (bet.referee.username, bet.author.username, bet.title)
                 elif winner == None:
                     n.notification_type = Notification.TYPE_BET_ARBITRATING_FINISHED_AUTHOR_LOST
-                    n.subject = "%s ha arbitrado la apuesta de %s \"%s\" y ha decidido que la apuesta es nula." % (bet.referee.username, bet.author.username, bet.title)
+                    n.subject = u"%s ha arbitrado la apuesta de %s \"%s\" y ha decidido que la apuesta es nula." % (bet.referee.username, bet.author.username, bet.title)
                 else:
                     n.notification_type = Notification.TYPE_BET_ARBITRATING_FINISHED_AUTHOR_LOST
-                    n.subject = "%s ha arbitrado la apuesta de %s \"%s\" y ha decidido que has perdido." % (bet.referee.username, bet.author.username, bet.title)
+                    n.subject = u"%s ha arbitrado la apuesta de %s \"%s\" y ha decidido que has perdido." % (bet.referee.username, bet.author.username, bet.title)
         elif bet.is_lottery():
             winners = bet.winners() or []
             if recipient in winners:
                 n.notification_type = Notification.TYPE_BET_ARBITRATING_FINISHED_AUTHOR_WON
-                n.subject = "%s ha arbitrado la porra \"%s\" y ha decidido que has ganado." % (bet.referee.username, bet.title)
+                n.subject = u"%s ha arbitrado la porra \"%s\" y ha decidido que has ganado." % (bet.referee.username, bet.title)
             else:
                 n.notification_type = Notification.TYPE_BET_ARBITRATING_FINISHED_AUTHOR_LOST
-                n.subject = "%s ha arbitrado la porra \"%s\" y ha decidido que has perdido." % (bet.referee.username, bet.title)
+                n.subject = u"%s ha arbitrado la porra \"%s\" y ha decidido que has perdido." % (bet.referee.username, bet.title)
         n.bet = bet
         return n
 
