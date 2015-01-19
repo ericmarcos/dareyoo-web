@@ -385,14 +385,15 @@ angular.module('dareyoo.controllers', []).
 
     $scope.getOpenBets = function(order) {
       $scope.order_by = order || $scope.order_by;
-      $http.get(document.location.origin + "/api/v1/me/open_bets/").success(function(response) {
+      $http.get(document.location.origin + "/api/v1/users/" + $scope.user.id + "/open_bets/").success(function(response) {
         if(response.results) $scope.bets = response.results;
         else $scope.bets = response;
         $scope.loaded = true;
       });
     };
-
-    $scope.getOpenBets();
+    if($scope.user) {
+      $scope.getOpenBets();
+    }
   }])
   .controller('UserCtrl', ['$scope', '$rootScope', '$http', '$stateParams', 'config', function($scope, $rootScope, $http, $stateParams, config) {
     $scope.profile_user_follows_me = false;
