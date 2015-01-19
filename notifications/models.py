@@ -44,10 +44,11 @@ class NotificationFactory:
         n.recipient = bid.bet.author
         n.notification_type = Notification.TYPE_BID_POSTED
         if bid.bet.is_auction():
-            n.subject = u"%s ha añadido una oferta: \"%s\"" % (bid.author.username, bid.title)
+            n.subject = u"%s ha añadido una oferta a tu subasta: \"%s\"" % (bid.author.username, bid.title)
         elif bid.bet.is_lottery():
-            n.subject = u"%s ha añadido un resultado: \"%s\"" % (bid.author.username, bid.title)
+            n.subject = u"%s ha añadido un resultado a tu porra: \"%s\"" % (bid.author.username, bid.title)
         n.bet = bid.bet
+        n.bid = bid
         n.user = bid.author
         return n
 
@@ -89,31 +90,32 @@ class NotificationFactory:
             n.recipient = bet.accepted_bid.author
             if bet.claim == Bet.CLAIM_WON:
                 n.notification_type = Notification.TYPE_BET_RESOLVING_FINISHED_AUTHOR_WON
-                n.subject = "%s ha declarado que ha ganado su apuesta \"%s\". Tienes 24h para reclamar." % (bet.author.username, bet.title)
+                n.subject = u"Que lástima... has perdido la apuesta \"%s\"." % bet.title
             elif bet.claim == Bet.CLAIM_LOST:
                 n.notification_type = Notification.TYPE_BET_RESOLVING_FINISHED_AUTHOR_LOST
-                n.subject = "%s ha declarado que ha perdido su apuesta \"%s\". Tienes 24h para reclamar." % (bet.author.username, bet.title)
+                n.subject = "¡Felicidades! Eres el ganador de la apuesta \"%s\"." % bet.title
             elif bet.claim == Bet.CLAIM_NULL:
                 n.notification_type = Notification.TYPE_BET_RESOLVING_FINISHED_NULL
-                n.subject = "%s ha declarado que nadie ha ganado su apuesta \"%s\". Tienes 24h para reclamar." % (bet.author.username, bet.title)
+                n.subject = u"Que lástima... has perdido la apuesta \"%s\"." % bet.title
             #if bet.claim_message:
             #    n.subject = bet.claim_message
         elif bet.is_lottery():
             n.recipient = recipient
             if bet.claim == Bet.CLAIM_NULL:
                 n.notification_type = Notification.TYPE_BET_RESOLVING_FINISHED_NULL
-                n.subject = "%s ha declarado que nadie ha ganado su porra \"%s\". Tienes 24h para reclamar." % (bet.author.username, bet.title)
+                n.subject = u"Que lástima... has perdido la porra \"%s\"." % bet.title
             elif recipient in bet.claim_lottery_winner.participants.all():
                 n.notification_type = Notification.TYPE_BET_RESOLVING_FINISHED_AUTHOR_LOST
-                n.subject = "%s ha declarado que has ganado la porra \"%s\"." % (bet.author.username, bet.title)
+                n.subject = "¡Felicidades! Eres el ganador de la porra \"%s\"." % bet.title
             else:
                 n.notification_type = Notification.TYPE_BET_RESOLVING_FINISHED_AUTHOR_WON
-                n.subject = "%s ha declarado que has perdido la porra \"%s\". Tienes 24h para reclamar." % (bet.author.username, bet.title)
+                n.subject = u"Que lástima... has perdido la porra \"%s\"." % bet.title
         n.bet = bet
         return n
 
     @staticmethod
     def bet_complaining_finished(bet, recipient=None):
+        '''
         n = Notification()
         n.notification_type = Notification.TYPE_BET_COMPLAINING_FINISHED
         n.recipient = recipient
@@ -123,6 +125,8 @@ class NotificationFactory:
             n.subject = "La apuesta de %s \"%s\" ha finalizado sin reclamaciones." % (bet.author.username, bet.title)
         n.bet = bet
         return n
+        '''
+        pass
 
     @staticmethod
     def bet_complaining_finished_conflict(bet, recipient=None):
@@ -149,32 +153,39 @@ class NotificationFactory:
         Assuming there's a referee
         '''
         n = Notification()
-        n.notification_type = Notification.TYPE_BET_COMPLAINING_FINISHED_CONFLICT
         n.recipient = recipient
         if bet.is_simple() or bet.is_auction():
             if recipient == bet.author:
                 winners = bet.winners()
                 winner = winners[0] if winners else None
                 if winner == recipient:
+                    n.notification_type = Notification.TYPE_BET_ARBITRATING_FINISHED_AUTHOR_WON
                     n.subject = "%s ha arbitrado tu apuesta \"%s\" y ha decidido que has ganado." % (bet.referee.username, bet.title)
                 elif winner == None:
+                    n.notification_type = Notification.TYPE_BET_ARBITRATING_FINISHED_AUTHOR_LOST
                     n.subject = "%s ha arbitrado tu apuesta \"%s\" y ha decidido que la apuesta es nula." % (bet.referee.username, bet.title)
                 else:
+                    n.notification_type = Notification.TYPE_BET_ARBITRATING_FINISHED_AUTHOR_LOST
                     n.subject = "%s ha arbitrado tu apuesta \"%s\" y ha decidido que has perdido." % (bet.referee.username, bet.title)
             elif recipient == bet.accepted_bid.author:
                 winners = bet.winners()
                 winner = winners[0] if winners else None
                 if winner == recipient:
+                    n.notification_type = Notification.TYPE_BET_ARBITRATING_FINISHED_AUTHOR_WON
                     n.subject = "%s ha arbitrado la apuesta de %s \"%s\" y ha decidido que has ganado." % (bet.referee.username, bet.author.username, bet.title)
                 elif winner == None:
+                    n.notification_type = Notification.TYPE_BET_ARBITRATING_FINISHED_AUTHOR_LOST
                     n.subject = "%s ha arbitrado la apuesta de %s \"%s\" y ha decidido que la apuesta es nula." % (bet.referee.username, bet.author.username, bet.title)
                 else:
+                    n.notification_type = Notification.TYPE_BET_ARBITRATING_FINISHED_AUTHOR_LOST
                     n.subject = "%s ha arbitrado la apuesta de %s \"%s\" y ha decidido que has perdido." % (bet.referee.username, bet.author.username, bet.title)
         elif bet.is_lottery():
             winners = bet.winners() or []
             if recipient in winners:
+                n.notification_type = Notification.TYPE_BET_ARBITRATING_FINISHED_AUTHOR_WON
                 n.subject = "%s ha arbitrado la porra \"%s\" y ha decidido que has ganado." % (bet.referee.username, bet.title)
             else:
+                n.notification_type = Notification.TYPE_BET_ARBITRATING_FINISHED_AUTHOR_LOST
                 n.subject = "%s ha arbitrado la porra \"%s\" y ha decidido que has perdido." % (bet.referee.username, bet.title)
         n.bet = bet
         return n
@@ -198,6 +209,25 @@ class Notification(models.Model):
     TYPE_BET_ARBITRATING_FINISHED_AUTHOR_WON    = 13
     TYPE_BET_ARBITRATING_FINISHED_AUTHOR_LOST   = 14
     TYPE_BET_ARBITRATING_FINISHED_NULL          = 15
+
+    TEMPLATE_NAMES = {
+        1: "Nuevo seguidor",
+        2: "Invite Email (white)",
+        3: "Basica aceptada",
+        4: {"auction": "Nueva oferta", "lottery":"Nuevo resultado"},
+        44: {"auction": "Oferta eliminada", "lottery":"Resultado eliminado"},
+        5: "Oferta aceptada",
+        6: "X",
+        7: {"simple":"Resolver (basica)", "auction": "Resolver (subasta)", "lottery":"Resolver (porra)"},
+        8: {"simple":"Basica perdida", "auction": "Subasta perdida", "lottery":"Porra perdida"},
+        9: {"simple":"Apuesta ganada (basica)", "auction": "Apuesta ganada (subasta)", "lottery":"Apuesta ganada (porra)"},
+        10: {"simple":"Basica perdida", "auction": "Subasta perdida", "lottery":"Porra perdida"},
+        11: "X",
+        12: {"simple":"Apuesta reclamada (basica)", "auction": "Apuesta reclamada (subasta)", "lottery":"Apuesta reclamada (porra)"}, #add (author) to lottery
+        13: {"simple":"Apuesta arbitrada (basica)", "auction": "Apuesta arbitrada (subasta)", "lottery":"Apuesta arbitrada (porra)"},
+        14: {"simple":"Apuesta arbitrada (basica)", "auction": "Apuesta arbitrada (subasta)", "lottery":"Apuesta arbitrada (porra)"},
+        15: "X",
+    }
 
     NOTIFICATION_TYPE_CHOICES = (
         (TYPE_NEW_FOLLOWER, "New follower"),
@@ -226,6 +256,7 @@ class Notification(models.Model):
     is_new = models.BooleanField(blank=True, default=True)
     readed = models.BooleanField(blank=True, default=False)
 
+    '''
     def send_notification_email(self):
         if self.recipient.email and self.recipient.email_notifications:
             if self.bet:
@@ -251,6 +282,131 @@ class Notification(models.Model):
             }
             
             send_task('send_email', kwargs=kwargs)
+    '''
+    def send_notification_email(self):
+        if self.recipient.email and self.recipient.email_notifications:
+            kwargs = {
+                'to_addr': self.recipient.email,
+                'subject_template': "email/notification/subject.txt",
+                'template_data': {
+                    'subject': self.subject
+                }
+            }
+
+            t = int(self.notification_type)
+            
+            if t == Notification.TYPE_NEW_FOLLOWER:
+                kwargs['template_name'] = Notification.TEMPLATE_NAMES[t]
+                kwargs['template_data']['FNAME'] = self.recipient.username
+                kwargs['template_data']['FOLLOWER_URL'] = self.get_user_url()
+                kwargs['template_data']['FOLLOWER_PIC'] = self.user.get_profile_pic_url()
+                kwargs['template_data']['FOLLOWER'] = self.user.username
+                kwargs['template_data']['FOLLOWER_DESC'] = self.user.description or ""
+            
+            if t == Notification.TYPE_BET_RECEIVED:
+                kwargs['template_name'] = Notification.TEMPLATE_NAMES[t]
+                kwargs['template_data']['FNAME'] = self.bet.author.username
+                kwargs['template_data']['AUTHOR_URL'] = self.get_user_url(self.bet.author)
+                kwargs['template_data']['AUTHOR_PIC'] = self.bet.author.get_profile_pic_url()
+                kwargs['template_data']['BETTITLE'] = self.bet.title
+                kwargs['template_data']['BET_URL'] = self.get_bet_url()
+            
+            if t == Notification.TYPE_BET_ACCEPTED:
+                kwargs['template_name'] = Notification.TEMPLATE_NAMES[t]
+                kwargs['template_data']['FNAME'] = self.user.username
+                kwargs['template_data']['BETTITLE'] = self.bet.title
+                kwargs['template_data']['BET_URL'] = self.get_bet_url()
+            
+            if t == Notification.TYPE_BID_POSTED:
+                kwargs['template_name'] = Notification.TEMPLATE_NAMES[t][self.bet.get_type_name()]
+                kwargs['template_data']['BETTITLE'] = self.bet.title
+                kwargs['template_data']['BIDAUTHOR'] = self.bid.author.username
+                kwargs['template_data']['RESULT'] = self.bid.title
+                kwargs['template_data']['AMOUNT'] = self.bid.amount
+                kwargs['template_data']['YOOS'] = self.bet.amount + self.bid.amount
+                kwargs['template_data']['BET_URL'] = self.get_bet_url()
+            
+            if t == Notification.TYPE_BID_DELETED:
+                kwargs['template_name'] = Notification.TEMPLATE_NAMES[t][self.bet.get_type_name()]
+                kwargs['template_data']['FNAME'] = self.bet.author.username
+                kwargs['template_data']['BETTITLE'] = self.bet.title
+                kwargs['template_data']['BET_URL'] = self.get_bet_url()
+            
+            if t == Notification.TYPE_BID_ACCEPTED:
+                kwargs['template_name'] = Notification.TEMPLATE_NAMES[t]
+                kwargs['template_data']['FNAME'] = self.bet.author.username
+                kwargs['template_data']['BETTITLE'] = self.bet.title
+                kwargs['template_data']['BET_URL'] = self.get_bet_url()
+            
+            if t == Notification.TYPE_BET_EVENT_FINISHED:
+                kwargs['template_name'] = Notification.TEMPLATE_NAMES[t][self.bet.get_type_name()]
+                kwargs['template_data']['FNAME'] = self.recipient.username
+                kwargs['template_data']['BETTITLE'] = self.bet.title
+                kwargs['template_data']['BET_URL'] = self.get_bet_url()
+            
+            if t == Notification.TYPE_BET_RESOLVING_FINISHED_AUTHOR_WON:
+                kwargs['template_name'] = Notification.TEMPLATE_NAMES[t][self.bet.get_type_name()]
+                kwargs['template_data']['BETTITLE'] = self.bet.title
+                if self.recipient == self.bet.author and not self.bet.is_lottery():
+                    kwargs['template_data']['BIDAUTHOR'] = self.bet.accepted_bid.author.username
+                    kwargs['template_data']['BID'] = self.bet.accepted_bid.title
+                #kwargs['template_data']['POINTS'] = self.bet.points.filter(user=self.recipient).first().points
+                kwargs['template_data']['BET_URL'] = self.get_bet_url()
+            
+            if t == Notification.TYPE_BET_RESOLVING_FINISHED_AUTHOR_LOST:
+                kwargs['template_name'] = Notification.TEMPLATE_NAMES[t][self.bet.get_type_name()]
+                if not self.bet.is_lottery():
+                    kwargs['template_data']['BIDAUTHOR'] = self.bet.accepted_bid.author.username
+                    kwargs['template_data']['BID'] = self.bet.accepted_bid.title
+                    if self.recipient == self.bet.author:
+                        kwargs['template_name'] += " (autor)"
+                kwargs['template_data']['AUTHORNAME'] = self.bet.author.username
+                kwargs['template_data']['BETTITLE'] = self.bet.title
+                #kwargs['template_data']['POINTS'] = self.bet.points.filter(user=self.recipient).first().points
+                kwargs['template_data']['BET_URL'] = self.get_bet_url()
+            
+            if t == Notification.TYPE_BET_RESOLVING_FINISHED_NULL:
+                kwargs['template_name'] = Notification.TEMPLATE_NAMES[t][self.bet.get_type_name()]
+                kwargs['template_data']['BETTITLE'] = self.bet.title
+                #kwargs['template_data']['POINTS'] = self.bet.points.filter(user=self.recipient).first().points
+                kwargs['template_data']['BET_URL'] = self.get_bet_url()
+            
+            if t == Notification.TYPE_BET_COMPLAINING_FINISHED_CONFLICT:
+                kwargs['template_name'] = Notification.TEMPLATE_NAMES[t][self.bet.get_type_name()]
+                if self.bet.is_lottery():
+                    kwargs['template_data']['BETAUTHOR'] = self.bet.author.username
+                    kwargs['template_data']['FNAME'] = self.bet.bids.filter(claim_author__isnull=False).first().claim_author.username
+                    if self.recipient == self.bet.author:
+                        kwargs['template_name'] += " (autor)"
+                else:
+                    kwargs['template_data']['FNAME'] = self.bet.accepted_bid.author.username
+                kwargs['template_data']['BETTITLE'] = self.bet.title
+                kwargs['template_data']['BET_URL'] = self.get_bet_url()
+            
+            if t == Notification.TYPE_BET_ARBITRATING_FINISHED_AUTHOR_WON or t == Notification.TYPE_BET_ARBITRATING_FINISHED_AUTHOR_LOST:
+                kwargs['template_name'] = Notification.TEMPLATE_NAMES[t][self.bet.get_type_name()]
+                if self.bet.is_lottery():
+                    kwargs['template_data']['RESULT'] = self.bet.referee_lottery_winner.title
+                else:
+                    w = self.bet.winners()
+                    kwargs['template_data']['WINNER'] = w[0].username if w else "Nadie, la apuesta es nula."
+                kwargs['template_data']['REFEREE'] = self.bet.referee.username
+                kwargs['template_data']['BETTITLE'] = self.bet.title
+                kwargs['template_data']['BET_URL'] = self.get_bet_url()
+
+            send_task('send_template_email', kwargs=kwargs)
+
+    def get_user_url(self, user=None):
+        if user:
+            return 'http://www.dareyoo.com/app/profile/%s/bets' % user.id
+        if self.user:
+            return 'http://www.dareyoo.com/app/profile/%s/bets' % self.user.id
+        return 'http://www.dareyoo.com'
+
+    def get_bet_url(self):
+        if self.bet:
+            return 'http://www.dareyoo.com/app/main/bet/%s' % self.bet.id
+        return 'http://www.dareyoo.com'
 
     def __unicode__(self):
         return "%s - %s [%s]" % (self.date, self.recipient, self.subject)

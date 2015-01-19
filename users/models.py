@@ -300,14 +300,13 @@ class DareyooUser(AbstractEmailUser):
                 'from_addr': settings.DEFAULT_FROM_EMAIL,
                 'to_addr': self.email,
                 'subject_template': "email/signup/subject.txt",
-                'text_body_template': "email/signup/body.txt",
-                'html_body_template': "email/signup/body.html",
+                'template_name': "Welcome",
                 'template_data': {
-                    'username': self.username,
+                    'FNAME': self.username,
                 }
             }
             
-            send_task('send_email', kwargs=kwargs)
+            send_task('send_template_email', kwargs=kwargs)
             send_task('register_email_mailchimp', kwargs={'user_id':self.id})
 
     def __unicode__(self):
