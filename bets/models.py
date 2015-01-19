@@ -582,7 +582,7 @@ class Bet(models.Model):
 
     def resolve(self, claim=None, claim_lottery_winner=None, claim_message=""):
         if self.is_event():
-            self.next_state()
+            self.bet_state = 'resolving'
         if self.is_resolving():
             if self.is_simple() or self.is_auction():
                 if claim in dict(Bet.BET_CLAIM_CHOICES).keys():
