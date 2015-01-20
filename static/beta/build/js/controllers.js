@@ -837,8 +837,9 @@ angular.module('dareyoo.controllers', []).
       return $scope.isComplaining() && $scope.isRival();
     };
     $scope.canComplainResult = function(bid) {
-      if($scope.bet && $scope.user)
-        return !$scope.isAuthor() && $scope.isComplaining() && $scope.isLottery() && $scope.bid.participants.indexOf($scope.user.id) != -1 && $scope.bet.claim_lottery_winner.id != bid.id;
+      if($scope.bet && $scope.user) {
+        return !$scope.isAuthor() && $scope.isComplaining() && $scope.isLottery() && bid.participants.indexOf($scope.user.id) != -1 && (!$scope.bet.claim_lottery_winner || $scope.bet.claim_lottery_winner.id != bid.id);
+      }
       return false;
     };
     $scope.canComplainNone = function() {

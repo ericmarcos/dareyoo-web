@@ -181,18 +181,19 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', '$
         return 'Dareyoo (beta)';
     }
 
-    $rootScope.getMe = function() {
-      $http.get(document.location.origin +"/api/v1/me/").success(function(response) {
-          $rootScope.user = response;
-      });
-      $timeout($rootScope.getMe, 5000);
-    };
     $rootScope.getMyFollowers = function() {
-      $http.get(document.location.origin +"/api/v1/me/followers").success(function(response) {
+      $http.get(document.location.origin +"/api/v1/users/" + $rootScope.user.id + "/followers").success(function(response) {
         if(response && response.length > 0) {
           $rootScope.followers = response;
         }
       });
+    };
+    $rootScope.getMe = function() {
+      $http.get(document.location.origin +"/api/v1/me/").success(function(response) {
+          $rootScope.user = response;
+          $rootScope.getMyFollowers();
+      });
+      $timeout($rootScope.getMe, 5000);
     };
     $rootScope.getAllUsernames = function() {
       $http.get(document.location.origin +"/api/v1/users?only_usernames=true").success(function(response) {
@@ -243,7 +244,6 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', '$
     };
 
     $rootScope.getMe();
-    $rootScope.getMyFollowers();
     $rootScope.getNotifications();
     $rootScope.getAllUsernames();
     $rootScope.getTournaments();
