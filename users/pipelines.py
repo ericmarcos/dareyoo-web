@@ -107,15 +107,21 @@ def save_registered(strategy, backend, user, response, details,
 def save_campaign(strategy, backend, user, response, details,
                     is_new=False, *args, **kwargs):
     if not user.reference_campaign:
-        utm_source = kwargs['request'].session.get('utm_source')
-        utm_medium = kwargs['request'].session.get('utm_medium')
-        utm_campaign = kwargs['request'].session.get('utm_campaign')
-        user.reference_campaign = "%s_%s_%s" % (utm_source, utm_medium, utm_campaign)
-        user.save()
+        try:
+            utm_source = kwargs['request'].session.get('utm_source')
+            utm_medium = kwargs['request'].session.get('utm_medium')
+            utm_campaign = kwargs['request'].session.get('utm_campaign')
+            user.reference_campaign = "%s_%s_%s" % (utm_source, utm_medium, utm_campaign)
+            user.save()
+        except:
+            pass
 
 def promo_code(strategy, backend, user, response, details,
                     is_new=False, *args, **kwargs):
-    code = kwargs['request'].POST.get('promo_code') or kwargs['request'].session.get('promo_code')
+    try:
+        code = kwargs['request'].POST.get('promo_code') or kwargs['request'].session.get('promo_code')
+    except:
+        pass
     if code:
         try:
             pc = PromoCode.objects.get(code=code)
