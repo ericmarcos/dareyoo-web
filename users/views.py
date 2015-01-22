@@ -219,7 +219,7 @@ def register(request, format=None):
             user.set_password(password)
             user.save()
         #Social pipeline
-    pipeline_params = {'strategy': None, 'user': user, 'response':None,
+    pipeline_params = {'strategy': None, 'backend':None, 'user': user, 'response':None,
                     'details': None, 'is_new': True, 'request': request}
     save_profile_picture(**pipeline_params)
     save_username(**pipeline_params)

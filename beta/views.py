@@ -65,7 +65,7 @@ def register_view(request):
                 #redirect to register page
                 return render_to_response('beta-register.html', context_instance=RequestContext(request, context))
             #Social pipeline
-            pipeline_params = {'strategy': None, 'user': user, 'response':None,
+            pipeline_params = {'strategy': None, 'backend':None, 'user': user, 'response':None,
                             'details': None, 'is_new': True, 'request': request}
             save_profile_picture(**pipeline_params)
             save_username(**pipeline_params)

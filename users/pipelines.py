@@ -16,11 +16,11 @@ from django.conf import settings
 from .models import DareyooUser, PromoCode, UserRefill
 
 #http://stackoverflow.com/questions/19890824/save-facebook-profile-picture-in-model-using-python-social-auth
-def save_profile_picture(strategy, user, response, details,
+def save_profile_picture(strategy, backend, user, response, details,
                          is_new=False,*args,**kwargs):
 
     if is_new:
-        if strategy and strategy.backend and strategy.backend.name == 'facebook':
+        if backend and backend.name == 'facebook':
             url = 'http://graph.facebook.com/{0}/picture'.format(response['id'])
             params={'type': 'normal', 'height': 200, 'width': 200}
         else:
@@ -38,14 +38,15 @@ def save_profile_picture(strategy, user, response, details,
         except Exception:
             pass
 
-def save_username(strategy, user, response, details,
+def save_username(strategy, backend, user, response, details,
                     is_new=False, *args, **kwargs):
     if is_new:
         username = ""
-        if strategy and strategy.backend and strategy.backend.name == 'facebook':
+        if backend and backend.name == 'facebook':
             try:
                 username = response['username']
                 unique_slugify(user, response['username'], 'username')
+                user.username = user.username[:30]
                 user.save()
             except Exception:
                 pass
@@ -69,11 +70,12 @@ def save_username(strategy, user, response, details,
                 except:
                     pass
 
-def save_reference_user(strategy, user, response, details,
+def save_reference_user(strategy, backend, user, response, details,
                     is_new=False, *args, **kwargs):
     if not user.reference_user:
-        reference_user_id = int(kwargs['request'].session.get('from', '0')) or None
         try:
+            #TODO: it throws MergeDict has no attribute session error...
+            reference_user_id = int(kwargs['request'].session.get('from', '0')) or None
             ref_user = DareyooUser.objects.get(id=reference_user_id)
             user.reference_user = ref_user
             user.save()
@@ -95,14 +97,14 @@ def save_reference_user(strategy, user, response, details,
         ur.refill_type = 'invite'
         ur.save()
 
-def save_registered(strategy, user, response, details,
+def save_registered(strategy, backend, user, response, details,
                     is_new=False, *args, **kwargs):
     if not user.registered:
         user.registered = True
         user.save()
     user.send_welcome_email()
 
-def save_campaign(strategy, user, response, details,
+def save_campaign(strategy, backend, user, response, details,
                     is_new=False, *args, **kwargs):
     if not user.reference_campaign:
         utm_source = kwargs['request'].session.get('utm_source')
@@ -111,7 +113,7 @@ def save_campaign(strategy, user, response, details,
         user.reference_campaign = "%s_%s_%s" % (utm_source, utm_medium, utm_campaign)
         user.save()
 
-def promo_code(strategy, user, response, details,
+def promo_code(strategy, backend, user, response, details,
                     is_new=False, *args, **kwargs):
     code = kwargs['request'].POST.get('promo_code') or kwargs['request'].session.get('promo_code')
     if code:
