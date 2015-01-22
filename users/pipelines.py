@@ -74,8 +74,7 @@ def save_reference_user(strategy, backend, user, response, details,
                     is_new=False, *args, **kwargs):
     if not user.reference_user:
         try:
-            #TODO: it throws MergeDict has no attribute session error...
-            reference_user_id = int(kwargs['request'].session.get('from', '0')) or None
+            reference_user_id = int(strategy.request.session.get('from', '0')) or None
             ref_user = DareyooUser.objects.get(id=reference_user_id)
             user.reference_user = ref_user
             user.save()
@@ -108,9 +107,9 @@ def save_campaign(strategy, backend, user, response, details,
                     is_new=False, *args, **kwargs):
     if not user.reference_campaign:
         try:
-            utm_source = kwargs['request'].session.get('utm_source')
-            utm_medium = kwargs['request'].session.get('utm_medium')
-            utm_campaign = kwargs['request'].session.get('utm_campaign')
+            utm_source = strategy.request.session.get('utm_source')
+            utm_medium = strategy.request.session.get('utm_medium')
+            utm_campaign = strategy.request.session.get('utm_campaign')
             user.reference_campaign = "%s_%s_%s" % (utm_source, utm_medium, utm_campaign)
             user.save()
         except:
@@ -119,7 +118,7 @@ def save_campaign(strategy, backend, user, response, details,
 def promo_code(strategy, backend, user, response, details,
                     is_new=False, *args, **kwargs):
     try:
-        code = kwargs['request'].POST.get('promo_code') or kwargs['request'].session.get('promo_code')
+        code = strategy.request.POST.get('promo_code') or strategy.request.session.get('promo_code')
     except:
         pass
     if code:
