@@ -269,7 +269,7 @@ class DareyooUser(AbstractEmailUser):
 
     def get_profile_pic_url(self):
         if self.profile_pic:
-            return self.profile_pic._get_url()
+            return self.profile_pic._get_url().split('?')[0]
         else:
             return settings.STATIC_URL + "beta/build/img/default_profile_pics/profile_%s.png" % ((self.id or 1 )% 10)
 
