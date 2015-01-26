@@ -124,5 +124,5 @@ class TournamentSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Tournament
-        fields = ('url', 'id', 'author', 'public', 'tag', 'start', 'end',
+        fields = ('url', 'id', 'author', 'public', 'tag', 'start', 'end', 'weekly',
              'pic', 'title', 'description', 'upload_pic_url', 'only_author', 'prizes')

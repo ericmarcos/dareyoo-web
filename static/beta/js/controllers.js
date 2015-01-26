@@ -251,8 +251,8 @@ angular.module('dareyoo.controllers', []).
         if(response.results) $scope.tournament = response.results;
         else $scope.tournament = response;
         $scope.loaded = true;
-        var now = new Date(Date.now());
-        for (var d = new Date($scope.tournament.start); d <= now; d.setDate(d.getDate() + 7)) {
+        var max = new Date(Math.min(Date.now(), $scope.tournament.end));
+        for (var d = new Date($scope.tournament.start); d <= max; d.setDate(d.getDate() + 7)) {
             $scope.weeks.push(new Date(d));
         }
       });

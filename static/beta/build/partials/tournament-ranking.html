@@ -1,8 +1,10 @@
 <div class="text-center">
-    <div class="ranking-weeks">
+    <div class="ranking-weeks" ng-if="tournament.weekly">
         <span ng-repeat="w in weeks" class="label label-as-badge pointer" ng-class="{'label-primary': week==weeks.length - $index - 1, 'label-default': week != weeks.length - $index - 1}" ng-click="getLeaderboard(tournament.id, weeks.length - $index - 1)">SEMANA DEL [[w | date:'dd/MM']]</span>
         <span class="label label-default label-as-badge pointer" ng-click="getLeaderboard(tournament.id)" ng-class="{'label-primary': !week, 'label-default': week}">GLOBAL</span>
-        
+    </div>
+    <div class="ranking-weeks" ng-if="!tournament.weekly">
+        <span class="label label-primary label-as-badge pointer" ng-click="getLeaderboard(tournament.id)">GLOBAL</span>
     </div>
 </div>
 <div ng-hide="loaded" class="container-fluid text-center" style="padding:10px;"><dy-loader></dy-loader></div>

@@ -66,9 +66,9 @@ class TournamentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.R
     def get_queryset(self):
         if self.request.user.is_authenticated():
             user = self.request.user
-            return Tournament.objects.is_allowed(user).active().distinct()
+            return Tournament.objects.is_allowed(user).visible().distinct()
         else:
-            return Tournament.objects.all().public().active().distinct()
+            return Tournament.objects.all().public().visible().distinct()
 
     @action(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
     def pic_upload(self, request, *args, **kwargs):
