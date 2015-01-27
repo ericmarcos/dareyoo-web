@@ -339,8 +339,8 @@ class Bet(models.Model):
             raise BetException("The amount must be at least 1")
         if int(self.amount) != self.amount:
             raise BetException("The amount must be an integer value")
-        if self.odds <= 1 and self.is_simple():
-            raise BetException("The odds must be greater than 1")
+        if (self.is_simple() or self.is_auction()) and not (1.2 < self.odds < 51):
+            raise BetException("Invalid bet ratio")
 
     def is_simple(self):
         return self.bet_type == Bet.TYPE_SIMPLE
@@ -574,6 +574,7 @@ class Bet(models.Model):
             self.accepted_bid_id = bid_id
             if self.is_auction():
                 self.odds = float(self.amount + self.accepted_bid.amount) / self.amount
+            self.check_valid()
             self.accepted_bid.author.lock_funds(self.accepted_bid.amount)
             self.accepted_bid.author.save()
             self.event()
