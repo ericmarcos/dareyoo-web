@@ -175,7 +175,7 @@ class DareyooUserManager(UserManager):
 class DareyooUser(AbstractEmailUser):
     objects = DareyooUserManager()
 
-    username = models.CharField(_('username'), max_length=30, blank=True, null=True,
+    username = models.CharField(_('username'), max_length=255, blank=True, null=True,
         help_text=_('30 characters or fewer. Letters, numbers and '
                     '@/./+/-/_ characters'),
         validators=[
