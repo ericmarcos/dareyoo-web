@@ -14,6 +14,7 @@ from django_fsm.db.fields import FSMField, transition
 from rest_framework.exceptions import APIException
 from celery.execute import send_task
 from users.models import *
+from users.signals import user_activated
 
 
 class BetException(APIException):
@@ -510,6 +511,7 @@ class Bet(models.Model):
                 author.lock_funds(self.amount)
                 author.save()
             self.author = author
+            user_activated.send(sender=self.__class__, user=author, level=3)
         else:
             raise BetException("Author can't be None")
 
@@ -538,6 +540,7 @@ class Bet(models.Model):
                 bid.amount = self.amount
             bid.check_valid()
             bid.save()
+            user_activated.send(sender=self.__class__, user=user, level=2)
             if self.is_simple():
                 self.accept_bid(bid.id)
         else:
@@ -552,6 +555,7 @@ class Bet(models.Model):
                         p.unlock_funds(bid.amount)
                         p.save()
                 bid.delete()
+                user_activated.send(sender=self.__class__, user=self.author, level=2)
         else:
             raise BetException("Can't remove a bid from this bet because it's not on bidding sate (current state:%s)" % self.bet_state)
 
@@ -560,6 +564,7 @@ class Bet(models.Model):
             if self.is_simple():
                 bid = Bid()
                 self.add_bid(bid, user)
+                user_activated.send(sender=self.__class__, user=user, level=2)
             else:
                 raise BetException("Can't accept this bet because it's not of 'basic' type.")
         else:
@@ -578,6 +583,7 @@ class Bet(models.Model):
             self.accepted_bid.author.lock_funds(self.accepted_bid.amount)
             self.accepted_bid.author.save()
             self.event()
+            user_activated.send(sender=self.__class__, user=self.author, level=2)
         else:
             raise BetException("Can't accept a bid from this bet because it's not on bidding sate (current state:%s)" % self.bet_state)
 
@@ -601,6 +607,7 @@ class Bet(models.Model):
                 else:
                     raise BetException("Invalid claim")
             self.resolved_at = timezone.now()
+            user_activated.send(sender=self.__class__, user=self.author, level=2)
         else:
             raise BetException("Can't claim on a bet that is not in resolving state (current state: %s)" % self.bet_state)
 
@@ -623,6 +630,7 @@ class Bet(models.Model):
                 else:
                     raise BetException("Invalid claim")
             self.arbitrated_at = timezone.now()
+            user_activated.send(sender=self.__class__, user=user, level=2)
         else:
             raise BetException("Can't arbitrate on a bet that is not in arbitrating state (current state: %s)" % self.bet_state)
 
@@ -836,6 +844,7 @@ class Bid(models.Model):
             p.lock_funds(self.amount)
             p.save()
         self.participants.add(p)
+        user_activated.send(sender=self.__class__, user=p, level=2)
 
     def complain(self, user, claim=None, claim_message=""):
         if not self.bet.is_participant(user):
@@ -850,6 +859,7 @@ class Bid(models.Model):
                 self.bet.referee_escrow = self.bet.referee_fees()
                 self.bet.complained_at = timezone.now()
                 self.bet.save()
+                user_activated.send(sender=self.__class__, user=user, level=2)
             else:
                 raise BetException("Invalid claim")
         else:

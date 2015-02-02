@@ -24,7 +24,7 @@ from celery.execute import send_task
 from custom_user.models import AbstractEmailUser
 from avatar.util import get_primary_avatar, force_bytes
 from rest_framework.exceptions import APIException
-from .signals import new_follower
+from .signals import new_follower, user_activated
 
 class DareyooUserException(APIException):
     status_code = 400
@@ -206,6 +206,7 @@ class DareyooUser(AbstractEmailUser):
             with transaction.atomic():
                 self.following.add(user)
                 new_follower.send(sender=self.__class__, user=user, follower=self)
+            user_activated.send(sender=self.__class__, user=self, level=2)
         except IntegrityError as ie:
             raise DareyooUserException("User %s is already following user %s." % (self.username, user.username))
 
