@@ -16,7 +16,7 @@ class UserActivation(models.Model):
     level = models.IntegerField(blank=True, null=True, default=1)
 
 def new_user_activation(sender, user, **kwargs):
-    now = timezone.now()
+    now = kwargs.get('timestamp', timezone.now())
     level = kwargs.get('level', 1)
     last_activation = user.activations.filter(level=level).order_by("-timestamp").first()
     if not last_activation or last_activation.timestamp < now - timedelta(hours=1):
