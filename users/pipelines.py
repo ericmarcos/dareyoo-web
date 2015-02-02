@@ -44,7 +44,7 @@ def save_username(strategy, backend, user, response, details,
         username = ""
         if backend and backend.name == 'facebook':
             try:
-                username = response['username'][:30]
+                username = response['name'][:30]
                 unique_slugify(user, username, 'username')
                 user.save()
             except Exception:
