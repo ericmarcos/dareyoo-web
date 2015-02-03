@@ -5,6 +5,7 @@ from users.views import *
 from bets.views import *
 from notifications.views import *
 from gamification.views import *
+from metrics.views import *
 from rest_framework import routers
 
 router = routers.DefaultRouter()
@@ -28,6 +29,7 @@ extra_api_urls = patterns('',
     url(r'^search-dareyoo-suggested/$', SearchDareyooSuggestedList.as_view(), name='search-dareyoo-suggested'),
     url(r'^register/$', register, name='register'),
     url(r'^register-by-access-token/(?P<backend>[^/]+)/$', register_by_access_token, name='register_by_access_token'),
+    url(r'^widget_activation/(?P<widget>[^/]+)/(?P<level>\w+)/$', widget_activation, name='widget_activation'),
 )
 
 from django.contrib import admin

@@ -44,3 +44,15 @@ def weekly_cohort(joined_week, activation_level=1, campaign=None):
         actives = week_actives(cohort, i, activation_level)
         weeks.append(actives.count())
     return weeks
+
+
+class WidgetActivation(models.Model):
+    LEVEL_IMPRESSION = 1
+    LEVEL_INTERACTION = 2
+    LEVEL_REGISTER = 3
+    LEVEL_LOGIN = 4
+    LEVEL_SHARE = 5
+
+    widget = models.CharField(max_length=255, blank=True, null=True) 
+    timestamp = models.DateTimeField(auto_now_add=True, blank=True, null=True, editable=False)
+    level = models.IntegerField(blank=True, null=True, default=1)
