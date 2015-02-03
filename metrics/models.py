@@ -27,11 +27,12 @@ user_activated.connect(new_user_activation)
 
 from users.models import DareyooUser
 
-def week_actives(cohort, week):
+def week_actives(cohort, week, activation_level=1):
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     monday = today + timedelta(days=-today.weekday(), weeks=-week)
     sunday = monday + timedelta(weeks=1) # this is actually next monday
-    actives = cohort.filter(activations__timestamp__range=(monday, sunday)).distinct()
+    subq = UserActivation.objects.filter(timestamp__range=(monday, sunday), level__gte=activation_level)
+    actives = cohort.filter(activations__in=subq).distinct()
     return actives
 
 def weekly_cohort(joined_week, activation_level=1, campaign=None):
@@ -39,7 +40,7 @@ def weekly_cohort(joined_week, activation_level=1, campaign=None):
     if campaign:
         cohort = cohort.campaign(campaign)
     weeks = [cohort.count()]
-    for i in reversed(xrange(joined_week+1)):
-        actives = week_actives(cohort, i)
+    for i in reversed(xrange(joined_week)):
+        actives = week_actives(cohort, i, activation_level)
         weeks.append(actives.count())
     return weeks
