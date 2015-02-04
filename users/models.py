@@ -24,7 +24,7 @@ from celery.execute import send_task
 from custom_user.models import AbstractEmailUser
 from avatar.util import get_primary_avatar, force_bytes
 from rest_framework.exceptions import APIException
-from .signals import new_follower
+from .signals import new_follower, user_activated
 
 class DareyooUserException(APIException):
     status_code = 400
@@ -175,7 +175,7 @@ class DareyooUserManager(UserManager):
 class DareyooUser(AbstractEmailUser):
     objects = DareyooUserManager()
 
-    username = models.CharField(_('username'), max_length=30, blank=True, null=True,
+    username = models.CharField(_('username'), max_length=255, blank=True, null=True,
         help_text=_('30 characters or fewer. Letters, numbers and '
                     '@/./+/-/_ characters'),
         validators=[
@@ -206,6 +206,7 @@ class DareyooUser(AbstractEmailUser):
             with transaction.atomic():
                 self.following.add(user)
                 new_follower.send(sender=self.__class__, user=user, follower=self)
+            user_activated.send(sender=self.__class__, user=self, level=2)
         except IntegrityError as ie:
             raise DareyooUserException("User %s is already following user %s." % (self.username, user.username))
 
@@ -269,7 +270,7 @@ class DareyooUser(AbstractEmailUser):
 
     def get_profile_pic_url(self):
         if self.profile_pic:
-            return self.profile_pic._get_url()
+            return self.profile_pic._get_url().split('?')[0]
         else:
             return settings.STATIC_URL + "beta/build/img/default_profile_pics/profile_%s.png" % ((self.id or 1 )% 10)
 
@@ -300,14 +301,13 @@ class DareyooUser(AbstractEmailUser):
                 'from_addr': settings.DEFAULT_FROM_EMAIL,
                 'to_addr': self.email,
                 'subject_template': "email/signup/subject.txt",
-                'text_body_template': "email/signup/body.txt",
-                'html_body_template': "email/signup/body.html",
+                'template_name': "Welcome",
                 'template_data': {
-                    'username': self.username,
+                    'FNAME': self.username,
                 }
             }
             
-            send_task('send_email', kwargs=kwargs)
+            send_task('send_template_email', kwargs=kwargs)
             send_task('register_email_mailchimp', kwargs={'user_id':self.id})
 
     def __unicode__(self):

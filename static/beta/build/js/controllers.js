@@ -180,10 +180,11 @@ angular.module('dareyoo.controllers', []).
         $scope.loaded = true;
       });
     };
-    if($scope.global) {
-      $scope.getLeaderboard(0);
-    } else {
+    if($scope.tournament && $scope.tournament.weekly) {
       $scope.getLeaderboard($stateParams.tournamentId, $scope.week); //by default we get current week
+    } else {
+      $scope.week = null;
+      $scope.getLeaderboard($stateParams.tournamentId); //by default we get global ranking
     }
   }]).
   controller('TournamentBetsCtrl', ['$scope', '$http', '$location', '$filter', '$stateParams', function($scope, $http, $location, $filter, $stateParams) {
@@ -251,8 +252,8 @@ angular.module('dareyoo.controllers', []).
         if(response.results) $scope.tournament = response.results;
         else $scope.tournament = response;
         $scope.loaded = true;
-        var now = new Date(Date.now());
-        for (var d = new Date($scope.tournament.start); d <= now; d.setDate(d.getDate() + 7)) {
+        var max = new Date(Math.min(Date.now(), new Date($scope.tournament.end)));
+        for (var d = new Date($scope.tournament.start); d <= max; d.setDate(d.getDate() + 7)) {
             $scope.weeks.push(new Date(d));
         }
       });
@@ -385,14 +386,15 @@ angular.module('dareyoo.controllers', []).
 
     $scope.getOpenBets = function(order) {
       $scope.order_by = order || $scope.order_by;
-      $http.get(document.location.origin + "/api/v1/me/open_bets/").success(function(response) {
+      $http.get(document.location.origin + "/api/v1/users/" + $scope.user.id + "/open_bets/").success(function(response) {
         if(response.results) $scope.bets = response.results;
         else $scope.bets = response;
         $scope.loaded = true;
       });
     };
-
-    $scope.getOpenBets();
+    if($scope.user) {
+      $scope.getOpenBets();
+    }
   }])
   .controller('UserCtrl', ['$scope', '$rootScope', '$http', '$stateParams', 'config', function($scope, $rootScope, $http, $stateParams, config) {
     $scope.profile_user_follows_me = false;
@@ -853,8 +855,9 @@ angular.module('dareyoo.controllers', []).
       return $scope.isComplaining() && $scope.isRival();
     };
     $scope.canComplainResult = function(bid) {
-      if($scope.bet && $scope.user)
-        return !$scope.isAuthor() && $scope.isComplaining() && $scope.isLottery() && $scope.bid.participants.indexOf($scope.user.id) != -1 && $scope.bet.claim_lottery_winner.id != bid.id;
+      if($scope.bet && $scope.user) {
+        return !$scope.isAuthor() && $scope.isComplaining() && $scope.isLottery() && bid.participants.indexOf($scope.user.id) != -1 && (!$scope.bet.claim_lottery_winner || $scope.bet.claim_lottery_winner.id != bid.id);
+      }
       return false;
     };
     $scope.canComplainNone = function() {

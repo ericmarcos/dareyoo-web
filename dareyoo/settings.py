@@ -50,8 +50,7 @@ INSTALLED_APPS = (
     'storages',
     'corsheaders',
     'rest_framework',
-    #'kombu.transport.django',
-    'djkombu',
+#    'kombu.transport.django',
 #    'haystack',
     'provider',
     'provider.oauth2',
@@ -202,8 +201,9 @@ CELERYBEAT_SCHEDULE = {
 SOUTH_MIGRATION_MODULES = {
     'provider': 'ignore',
     'oauth2': 'ignore',
-    'default': 'default.south_migrations',
+    'default': 'social.apps.django_app.default.south_migrations',
 }
+SOUTH_TESTS_MIGRATE = False
 
 #AUTHENTICATION_BACKENDS = (
 #    'social_auth.backends.facebook.FacebookBackend',
@@ -253,7 +253,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.user.create_user',
     'social.pipeline.social_auth.associate_user',
     'social.pipeline.social_auth.load_extra_data',
-    'social.pipeline.user.user_details',
+    #'social.pipeline.user.user_details',
     'users.pipelines.save_profile_picture',
     'users.pipelines.save_username',
     'users.pipelines.save_reference_user',
@@ -304,5 +304,5 @@ DEFAULT_FROM_ADDR = 'Dareyoo <no-reply@dareyoo.com>'
 DEFAULT_FROM_EMAIL = 'Dareyoo <no-reply@dareyoo.com>'
 
 ### CORS ###
-CORS_URLS_REGEX = r'^/api/v1.*$'
+CORS_URLS_REGEX = r'^(/api/v1.*|/oauth2/.*)$'
 CORS_ORIGIN_ALLOW_ALL = True

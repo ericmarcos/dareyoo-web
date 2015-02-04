@@ -6,6 +6,7 @@ from users.views import *
 from bets.views import *
 from notifications.views import *
 from gamification.views import *
+from metrics.views import *
 from rest_framework import routers
 
 # API
@@ -20,11 +21,12 @@ router.register(r'notifications', NotificationViewSet)
 extra_api_urls = patterns('',
     url(r'^bets/search/$', SearchBetsPointsList.as_view(), name='bets-search'),
     url(r'^timeline/$', TimelinePointsList.as_view(), name='timeline'),
-    url(r'^me/(?P<rest>\w*)', MeRedirectView.as_view(), name='me-user-detail'),
+    url(r'^me/$', MeRedirectView.as_view(), name='me-user-detail'),
     url(r'^search-facebook-friends/$', SearchFacebookFriendsList.as_view(), name='search-facebook-friends'),
     url(r'^search-dareyoo-suggested/$', SearchDareyooSuggestedList.as_view(), name='search-dareyoo-suggested'),
     url(r'^register/$', register, name='register'),
     url(r'^register-by-access-token/(?P<backend>[^/]+)/$', register_by_access_token, name='register_by_access_token'),
+    url(r'^widget_activation/(?P<widget>[^/]+)/(?P<level>\w+)/$', widget_activation, name='widget_activation'),
 )
 
 admin.autodiscover()

@@ -4,7 +4,7 @@ from users.models import *
 from django.conf import settings
 from django.utils.timezone import now
 
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives, EmailMessage
 from django.template import Context
 from django.template.loader import render_to_string
 
@@ -56,6 +56,29 @@ def send_email(**kwargs):
     msg = EmailMultiAlternatives(subject=subject, from_email=from_addr,
                                 to=[to_addr], body=text_body)
     msg.attach_alternative(html_body, "text/html")
+    msg.send(fail_silently=True)
+
+
+@shared_task(name='send_template_email')
+def send_template_email(**kwargs):
+    from_addr = kwargs.get('from_addr', settings.DEFAULT_FROM_ADDR)
+    to_addr = kwargs.get('to_addr')
+    subject = kwargs.get('subject', '')
+    text_body = kwargs.get('text_body', '')
+    html_body = kwargs.get('html_body', '')
+    template_name = kwargs.get('template_name', '')
+    template_data = kwargs.get('template_data', {})
+    plaintext_context = Context(autoescape=False)  # HTML escaping not appropriate in plaintext
+
+    subject_template = kwargs.get('subject_template')
+    if subject_template:
+        subject = render_to_string(subject_template, template_data, plaintext_context)
+
+    msg = EmailMessage(subject=subject, from_email=from_addr,
+                   to=[to_addr,])
+    msg.template_name = template_name
+    msg.global_merge_vars = template_data
+    msg.inline_css = True
     msg.send(fail_silently=True)
 
 

@@ -38,6 +38,7 @@
         <div class="tournaments-summary">
           <h4>Torneos oficiales</h4>
           <h5 ng-repeat="t in tournaments"><a ui-sref="main.tournament-detail.bets({tournamentId:t.id})"><img class="img-rounded" ng-src="[[t.pic]]" width="20">  [[t.tag]]   <span class="glyphicon glyphicon-gift" aria-hidden="true" ng-show="t.prizes.length>0"></span></a><br></h5>
+          <h5><a href="/proposito-2015/">  #proposito2015   <span class="glyphicon glyphicon-gift" aria-hidden="true"></span></a><br></h5>
         </div>
       </div>
     </div>

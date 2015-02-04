@@ -20,4 +20,5 @@ urlpatterns = patterns('',
     url(r'^faq/$', 'beta.views.faq', name='beta-faq'),
     url(r'^mobile-notification/$', 'beta.views.mobile_notification', name='beta-mobile-notification'),
     url(r'^app', 'beta.views.app', name='beta-home'),
+    url(r'^proposito-2015/$', 'beta.views.campaign_ny2015_view', name='beta-ny2015'),
 )

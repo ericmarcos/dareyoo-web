@@ -1,6 +1,6 @@
 Hola {{ username }},
 
-Hemos recibido una solicitud de recuperación de password para {{ domain }}.
+Hemos recibido una solicitud de recuperación de password para www.dareyoo.com
 
 Puedes restablecer tu password en el siguiente link:
 

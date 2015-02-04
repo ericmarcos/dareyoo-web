@@ -88,15 +88,19 @@ def bet_change_state_notifications(sender, **kwargs):
                     n.send_notification_email()
 
         if transition == 'closed_ok':
+            '''
             for p in bet.participants():
                 n = NotificationFactory.bet_complaining_finished(bet, p)
                 n.save()
                 n.send_notification_email()
+            '''
+            pass
 
         if transition == 'closed_conflict':
             if bet.is_simple() or bet.is_auction():
                 n = NotificationFactory.bet_arbitrated(bet, bet.author)
                 n.save()
+                n.send_notification_email()
                 n = NotificationFactory.bet_arbitrated(bet, bet.accepted_bid.author)
                 n.save()
                 n.send_notification_email()

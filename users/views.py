@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.http import Http404
+from django.shortcuts import redirect
 from django.forms import EmailField
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
@@ -63,9 +64,6 @@ class DareyooUserViewSet(viewsets.ModelViewSet):
         if request.user.username != username and DareyooUser.objects.filter(username=username).exists():
             raise MethodNotAllowed("This username already exists.")
         ret = super(DareyooUserViewSet, self).update(request, pk)
-        if request.QUERY_PARAMS.get('new'):
-            user = self.get_object()
-            user.send_welcome_email()
         return ret
 
     @link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
@@ -129,7 +127,7 @@ class DareyooUserViewSet(viewsets.ModelViewSet):
         except DareyooUserException as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-
+'''
 class MeRedirectView(RedirectView):
     permanent = False
     query_string = True
@@ -158,7 +156,23 @@ class MeRedirectView(RedirectView):
         if self.request.is_secure():
             url = 'https://' + url
         return url
+'''
+class MeRedirectView(APIView):
+    """
+    View to list all users in the system.
 
+    * Requires token authentication.
+    * Only admin users are able to access this view.
+    """
+    model = DareyooUser
+    def get(self, request, format=None):
+        """
+        Return a list of all users.
+        """
+        if not self.request.user.is_authenticated():
+            raise Http404
+        user_activated.send(sender=self.__class__, user=self.request.user)
+        return redirect('dareyoouser-detail', pk=self.request.user.id)
 
 class SearchFacebookFriendsList(generics.ListAPIView):
     model = DareyooUser
@@ -205,7 +219,7 @@ def register(request, format=None):
             user.set_password(password)
             user.save()
         #Social pipeline
-    pipeline_params = {'strategy': None, 'user': user, 'response':None,
+    pipeline_params = {'strategy': None, 'backend':None, 'user': user, 'response':None,
                     'details': None, 'is_new': True, 'request': request}
     save_profile_picture(**pipeline_params)
     save_username(**pipeline_params)
@@ -218,6 +232,7 @@ def register(request, format=None):
         scope.to_int('read', 'write'),
         client
     )
+    user_activated.send(sender=None, user=self.request.user)
     return Response(
         {'access_token': access_token.token,
         'expires_in': access_token.get_expire_delta(),
@@ -246,6 +261,7 @@ def register_by_access_token(request, backend, format=None):
                 scope.to_int('read', 'write'),
                 client
             )
+            user_activated.send(sender=None, user=self.request.user)
             return Response(
                 {'access_token': access_token.token,
                 'expires_in': access_token.get_expire_delta(),

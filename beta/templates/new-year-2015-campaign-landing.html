@@ -1,0 +1,691 @@
+{% extends "beta-base.html" %}
+{% block html %}<html lang="es" ng-controller="mainCtrl">{% endblock %}
+
+{% block title %}<title>¡Tu propósito para 2015 tiene premio! | Dareyoo</title>{% endblock %}
+
+{% block meta_desc %}<meta name="description" content="Es fácil, escribe tu propósito, envíaselo a tus amigos para que apuesten a favor o en contra y gana un mes de gym gratis cortesía de Gymadvisor o una licencia pro de 8fit." />{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/landing.all.min.css?new">
+<link rel="image_src" href="http://s3-eu-west-1.amazonaws.com/dareyoo-pro/beta/build/img/ny2015/item2.jpg" />
+<!--<link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/dareyoo_app.all.min.css">-->
+<style type="text/css">
+    html, body {
+        height: 100%;
+    }
+    #intro {
+        padding-top: 77px;
+        height: 100%;
+        overflow: hidden;
+    }
+    .main-container {
+        height: 100%;
+        overflow: auto;
+    }
+    .main-wrapper {
+        position: relative;
+    }
+    .bases {
+        position: absolute;
+        bottom: 10px;
+        right: 0px;
+        cursor: pointer;
+    }
+    .logo-claim h2 {
+        max-width: 800px;
+        margin-top: 18px;
+        margin-bottom: 10px;
+        padding-right: 25px;
+    }
+    .logo-claim h3 {
+        max-width: 590px;
+        font-size: 19px;
+        margin-bottom: 10px;
+    }
+    h3 {
+        color: white;
+    }
+    .widget {
+        max-width: 600px;
+        min-height: 200px;
+        text-align: center;
+        margin: 20px auto;
+    }
+    .widget>h5 {
+        color: white;
+        font-size: 16px;
+        font-weight: 400;
+    }
+    #title {
+        width: 100%;
+        height: 100px;
+        padding: 10px;
+        color: #eee;
+        font-size: 40px;
+        display: inline-block;
+        border: none;
+        font: 'Source Sans Pro', Tahoma, sans-serif;
+        outline: 0;
+        -webkit-appearance: none;
+        border-radius: 0;
+        background-color: rgba(0,0,0,0.4);
+        text-align: center;
+    }
+    .rand {
+        height: 100px;
+    }
+    #email {
+        /*width: 60%;*/
+        height: 50px;
+        padding: 4px;
+        color: #eee;
+        font-size: 30px;
+        display: inline-block;
+        border: none;
+        font: 'Source Sans Pro', Tahoma, sans-serif;
+        outline: 0;
+        -webkit-appearance: none;
+        border-radius: 0;
+        background-color: rgba(0,0,0,0.4);
+        text-align: center;
+    }
+    .anadir {
+        height: 50px;
+    }
+    button.no-radius {
+        border-bottom-right-radius: 0px;
+        border-top-right-radius: 0px;
+    }
+    .otros {
+        color: #fff;
+        font-size: 19px;
+    }
+    .otras_promesas {
+        margin-top: 40px;
+    }
+    .bets-reel {
+        margin-top: 6px;
+        height: 100px;
+    }
+    .invites {
+        max-height: 140px;
+        overflow: auto;
+    }
+    .invite {
+        padding: 8px;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #ccc;
+        font-size: 14px;
+    }
+    button.close {
+        color: #fff;
+        opacity: 0.7;
+    }
+    .btn-primary {
+        border-radius: 24px;
+        padding: 10px 20px;
+    }
+    dy-loader {
+        display: block;
+        margin: auto;
+        width: 50px;
+    }
+    .facebook-bet-share {
+        width: 125px;
+    }
+    .facebook-bet-share .facebookButton { display: none; }
+    .share-bet-btns {
+        width: 100%;
+        max-width: 350px;
+        height: 50px;
+        vertical-align: middle;
+        text-align: center;
+        margin: 20px auto;
+    }
+.carousel-fade>.carousel-inner>.item1 {
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-position: center center;
+    background-image: url("http://s3-eu-west-1.amazonaws.com/dareyoo-pro/beta/build/img/ny2015/item1.jpg");
+}
+.carousel-fade>.carousel-inner>.item2 {
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-position: center center;
+    background-image: url("http://s3-eu-west-1.amazonaws.com/dareyoo-pro/beta/build/img/ny2015/item2.jpg");
+}
+.carousel-fade>.carousel-inner>.item3 {
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-position: center center;
+    background-image: url("http://s3-eu-west-1.amazonaws.com/dareyoo-pro/beta/build/img/ny2015/item3.jpg");
+}
+.carousel-fade>.carousel-inner>.item4 {
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-position: center center;
+    background-image: url("http://s3-eu-west-1.amazonaws.com/dareyoo-pro/beta/build/img/ny2015/item4.jpg");
+}
+.carousel-fade>.carousel-inner>.item5 {
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-position: center center;
+    background-image: url("http://s3-eu-west-1.amazonaws.com/dareyoo-pro/beta/build/img/ny2015/item5.jpg");
+}
+.carousel-fade>.carousel-inner>.item6 {
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-position: center center;
+    background-image: url("http://s3-eu-west-1.amazonaws.com/dareyoo-pro/beta/build/img/ny2015/item6.jpg");
+}
+
+#circleG {
+    width:46.666666666666664px;
+}
+.circleG {
+    background-color:#FFFFFF;
+    float:left;
+    height:10px;
+    margin-left:5px;
+    width:10px;
+    -moz-animation-name:bounce_circleG;
+    -moz-animation-duration:0.6000000000000001s;
+    -moz-animation-iteration-count:infinite;
+    -moz-animation-direction:linear;
+    -moz-border-radius:7px;
+    -webkit-animation-name:bounce_circleG;
+    -webkit-animation-duration:0.6000000000000001s;
+    -webkit-animation-iteration-count:infinite;
+    -webkit-animation-direction:linear;
+    -webkit-border-radius:7px;
+    -ms-animation-name:bounce_circleG;
+    -ms-animation-duration:0.6000000000000001s;
+    -ms-animation-iteration-count:infinite;
+    -ms-animation-direction:linear;
+    -ms-border-radius:7px;
+    -o-animation-name:bounce_circleG;
+    -o-animation-duration:0.6000000000000001s;
+    -o-animation-iteration-count:infinite;
+    -o-animation-direction:linear;
+    -o-border-radius:7px;
+    animation-name:bounce_circleG;
+    animation-duration:0.6000000000000001s;
+    animation-iteration-count:infinite;
+    animation-direction:linear;
+    border-radius:7px;
+}
+#circleG_1 {
+    -moz-animation-delay:0.12000000000000002s;
+    -webkit-animation-delay:0.12000000000000002s;
+    -ms-animation-delay:0.12000000000000002s;
+    -o-animation-delay:0.12000000000000002s;
+    animation-delay:0.12000000000000002s;
+}
+#circleG_2 {
+    -moz-animation-delay:0.28s;
+    -webkit-animation-delay:0.28s;
+    -ms-animation-delay:0.28s;
+    -o-animation-delay:0.28s;
+    animation-delay:0.28s;
+}
+#circleG_3 {
+    -moz-animation-delay:0.36s;
+    -webkit-animation-delay:0.36s;
+    -ms-animation-delay:0.36s;
+    -o-animation-delay:0.36s;
+    animation-delay:0.36s;
+}
+@-moz-keyframes bounce_circleG {
+    0% {}
+    50% { background-color:#000000 }
+    100% {}
+}
+@-webkit-keyframes bounce_circleG {
+    0% {}
+    50% { background-color:#000000 }
+    100% {}
+}
+@-ms-keyframes bounce_circleG {
+    0% {}
+    50% { background-color:#000000 }
+    100% {}
+}
+@-o-keyframes bounce_circleG {
+    0% {}
+    50% { background-color:#000000 }
+    100% {}
+}
+@keyframes bounce_circleG {
+    0% {}
+    50% { background-color:#000000 }
+    100% {}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+{{ block.super }}
+
+<div id="bases-modal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Bases del sorteo</h4>
+      </div>
+      <div class="modal-body">
+        <p id="message" class="register-msg">
+            <ul>
+                <li>Entre los participantes del torneo se sortearán 10 packs de 1 mes gratis en los gimnasios de <a href="https://gymadvisor.com/">Gymadvisor</a> y 10 licencias PRO de <a href="http://8fit.com/">8fit</a>.</li>
+                <li>Para participar hay que crear un propósito de año nuevo desde esta página y invitar como mínimo a otra persona.</li>
+                <li>Sólo 1 propósito será contabilizado por cada usuario.</li>
+                <li>Las probabilidades en el sorteo irán en función de las invitaciones enviadas y aceptadas por el destinatario.</li>
+                <li>Dareyoo se reserva el derecho a excluir del concurso aquellos participantes que envíen invitaciones a direcciones de correo falsas o duplicadas.</li>
+                <li>Los ganadores del sorteo se darán a conocer el día 1 de marzo.</li>
+            </ul>
+            </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Aceptar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id="register-modal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
+        <h4 class="modal-title">Registrate ahora, ¡es gratis!</h4>
+      </div>
+      <div class="modal-body" ng-init="register=true">
+        <p id="message" class="register-msg">Necesitas ser usuario de Dareyoo para poder crear tu propósito.</p>
+        <br>
+            <div class="row fill text-center" ng-show="register">
+                <div class="col-md-6 right-divider">
+                    <h4>Crear nueva cuenta:</h4>
+
+                    <form method="post" role="form" name="LoginForm" action="[['/register/?' + getNext()]]">
+                    {% csrf_token %}
+                    <input type="text" id="email_register" name="email" class="form-control" placeholder="email">
+                    <span class="help-block"></span>
+
+                    <input type="password" id="password" name="password" placeholder="password" class="form-control">
+                    <span class="help-block"></span>
+
+                    <input type="password" id="password2" name="password2" placeholder="repite el password" class="form-control">
+                    <span class="help-block"></span>
+
+                    <button type="submit" class="btn btn-primary center-block">Registrar</button>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <h4>O ahórrate un minuto y regístrate con:</h4><br>
+                    <a href="/login/facebook/?[[getNext()]]">
+                        <button class='zocial facebook'>Registrar con Facebook</button>
+                    </a>
+                    <p><small>(nunca publicaremos nada sin tu permiso)</small></p>
+                </div>
+            </div>
+            <div class="row fill text-center" ng-show="register">
+                <div class="col-md-12 text-center">
+                    <p class="register-msg"><br><br>¿Ya tienes una cuenta? <a href="" ng-click="register=false">Iniciar sesión</a>.</p>
+                </div>
+            </div>
+            <div class="row fill text-center" ng-show="!register">
+                <div class="col-md-6 right-divider">
+                    <h4>Iniciar sesión:</h4>
+
+                    <form method="post" role="form" name="LoginForm" action="/login/">
+                    {% csrf_token %}
+                    <div id="name-group" class="form-group">
+                        <input type="text" id="username" name="username" class="form-control" placeholder="email">
+                        <span class="help-block"></span>
+
+                        <input type="password" id="password" name="password" placeholder="password" class="form-control">
+                        <span class="help-block"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <input type="hidden" name="next" value="/proposito-2015/?[[getTitleAndInvites()]]" />
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <h4>O inicia sesión con:</h4><br>
+                    <a href="{% url 'social:begin' "facebook" %}?[[getNext()]]">
+                        <button class='zocial facebook'>Facebook Login</button>
+                    </a>
+                </div>
+            </div>
+            <div class="row fill text-center" ng-show="!register">
+                <div class="col-md-12 text-center">
+                    <p class="register-msg"><br>¿Aún no tienes una cuenta? <a href="" ng-click="register=true">Créala ahora</a>.</p>
+                </div>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id="intro">
+    <!-- carousel -->
+    <div id="carousel-intro" class="carousel slide carousel-fade" data-ride="carousel" data-interval="6000" data-pause="none">
+      <div class="carousel-inner" role="listbox">
+        <div class="item item1 active">
+        </div>
+        <div class="item item2">
+        </div>
+        <div class="item item3">
+        </div>
+        <div class="item item4">
+        </div>
+        <div class="item item5">
+        </div>
+        <div class="item item6">
+        </div>
+      </div>
+    </div>
+    <div class="container text-center main-container">
+        <div class="main-wrapper">
+        <div class="social-btns">
+            <a href="http://www.facebook.com/DareyooApp"><div class="fb"></div></a>
+            <a href="http://twitter.com/DareyooApp"><div class="twitter"></div></a>
+        </div>
+        <div class="logo-claim">
+            <img src="{{ STATIC_URL }}beta/build/img/landing/intro/dareyoo_logo_white.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/intro/dareyoo_logo_white@2x.png">
+            <h2 ng-show="step==1">¡Tu propósito para 2015 tiene premio!</h2>
+            <h2 ng-show="step!=1">"[[newBetFormData.title]]"</h2>
+            <!--<h3 ng-show="step==1">Es fácil, escribe tu propósito, compártelo con tus amigos y gana un mes de gym gratis cortesía de Gymadvisor o una licencia pro de 8fit.<br>Demuestra que este año vas en serio.</h3>-->
+            <h3 ng-show="step==1">Es fácil, escribe tu propósito, envíaselo a tus amigos para que apuesten a favor o en contra y gana un mes de gym gratis cortesía de <a href="https://gymadvisor.com/"><strong>Gymadvisor</strong></a> o una licencia pro de <a href="http://8fit.com/"><strong>8fit</strong></a>.</h3>
+            <h3 ng-show="step==2">Invita a todos aquellos que se ríen cuando dices eso de "¡de este año no pasa!" y demuéstrales que en este 2015 vas en serio.</h3>
+        </div>
+        <div class="step1" ng-show="step==1">
+              <div class="input-group">
+                <input type="text" id="title" maxlength="140" placeholder="Escribe tu propósito con el hashtag #proposito2015 aquí" ng-model="newBetFormData.title">
+                <span class="input-group-btn">
+                    <button class="btn btn-primary rand no-radius" type="button" ng-click="random()">Generar<br>al azar</button>
+                </span>
+              </div>
+              <!--<button type="button" class="btn btn-primary" ng-click="random()">Genérame un propósito al azar</button>-->
+              <button type="button" class="btn btn-primary" ng-click="gotoInvite()" style="margin-top: 10px;">Siguiente</button>
+        </div>
+        <div class="widget step2" ng-show="step==2">
+            <div class="invites">
+                <div class="invite" ng-show="!newBetFormData.invites.length">(aún no has invitado a nadie)</div>
+                <div class="invite" ng-repeat="i in newBetFormData.invites">[[i]]
+                    <div class="pull-right">
+                        <button type="button" class="close" ng-click="removeInvite(i)">&times;</button>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group">
+                <input type="email" ng-model="invite" placeholder="email de la persona que quieras invitar"class="form-control" ng-keypress="onInviteEnter($event)" id="email">
+                <span class="input-group-btn">
+                    <button class="btn btn-primary anadir no-radius" type="button" ng-click="onInviteEnter()">Añadir</button>
+                </span>
+            </div><!-- /input-group -->
+            <h5>Cuanta más gente invites, más opciones de ganar un premio.</h5>
+            <button type="button" class="btn btn-primary center-block" ng-click="send()">Finalizar</button>
+        </div>
+        <div class="widget step3" ng-show="step==3">
+            <dy-loader></dy-loader>
+        </div>
+        <div class="widget step4" ng-show="step==4">
+            <h3>¡Genial! Tu porra ya está creada, <a href="/app/main/bet/[[bet_id]]"><strong>échale un vistazo aquí</strong></a>.</h3>
+            <h3>Que se entere todo el mundo,<br>¡este 2015 las cosas van a cambiar!</h3>
+            <table class="share-bet-btns"><tr>
+                <td width="55%">
+                    <div relink-event="rebuildTwitter">
+                        <a twitter
+                            data-lang="es"
+                            data-count='none'
+                            data-url="http://www.dareyoo.com/app/main/bet/[[bet_id]]?utm_source=twitter&utm_medium=viral&utm_campaign=bet-share-proposito2015"
+                            data-via='dareyooApp'
+                            data-size="large"
+                            data-text='[[new_bet.title || newBetFormData.title]]' >
+                        </a>
+                    </div>
+                </td><td>
+                    <div>
+                        <a facebook class="zocial facebook facebook-bet-share" data-url='http://www.dareyoo.com/app/main/bet/[[bet_id]]?utm_source=facebook&utm_medium=viral&utm_campaign=bet-share-proposito2015'>Compartir</a>
+                    </div>
+                </td></tr>
+            </table>
+        </div>
+        <div ng-show="step==2">
+            <h3>¡Quién ríe último se lleva el premio!</h3>
+        </div>
+        <div class="otras_promesas" ng-show="step==1">
+            <h3 class="otros">Lo que otros han prometido:</h3>
+            <div class="bets-reel">
+                <div id="bets-carousel" class="carousel slide" data-ride="carousel">
+                  <!-- Wrapper for slides -->
+                  <div class="carousel-inner">
+                    {% for b in bets %}
+                    <div class="item{% if forloop.first %} active{% endif %}">
+                        <a href="/app/main/bet/{{ b.id }}"><h4 class="otros">"{{ b.title }}"</h4></a>
+                        <a href="/app/profile/{{ b.author.id }}/bets">
+                        <div class="bet-signature">
+                            <img src="{{ b.author.get_profile_pic_url }}" width="32" class="img-circle">
+                            <p>{{ b.author.username }}</p>
+                        </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+            </div>
+        </div>
+        <div class="bases"><a data-toggle="modal" data-target="#bases-modal">Bases del concurso</a></div>
+    </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}beta/build/js/dareyoo_landing.all.min.js?new"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}beta/build/js/angular.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}beta/build/js/ui-utils.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}beta/build/js/angular-cookies.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}beta/build/js/angular-socialshare.min.js"></script>
+<script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
+<script type="text/javascript" src="//www.bitstorm.org/jquery/color-animation/jquery.animate-colors-min.js"></script>
+<script type="text/javascript">
+var dareyooApp = angular.module('dareyoo_promesa2015', [
+  'ngCookies',
+  'ui.keypress',
+  'djds4rce.angular-socialshare'
+]).
+config(['$interpolateProvider', '$sceDelegateProvider', function($interpolateProvider, $sceDelegateProvider) {
+  $interpolateProvider.startSymbol('[[');
+  $interpolateProvider.endSymbol(']]');
+  $sceDelegateProvider.resourceUrlWhitelist([
+    // Allow same origin resource loads.
+    'self',
+    // Allow loading from outer templates domain.
+    'http://s3-eu-west-1.amazonaws.com/dareyoo/**',
+    'http://s3-eu-west-1.amazonaws.com/dareyoo-pro/**',
+    'http://s3-eu-west-1.amazonaws.com/dareyoo-pre/**',
+    'https://s3-eu-west-1.amazonaws.com/dareyoo/**',
+    'https://s3-eu-west-1.amazonaws.com/dareyoo-pro/**',
+    'https://s3-eu-west-1.amazonaws.com/dareyoo-pre/**'
+  ]); 
+}]).
+run(['$http', '$cookies', '$FB', 'config', function($http, $cookies, $FB, config) {
+    $http.defaults.headers.post['X-CSRFToken'] = $cookies['csrftoken'];
+    $FB.init(config.fb_key);
+}]).
+constant('config', {static_url: "{{ STATIC_URL }}", fb_key: "{{ fb_key }}" }).
+directive('dyLoader', ['config', function(config) {
+    return {
+        restrict: 'E',
+        scope: {
+            limit: '='
+        },
+        templateUrl: config.static_url + 'beta/build/partials/directives/dy-loader.html'
+    };
+}]).
+directive('relinkEvent', function($rootScope) {
+    return {
+        transclude: 'element',
+        restrict: 'A',
+        link: function(scope, element, attr, ctrl, transclude) {
+            var previousContent = null;
+
+            var triggerRelink = function() {
+                if (previousContent) {
+                    previousContent.remove();
+                    previousContent = null;
+                }
+
+                transclude(function (clone) {
+                    element.parent().append(clone);
+                    previousContent = clone;
+                });
+
+            };
+
+            triggerRelink();                
+            $rootScope.$on(attr.relinkEvent, triggerRelink);
+
+        }
+    }
+}).
+controller('mainCtrl', ['$scope', '$rootScope', '$http', 'config', function($scope, $rootScope, $http, config) {
+    $scope.bet_id = {{ bet_id }};
+    $scope.user = {{ logged_in }};
+    $scope.invite = "";
+    $scope.step = 1;
+    if($scope.bet_id)
+        $scope.step = 4;
+    $scope.items = ["Voy a dejar de fumar #proposito2015",
+                    "Iré al gimnasio 3 días por semana #proposito2015",
+                    "Haré una media maratón #proposito2015",
+                    "No saldré de fiesta 3 días por semana #proposito2015",
+                    "Dejaré de robarle el periódico al vecino #proposito2015",
+                    "No me quedarán más de 5 este semestre #proposito2015",
+                    "Regaré las plantas cada día #proposito2015",
+                    "Dejaré de morderme las uñas #proposito2015",
+                    "Voy a entrar en ese maldito vestido #proposito2015",
+                    "Me acordaré del cumple de mi pareja #proposito2015",
+                    "Pasaré menos tiempo en Facebook y Twitter #proposito2015",
+                    "Voy a comer sano #proposito2015",];
+    $scope.newBetFormData = { bet_type: 3,
+                        title: "{{ title }}",
+                        amount: 10,
+                        bidding_deadline: new Date(2015, 0, 31),
+                        event_deadline: new Date(2015, 1, 28),
+                        public: true,
+                        open_lottery: true,
+                        invites: []};
+    console.log($scope.newBetFormData.title);
+    $scope.onInviteEnter = function(event) {
+      if (!event || event.which == 13) {
+        $scope.addInvite($scope.invite);
+        $scope.invite = "";
+      }
+    };
+    $scope.addInvite = function(inv) {
+      if(inv && $scope.newBetFormData.invites.indexOf(inv) == -1) {
+        $scope.newBetFormData.invites.unshift(inv);
+      }
+    };
+    $scope.removeInvite = function(inv) {
+      var index = $scope.newBetFormData.invites.indexOf(inv);
+      if(index != -1) {
+        $scope.newBetFormData.invites.splice(index, 1);
+      }
+    };
+    $scope.getTitleAndInvites = function() {
+        var myData = {
+            'title': $scope.newBetFormData.title,
+            'invites': $scope.newBetFormData.invites.join(",")
+        };
+        var out = new Array();
+        for (key in myData) {
+            out.push(key + '=' + encodeURIComponent(myData[key]));
+        }
+        return out.join('&');
+    };
+    $scope.getNext = function() {
+        var myData = {
+            'title': $scope.newBetFormData.title,
+            'invites': $scope.newBetFormData.invites.join(",")
+        };
+        var out = new Array();
+        for (key in myData) {
+            out.push(key + '=' + encodeURIComponent(myData[key]));
+        }
+        return "next=" + encodeURIComponent("/proposito-2015/?" + out.join('&'));
+    };
+    $scope.random = function() {
+        var next_item = $scope.items[Math.floor(Math.random()*$scope.items.length)];
+        while(next_item == $scope.newBetFormData.title)
+            next_item = $scope.items[Math.floor(Math.random()*$scope.items.length)];
+        $scope.newBetFormData.title = next_item;
+    }
+    $scope.gotoInvite = function() {
+        if($scope.newBetFormData.title) {
+            if($scope.newBetFormData.title.indexOf("#proposito2015") == -1) {
+                $scope.newBetFormData.title += " #proposito2015";
+            }
+            $scope.step = 2;
+        } else {
+            jQuery('#title').css("background-color", "rgba(255,255,255,0.6)");
+            jQuery('#title').animate({
+              backgroundColor: 'rgba(0,0,0,0.4)'
+            });
+        }
+    }
+    $scope.send = function() {
+        if($scope.newBetFormData.invites.length) {
+            if(!$scope.user) {
+                $('#register-modal').modal('show');
+            } else {
+                $scope.step = 3;
+                $http.post(document.location.origin + "/api/v1/bets/", $scope.newBetFormData)
+                  .success(function(response, status, headers, config) {
+                    $scope.bet_id = response.id;
+                    $rootScope.$broadcast('rebuildTwitter');
+                    $scope.step = 4;
+                    $http.post(document.location.origin + "/api/v1/bets/" + $scope.bet_id + "/bids/",
+                        {title: "Lo siento pero... ¡No lo conseguirás!", amount:10});
+                    $http.post(document.location.origin + "/api/v1/bets/" + $scope.bet_id + "/bids/",
+                        {title: "Claro que sí, ¡Tú puedes!", amount:10});
+                  })
+                  .error(function(response, status, headers, config) {
+                    console.error(response);
+                  });
+            }
+        } else {
+            jQuery('#email').css("background-color", "rgba(255,255,255,0.6)");
+            jQuery('#email').animate({
+              backgroundColor: 'rgba(0,0,0,0.4)'
+            });
+        }
+    };
+    $rootScope.$broadcast('rebuildTwitter');
+}]);
+
+angular.element(document).ready(function() {
+    while(!angular.bootstrap(document, ['dareyoo_promesa2015']));
+});
+</script>
+{% endblock %}

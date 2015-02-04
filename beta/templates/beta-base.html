@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Dareyoo es una plataforma de apuestas social y gratuita, donde los jugadores crean y resuelven libremente sus apuestas o porras. Los usuarios compiten con una moneda virtual, el Yoo, y obtienen premios según se posicionen en los ránkings. En Dareyoo convergen las apuestas tradicionales, las redes sociales y la gamificación." />
+  {% block meta_desc %}<meta name="description" content="Dareyoo es una plataforma de apuestas social y gratuita, donde los jugadores crean y resuelven libremente sus apuestas o porras. Los usuarios compiten con una moneda virtual, el Yoo, y obtienen premios según se posicionen en los ránkings. En Dareyoo convergen las apuestas tradicionales, las redes sociales y la gamificación." />{% endblock %}
   <meta name="keywords" content="apuesta social porra amigos apostar gratis">
   <meta name="author" content="">
   <link rel="shortcut icon" href="">
@@ -55,7 +55,7 @@
   <!-- Collect the nav links, forms, and other content for toggling -->
   <div class="collapse navbar-collapse" id="landing-navbar-collapse">
     <ul class="nav navbar-nav navbar-left">
-      <li {% if request.resolver_match.url_name == "beta-como" %}class="active"{% endif %}><a href="{% url 'beta-how-to' %}">CÓMO FUNCIONA</a></li>
+      <li {% if request.resolver_match.url_name == "beta-how-to" %}class="active"{% endif %}><a href="{% url 'beta-how-to' %}">CÓMO FUNCIONA</a></li>
       <!--<li {% if request.resolver_match.url_name == "beta-quienes" %}class="active"{% endif %}><a href="#">QUIÉNES SOMOS</a></li> -->
       <li {% if request.resolver_match.url_name == "beta-faq" %}class="active"{% endif %}><a href="{% url 'beta-faq' %}">FAQ</a></li>
     </ul>

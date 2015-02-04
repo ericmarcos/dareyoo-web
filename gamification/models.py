@@ -420,6 +420,9 @@ class TournamentQuerySet(QuerySet):
         now = timezone.now()
         return self.filter(start__lte=now, end__gte=now)
 
+    def visible(self):
+        return self.filter(visible=True)
+
 
 class TournamentManager(models.Manager):
     use_for_related_fields = True
@@ -450,6 +453,8 @@ class Tournament(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True, default="")
     bets = models.ManyToManyField(Bet, blank=True, null=True, related_name='tournaments')
+    visible = models.BooleanField(blank=True, default=True)
+    weekly = models.BooleanField(blank=True, default=True)
 
     def save(self, *args, **kwargs):
         is_new = self.pk is None

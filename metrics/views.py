@@ -10,8 +10,21 @@ from django.http import *
 from django.shortcuts import render_to_response,redirect, get_object_or_404
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required, user_passes_test
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
 from users.models import *
 from bets.models import Bet
+from .models import *
+
+
+@api_view(['POST',])
+@permission_classes([])
+def widget_activation(request, widget, level, format=None):
+    levels = {"impression": 1, "interaction": 2, "register": 3, "login": 4, "share": 5}
+    if level not in levels.keys():
+        return Response({'detail': "Invalid activation level"}, status=status.HTTP_400_BAD_REQUEST)
+    WidgetActivation.objects.create(widget=widget, level=levels[level])
+    return Response({'status': 'created'})
 
 
 @user_passes_test(lambda u: u.is_staff)
