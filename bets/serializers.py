@@ -1,6 +1,6 @@
 from .models import *
 from django.http import Http404
-from rest_framework import serializers, exceptions, status
+from rest_framework import serializers, exceptions, status, pagination
 from users.serializers import *
 
 
@@ -67,3 +67,7 @@ class DareyooUserBetsFullSerializer(DareyooUserFullSerializer):
         model = DareyooUserFullSerializer.Meta.model
         fields = DareyooUserFullSerializer.Meta.fields + ('open_bets', 'created_bets', 'bets_url')
         read_only_fields = DareyooUserFullSerializer.Meta.read_only_fields
+
+class PaginatedBetSerializer(pagination.PaginationSerializer):
+    class Meta:
+        object_serializer_class = BetSerializer

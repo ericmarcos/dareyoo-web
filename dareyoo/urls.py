@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.contrib import admin
 from users.views import *
 from bets.views import *
 from notifications.views import *
@@ -8,6 +9,7 @@ from gamification.views import *
 from metrics.views import *
 from rest_framework import routers
 
+# API
 router = routers.DefaultRouter()
 router.register(r'users', DareyooUserBetPointsViewSet)
 router.register(r'bets', BetPointsViewSet)
@@ -15,11 +17,6 @@ router.register(r'bids', BidViewSet)
 router.register(r'tournaments', TournamentViewSet)
 router.register(r'prizes', PrizeViewSet)
 router.register(r'notifications', NotificationViewSet)
-#TODO:
-#/search/
-#/search/users/
-#/search/bets/
-#/search/tournaments/
 
 extra_api_urls = patterns('',
     url(r'^bets/search/$', SearchBetsPointsList.as_view(), name='bets-search'),
@@ -32,15 +29,8 @@ extra_api_urls = patterns('',
     url(r'^widget_activation/(?P<widget>[^/]+)/(?P<level>\w+)/$', widget_activation, name='widget_activation'),
 )
 
-from django.contrib import admin
 admin.autodiscover()
 
-### API resources ###
-'''v1_api = Api(api_name='v1')
-v1_api.register(UserResource())
-v1_api.register(BetResource())
-v1_api.register(BidResource())
-'''
 urlpatterns = patterns('',
     url(r'^', include('beta.urls')),
     url(r'^', include('metrics.urls')),

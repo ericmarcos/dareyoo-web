@@ -8,7 +8,8 @@ from users.models import DareyooUserException
 from users.views import DareyooUserViewSet
 from users.serializers import *
 from .models import *
-from .serializers import BetSerializer, BidSerializer
+from .serializers import BetSerializer, BidSerializer, PaginatedBetSerializer
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
@@ -285,7 +286,7 @@ class OpenBetsList(generics.ListAPIView):
 
 
 class DareyooUserBetViewSet(DareyooUserViewSet):
-    bets_serializer_class = BetSerializer
+    bets_serializer_class = PaginatedBetSerializer
 
     @link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
     def bets(self, request, *args, **kwargs):
@@ -293,8 +294,10 @@ class DareyooUserBetViewSet(DareyooUserViewSet):
         all_bets = request.QUERY_PARAMS.get('all', False)
         bet_state = request.QUERY_PARAMS.get('state', None)
         bet_type = request.QUERY_PARAMS.get('type', None)
+        page = request.QUERY_PARAMS.get('page')
 
         qs = Bet.objects.all().created_by(user)
+
         if bet_state:
             qs = qs.state(bet_state)
         elif not all_bets:
@@ -305,9 +308,21 @@ class DareyooUserBetViewSet(DareyooUserViewSet):
             qs = qs.public()
         elif user != request.user:
             qs = qs.public() | qs.sent_to(request.user)
-        qs = qs.order_by('-created_at').distinct()
 
-        serializer = self.bets_serializer_class(qs, many=True, context={'request': request})
+        paginator = Paginator(qs.order_by('-created_at').distinct(), 10)
+
+        try:
+            bets = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            bets = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999),
+            # deliver last page of results.
+            bets = paginator.page(paginator.num_pages)
+
+        serializer_context = {'request': request}
+        serializer = PaginatedBetSerializer(bets, context=serializer_context)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @link(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
