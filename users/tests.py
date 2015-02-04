@@ -87,6 +87,14 @@ class UserResourceTest(APITestCase):
         u = DareyooUser.objects.last()
         self.assertEqual(u.email, email)
 
+    def test_get_me(self):
+        self.client.credentials(HTTP_AUTHORIZATION=self.get_oauth2_token())
+
+        resp = self.client.get(reverse('me-user-detail'))
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        self.client.credentials()
+
     def test_get_followers(self):
         resp = self.client.get(reverse('dareyoouser-followers', args=[1]), format='json')
         self.assertEqual(len(resp.data), 3)
