@@ -232,7 +232,7 @@ def register(request, format=None):
         scope.to_int('read', 'write'),
         client
     )
-    user_activated.send(sender=None, user=self.request.user)
+    user_activated.send(sender=None, user=request.user)
     return Response(
         {'access_token': access_token.token,
         'expires_in': access_token.get_expire_delta(),
@@ -261,7 +261,7 @@ def register_by_access_token(request, backend, format=None):
                 scope.to_int('read', 'write'),
                 client
             )
-            user_activated.send(sender=None, user=self.request.user)
+            user_activated.send(sender=None, user=request.user)
             return Response(
                 {'access_token': access_token.token,
                 'expires_in': access_token.get_expire_delta(),
