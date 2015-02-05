@@ -191,9 +191,8 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', '$
     $rootScope.getMe = function() {
       $http.get(document.location.origin +"/api/v1/me/").success(function(response) {
           $rootScope.user = response;
-          $rootScope.getMyFollowers();
       });
-      $timeout($rootScope.getMe, 5000);
+      $timeout($rootScope.getMe, 60000);
     };
     $rootScope.getAllUsernames = function() {
       $http.get(document.location.origin +"/api/v1/users?only_usernames=true").success(function(response) {
@@ -213,7 +212,7 @@ run(['$http', '$cookies', '$rootScope', '$state', '$stateParams', '$timeout', '$
           $rootScope.new_notifications = not.filter(function(elem) {return elem && elem.is_new;}).length;
         }
       });
-      $timeout($rootScope.getNotifications, 5000);
+      $timeout($rootScope.getNotifications, 60000);
     };
 
     $rootScope.notificationsClick = function() {
