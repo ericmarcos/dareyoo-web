@@ -1,7 +1,6 @@
 <a href="#" ui-sref="profile.bets({userId:user.id})">
     <div class="border-shadow-img" style="width: [[img_width + 4]]px; height: [[img_height + 4]]px">
         <img ng-if="user.pic" ng-src="[[user.pic]]" width="[[img_width]]" height="[[img_height]]" alt="[[user.username]]" class="img-circle">
-        <img ng-if="!user.pic" ng-src="//s3-eu-west-1.amazonaws.com/dareyoo/beta/build/img/default_profile_pics/profile_[[user.id%10]].png" alt="[[user.username]]" width="[[img_width]]" height="[[img_height]]" class="img-circle">
         <!-- <div ng-show="show_badges" class="level">[[user.level]]</div> -->
         <dy-level-star ng-show="show_badges" class="level" level="user.level"></dy-level-star>
         <div ng-show="show_badges" class="fair_play" ng-if="user.fair_play"></div>
