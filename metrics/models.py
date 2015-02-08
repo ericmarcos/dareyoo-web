@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db import models
 
 from users.signals import user_activated
+from bets.models import Bet
 
 class UserActivation(models.Model):
     LEVEL_LOGIN = 1
@@ -52,7 +53,11 @@ class WidgetActivation(models.Model):
     LEVEL_REGISTER = 3
     LEVEL_LOGIN = 4
     LEVEL_SHARE = 5
+    LEVEL_BANNER_CLICK = 6
 
-    widget = models.CharField(max_length=255, blank=True, null=True) 
+    widget = models.CharField(max_length=255, blank=True, null=True)
+    bet = models.ForeignKey(Bet, related_name='widget_activations', blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True, blank=True, null=True, editable=False)
     level = models.IntegerField(blank=True, null=True, default=1)
+    from_ip = models.GenericIPAddressField(blank=True, null=True)
+    from_host = models.CharField(max_length=255, blank=True, null=True)

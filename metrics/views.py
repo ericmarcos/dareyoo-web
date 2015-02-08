@@ -12,6 +12,8 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required, user_passes_test
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework import status
+from ipware.ip import get_ip
 from users.models import *
 from bets.models import Bet
 from .models import *
@@ -20,10 +22,19 @@ from .models import *
 @api_view(['POST',])
 @permission_classes([])
 def widget_activation(request, widget, level, format=None):
-    levels = {"impression": 1, "interaction": 2, "register": 3, "login": 4, "share": 5}
+    levels = {"impression": 1, "interaction": 2, "register": 3, "login": 4, "share": 5, "banner": 6}
     if level not in levels.keys():
         return Response({'detail': "Invalid activation level"}, status=status.HTTP_400_BAD_REQUEST)
-    WidgetActivation.objects.create(widget=widget, level=levels[level])
+    try:
+        WidgetActivation.objects.create(
+            widget=widget,
+            bet_id=request.DATA.get('bet_id'),
+            level=levels[level],
+            from_ip=get_ip(request),
+            from_host=request.META.get('HTTP_HOST'),
+        )
+    except Exception, e:
+        return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     return Response({'status': 'created'})
 
 
