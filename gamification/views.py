@@ -1,8 +1,10 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from rest_framework import generics, views, response, status, renderers, mixins
 from rest_framework.decorators import link
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from bets.views import *
+from users.signals import user_activated
 from .serializers import *
 from .models import *
 
@@ -20,6 +22,14 @@ class DareyooUserBetPointsViewSet(DareyooUserBetViewSet):
         serializer = TournamentSerializer(qs, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class MeView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    
+    def get(self, request, format=None):
+        user_activated.send(sender=self.__class__, user=request.user)
+        serializer = DareyooUserPointsFullSerializer(request.user, context={'request': request})
+        return Response(serializer.data)
 
 class BetPointsViewSet(BetViewSet):
     serializer_class = BetPointsSerializer

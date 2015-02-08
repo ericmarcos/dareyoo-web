@@ -127,52 +127,6 @@ class DareyooUserViewSet(viewsets.ModelViewSet):
         except DareyooUserException as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-'''
-class MeRedirectView(RedirectView):
-    permanent = False
-    query_string = True
-    pattern_name = 'dareyoouser-detail'
-
-    def get_redirect_url(self, *args, **kwargs):
-        if not self.request.user.is_authenticated():
-            raise Http404
-        user_activated.send(sender=self.__class__, user=self.request.user)
-        kwargs.update({'pk': self.request.user.id})
-        rest = kwargs.pop('rest', '')
-        #https://github.com/django/django/blob/1.6.4/django/views/generic/base.py#L173
-        if self.url:
-            url = self.url % kwargs
-        elif self.pattern_name:
-            try:
-                url = reverse(self.pattern_name, args=args, kwargs=kwargs)
-            except NoReverseMatch:
-                return None
-        else:
-            return None
-        url += rest
-        args = self.request.META.get('QUERY_STRING', '')
-        if args and self.query_string:
-            url = "%s?%s" % (url, args)
-        if self.request.is_secure():
-            url = 'https://' + url
-        return url
-'''
-class MeRedirectView(APIView):
-    """
-    View to list all users in the system.
-
-    * Requires token authentication.
-    * Only admin users are able to access this view.
-    """
-    model = DareyooUser
-    def get(self, request, format=None):
-        """
-        Return a list of all users.
-        """
-        if not self.request.user.is_authenticated():
-            raise Http404
-        user_activated.send(sender=self.__class__, user=self.request.user)
-        return redirect('dareyoouser-detail', pk=self.request.user.id)
 
 class SearchFacebookFriendsList(generics.ListAPIView):
     model = DareyooUser
