@@ -295,6 +295,10 @@ class Bet(models.Model):
                          (CLAIM_LOST, "lost"),
                          (CLAIM_NULL, "null"))
 
+    BET_LOTTERY_TYPE_CHOICES = (("generic", "Generic"),
+                                ("football_result", "Football Result"),
+                                ("basketball_result", "Basketball Result"))
+
     author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='bets', blank=True, null=True)
     title = models.CharField(max_length=255, blank=True, null=True, default="")
     description = models.TextField(blank=True, null=True, default="")
@@ -303,6 +307,7 @@ class Bet(models.Model):
     referee_escrow = models.FloatField(blank=True, null=True, default=0)
     bet_type = models.PositiveSmallIntegerField(blank=True, null=True, choices=BET_TYPE_CHOICES, default=TYPE_SIMPLE)
     open_lottery = models.BooleanField(blank=True, default=True)
+    lottery_type = models.CharField(max_length=255, blank=True, null=True, choices=BET_LOTTERY_TYPE_CHOICES, default="generic")
     bet_state = FSMField(default='bidding')
     odds = models.FloatField(blank=True, null=True, default=2)
     accepted_bid = models.ForeignKey("Bid", blank=True, null=True, related_name='accepted')
@@ -825,6 +830,7 @@ class Bid(models.Model):
     claim_message = models.TextField(blank=True, null=True, default="")
     claim_author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='lottery_claimer', blank=True, null=True)
     participants = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='participated_bids', blank=True, null=True)
+    pic = models.ImageField(upload_to='bids', null=True, blank=True)
 
     def check_valid(self):
         if self.amount <= 0:
@@ -865,11 +871,29 @@ class Bid(models.Model):
         else:
             raise BetException("Can't complain on a bet that is not in complaining state (current state: %s)" % self.bet.bet_state)
 
+    def get_pic_url(self):
+        if self.pic:
+            return self.pic._get_url()
+        else:
+            return ""
+
     def __unicode__(self):
         return unicode(self.title) or unicode(self.id) or u"Bid object"
 
     class Meta:
         pass
+
+
+class BetChoice(models.Model):
+    bet = models.ForeignKey(Bet, related_name='choices', blank=True, null=True)
+    title = models.CharField(max_length=255, blank=True, null=True)
+    pic = models.ImageField(upload_to='bet_choices', null=True, blank=True)
+
+    def get_pic_url(self):
+        if self.pic:
+            return self.pic._get_url()
+        else:
+            return ""
 
 
 import bets.signals
