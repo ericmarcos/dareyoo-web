@@ -178,8 +178,8 @@ def register(request, format=None):
     save_profile_picture(**pipeline_params)
     save_username(**pipeline_params)
     save_reference_user(**pipeline_params)
-    save_registered(**pipeline_params)
     save_campaign(**pipeline_params)
+    save_registered(**pipeline_params)
     #promo_code(**pipeline_params)
     access_token = AccessTokenView().get_access_token(request,
         user,

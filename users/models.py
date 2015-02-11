@@ -297,11 +297,16 @@ class DareyooUser(AbstractEmailUser):
 
     def send_welcome_email(self):
         if self.email:
+            template_name = "Welcome"
+            if self.reference_campaign == 'widget_sport':
+                template_name = "Welcome Sport"
+            elif self.reference_campaign == 'widget_solobasket':
+                template_name = "Welcome Solobasket"
             kwargs = {
                 'from_addr': settings.DEFAULT_FROM_EMAIL,
                 'to_addr': self.email,
                 'subject_template': "email/signup/subject.txt",
-                'template_name': "Welcome",
+                'template_name': template_name,
                 'template_data': {
                     'FNAME': self.username,
                 }
