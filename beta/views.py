@@ -114,6 +114,10 @@ def faq(request):
     handle_campaign(request)
     return render_to_response('beta-faq.html', context_instance=RequestContext(request))
 
+def legal(request):
+    handle_campaign(request)
+    return render_to_response('beta-legal.html', context_instance=RequestContext(request))
+
 def mobile_notification(request):
     if request.is_ajax():
         email = request.POST.get('email')

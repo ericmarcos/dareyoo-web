@@ -1,0 +1,134 @@
+{% extends "beta-base.html" %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/landing.all.min.css">
+<!-- <link rel="stylesheet" href="{{ STATIC_URL }}beta/lib/bootstrap/dist/css/bootstrap.min.css"> -->
+<style type="text/css">
+    /*body, html { height: 100%; overflow: hidden; }*/
+    body {
+      position: relative;
+      padding-bottom: 100px;
+    }
+    h4 {
+        text-align: left;
+    }
+    .main-container {
+        /*overflow: scroll;*/
+        margin-top: 100px;
+        /*height: calc(100%-100px);
+        height: -moz-calc(100% - 100px);
+        height: -webkit-calc(100% - 100px);
+        height: -o-calc(100% - 100px);*/
+        height: 100%;
+        position: relative;
+    }
+    .dy-docs-sidebar>li>a { border-left: 5px transparent solid; font-size: 16px; font-weight: 300; }
+    .dy-docs-sidebar>li.active>a, .dy-docs-sidebar>li:hover>a {
+        border-left: 5px #fdd solid;
+        background-color: transparent;
+        font-weight: 400;
+    }
+    .dy-docs-sidebar>li>ul { display: none; font-size: 17px; font-weight: 300; }
+    .dy-docs-sidebar>li.active>ul { display: inline; }
+    .dy-docs-sidebar>li>ul>li>a { border-left: 5px transparent solid; padding: 4px 30px 0px; }
+    .dy-docs-sidebar>li>ul>li.active>a, .dy-docs-sidebar>li>ul>li:hover>a {
+        border-left: 5px #fdd solid;
+        background-color: transparent;
+        font-weight: 400;
+    }
+
+    .bs-callout {
+        padding: 20px;
+        margin: 20px 0;
+        border: 1px solid #eee;
+        border-left-width: 5px;
+        border-radius: 3px;
+    }
+    .bs-callout-info { border-left-color: #5bc0de; }
+    .bs-callout h4 { margin-top: 0; margin-bottom: 5px; }
+    .bs-callout-info h4 { color: #5bc0de; }
+
+    h1 { margin-top: 0px; }
+    p { margin: 10px 0px; }
+    ul.big-list { font-size: 19px; font-weight: 300; }
+    dl:last-child { margin-bottom: 0px; }
+    dt, dd { font-size: 16px; }
+    .dy-docs-sidebar { max-width: 280px; }
+
+</style>
+{% endblock %}
+
+{% block content %}
+{{ block.super }}
+
+<div class="container main-container">
+    <div class="row">
+        <div id="main-content" class="col-md-8 col-md-offset-2" role="main">
+            <h1>TÉRMINOS Y CONDICIONES GENERALES</h1>
+
+            <p class="lead">En cumplimiento de la Ley 34/2002 de Servicios de la Sociedad de la Información y del Comercio Electrónico (LSSICE), te informamos que dareyoo.com es un dominio de Internet y marca registrada por DAREYOO GAMING, S.L. (en adelante, Dareyoo), C.I.F. B66289133, con domicilio social en la Calle Consell de Cent, 289 entl.1ª 08011 Barcelona.</p>
+
+            <h3>Condiciones generales de utilización del servicio entre Dareyoo y el usuario:</h3>
+
+            <p>
+1. El usuario declara que dispone de capacidad legal necesaria para utilizar la plataforma de acuerdo con las condiciones más abajo desglosadas, las cuales declara comprender y aceptar.
+<br><br>
+El usuario se compromete a utilizar los servicios y contenidos en nuestro sitio web de conformidad con la Ley y los términos y condiciones generales y particulares de los servicios que ofrece Dareyoo.com en cada momento, debiendo abstenerse de emplearlos para:
+<br><br>
+(a) Transmitir a terceros no autorizados su nombre de usuario y su contraseña, debiendo comunicar inmediatamente a Dareyoo.com el acceso por parte de un usuario no autorizado a dicha información.
+<br><br>
+(b) Introducir en la red programas de datos susceptibles de provocar daños en los sistemas informáticos de Dareyoo.com, sus proveedores o terceros usuarios de la red interna o de este sitio web.
+<br><br>
+(c) Realizar actividades ilícitas, contrarias a la buena fe, a las costumbres, a la moral o al orden público.
+<br><br>
+(d) Realizar actividades que constituyan una infracción de la regulación sobre propiedad intelectual e industrial o cualquier otra norma del ordenamiento jurídico aplicable.
+<br><br>
+(e) Reproducir, duplicar, vender o explotar para fines comerciales cualquier contenido del sitio web.
+<br><br>
+(f) Difundir contenidos de carácter racista, xenófobo, pornográfico, de apología del terrorismo y/o que atenten contra los derechos humanos.
+<br><br>
+2. Al registrarse en Dareyoo.com, el usuario escogerá un nombre de usuario y contraseña. El usuario deberá custodiar debidamente las claves y contraseñas facilitadas para su acceso como usuario registrado, dado que son de carácter personal y confidencial, siendo el usuario responsable de su uso por una tercera persona a la que dicho usuario se las haya facilitado.
+<br><br>
+3. Dareyoo.com es titular de la base de datos generada con los datos de carácter personal suministrados por los usuarios en el proceso de uso de la plataforma. Dareyoo se compromete al cumplimiento de su obligación de secreto de los datos de carácter personal y de su deber de tratarlos con confidencialidad, y a tal fin Dareyoo adoptará las medidas necesarias para evitar su alteración, pérdida, tratamiento o acceso no autorizado, habida cuenta en todo momento del estado de la tecnología con arreglo a lo previsto en la legislación vigente en España en materia de protección de datos de carácter personal.
+<br><br>
+El usuario acepta que los datos personales facilitados sean incorporados a un fichero automatizado, cuya titularidad corresponde a Dareyoo con la finalidad de realizar encuestas de satisfacción y comunicaciones comerciales por correo electrónico sobre otros servicios o productos que Dareyoo considere que podrían ser del interés del usuario, por ser similares a los utilizados. En caso de que el usuario no desee recibir comunicaciones comerciales por medios electrónicos puede dirigirse en cualquier momento a Dareyoo enviando un correo electrónico a la siguiente dirección hi@dareyoo.com. El usuario también podrá ejercer sus derechos de acceso, rectificación, cancelación y oposición mediante comunicación escrita, adjuntando fotocopia del DNI o documento identificativo equivalente, ante DAREYOO GAMING, S.L. en Calle Consell de Cent, 289 entl.1ª 08011 Barcelona.
+<br><br>
+El usuario responderá, en cualquier caso, de la veracidad de los datos facilitados y se responsabilizará de comunicar a Dareyoo cualquier modificación en los mismos, reservándose Dareyoo el derecho a excluir de los servicios registrados a todo usuario que haya facilitado datos falsos, sin perjuicio de las demás acciones que procedan en Derecho.
+<br><br>
+4. Todos los contenidos, marcas, logos, dibujos etc. que figuran en la web de Dareyoo, se hallan protegidos por los derechos de propiedad intelectual e industrial que son expresamente reservados por Dareyoo o, en su caso, por las personas o empresas que figuran como autores o titulares de los derechos. La violación de los anteriores derechos será perseguida de conformidad con la legislación vigente.
+<br><br>
+Por lo tanto, queda prohibida la reproducción, explotación, alteración, distribución o comunicación pública por cualquier título o medio de la totalidad de los contenidos de la página web de Dareyoo para usos diferentes de la legítima información o contratación por los usuarios de los servicios ofertados. En todo caso será necesario el consentimiento previo por escrito de Dareyoo.
+<br><br>
+5. Los links o enlaces con otras páginas web que aparezcan en las páginas de Dareyoo se ofrecen a efectos meramente informativos al usuario, por lo que Dareyoo no se responsabiliza sobre los productos, servicios o contenidos que se oferten o suministren en las páginas de destino ubicados en otro dominio.
+<br><br>
+6. Cookies: En Dareyoo recogemos mediante el uso de cookies y utilizamos información de los usuarios para analizar su conducta al navegar en nuestra página web y de esta manera proporcionar nuestros servicios de manera más eficiente e introducir mejoras.
+<br><br>
+Una cookie es un pequeño archivo de datos que es transferido al disco duro de su ordenador. Dareyoo utiliza la tecnología de cookies para recopilar datos adicionales sobre el uso del sitio web. La navegación por la página web de Dareyoo implica consentir la instalación de las mismas (excepto en la medida en que el usuario haya modificado la configuración del navegador para rechazar cookies).
+<br><br>
+Enlaces: Con el fin de proveer una publicidad más adecuada a nuestros usuarios y mejorar nuestras ofertas, Dareyoo puede conservar información sobre cómo interactúas con enlaces que aparecen en nuestra página web o en nuestras notificaciones, redirigiendo clics o por otros medios.
+<br><br>
+Cesión de información: Contratamos a proveedores de servicios para llevar a cabo la prestación de los servicios que ofrecemos en nuestra página web. Podemos compartir sus datos personales con dichos proveedores de servicios con arreglo a obligaciones de confidencialidad compatibles con esta Política de Protección de Datos, y a condición de que los terceros utilicen sus datos personales únicamente por nuestra cuenta y conforme a nuestras instrucciones.
+<br><br>
+7. Si cualquier cláusula incluida en estas condiciones generales fuese declarada, total o parcialmente, nula o ineficaz, tal nulidad o ineficacia afectará tan sólo a dicha disposición o a la parte de la misma que resulte nula o ineficaz, subsistiendo las condiciones generales en todo lo demás, teniéndose tal disposición, o la parte de la misma que resultase afectada, por no puesta.
+<br><br>
+8. El usuario acepta que la legislación aplicable al funcionamiento de este servicio es la española. Serán competentes para conocer de las divergencias que se deriven de la interpretación o aplicación de este clausulado los Jueces y Tribunales del domicilio del consumidor.
+<br><br>
+9. Para cualquier sugerencia, consulta, queja o reclamación el usuario debe dirigirse a a DAREYOO GAMING, S.L. a la dirección Calle Consell de Cent, 289 entl.1ª 08011 Barcelona, o bien mediante comunicación electrónica a la dirección de correo hi@dareyoo.com
+            </p>
+           
+        </div>
+    </div>
+</div>
+
+<footer>
+    <!-- <p>Dareyoo Gaming. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>-->
+</footer>
+
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}beta/build/js/jquery.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}beta/build/js/bootstrap.min.js"></script>
+{% endblock %}
