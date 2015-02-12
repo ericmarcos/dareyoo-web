@@ -107,7 +107,7 @@ def save_campaign(strategy, backend, user, response, details,
     if not user.reference_campaign:
         try:
             if strategy.request.DATA.get('widget'):
-                user.reference_campaign = 'widget_' + request.DATA.get('widget')
+                user.reference_campaign = 'widget_' + strategy.request.DATA.get('widget')
             else:
                 utm_source = strategy.request.session.get('utm_source')
                 utm_medium = strategy.request.session.get('utm_medium')
