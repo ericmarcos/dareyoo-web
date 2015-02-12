@@ -4,13 +4,24 @@ from rest_framework import serializers, exceptions, status, pagination
 from users.serializers import *
 
 
-class BetChoiceSerializer(serializers.HyperlinkedModelSerializer):
+class BetChoiceSerializer(serializers.ModelSerializer):
     pic = serializers.Field(source='get_pic_url')
 
     class Meta:
         model = Bid
         fields = ("id", "title", "pic", )
 
+
+class BidShortSerializer(serializers.ModelSerializer):
+    author = DareyooUserShortSerializer(read_only=True)
+    participants = serializers.SerializerMethodField('get_participants')
+    pic = serializers.Field(source='get_pic_url')
+    
+    def get_participants(self, obj):
+        return obj.participants.count()
+
+    class Meta:
+        model = Bid
 
 class BidSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field(source='id')
@@ -27,9 +38,19 @@ class BidSerializer(serializers.HyperlinkedModelSerializer):
         model = Bid
 
 
+class BetShortSerializer(serializers.ModelSerializer):
+    author = DareyooUserShortSerializer(read_only=True)
+    bids = BidShortSerializer(many=True, read_only=True)
+    choices = BetChoiceSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Bet
+        fields = ('author', 'title','amount','bet_type','bet_state','odds','created_at',
+                    'id', 'bidding_deadline','event_deadline','public', 'bids', 
+                    'open_lottery', 'choices', 'lottery_type',)
+
 class BetSerializer(serializers.HyperlinkedModelSerializer):
     author = DareyooUserShortSerializer(read_only=True)
-    #type = serializers.Field(source='get_type_name')
     bids = BidSerializer(many=True, read_only=True)
     choices = BetChoiceSerializer(many=True, read_only=True)
     accepted_bid = BidSerializer(read_only=True)

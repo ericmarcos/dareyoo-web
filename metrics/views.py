@@ -16,25 +16,34 @@ from rest_framework import status
 from ipware.ip import get_ip
 from users.models import *
 from bets.models import Bet
+from .serializers import *
 from .models import *
 
 
 @api_view(['POST',])
 @permission_classes([])
 def widget_activation(request, widget, level, format=None):
-    levels = {"impression": 1, "interaction": 2, "register": 3, "login": 4, "share": 5, "banner": 6}
+    levels = {"impression": 1, "interaction": 2, "participate":3, "register": 4, "login": 5, "share": 6, "banner": 7}
     if level not in levels.keys():
         return Response({'detail': "Invalid activation level"}, status=status.HTTP_400_BAD_REQUEST)
     try:
+        w = Widget.objects.get(name=widget)
+        b = w.get_random_bets()
         WidgetActivation.objects.create(
-            widget=widget,
-            bet_id=request.DATA.get('bet_id'),
+            widget=w,
+            bet=b[0] if b else None,
             level=levels[level],
             from_ip=get_ip(request),
             from_host=request.META.get('HTTP_HOST'),
+            participate_result=request.DATA.get('result'),
+            medium_shared=request.DATA.get('medium'),
+            banner_clicked=request.DATA.get('banner')
         )
     except Exception, e:
         return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    if level == "impression":
+        serializer = WidgetSerializer(w, context={'request': request})
+        return Response(serializer.data)
     return Response({'status': 'created'})
 
 

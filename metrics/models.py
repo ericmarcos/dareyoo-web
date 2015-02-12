@@ -47,17 +47,66 @@ def weekly_cohort(joined_week, activation_level=1, campaign=None):
     return weeks
 
 
+class Widget(models.Model):
+    name = models.CharField(max_length=255, blank=True, null=True)
+    bets = models.ManyToManyField(Bet, related_name='widgets', blank=True, null=True)
+    next_bets = models.ManyToManyField(Bet, related_name='widgets_next', blank=True, null=True)
+    bg_pic = models.ImageField(upload_to='widget_bg', null=True, blank=True)
+    header_pic = models.ImageField(upload_to='widget_headers', null=True, blank=True)
+    header_link = models.URLField(blank=True, null=True)
+    footer_pic = models.ImageField(upload_to='widget_footers', null=True, blank=True)
+    footer_link = models.URLField(blank=True, null=True)
+
+    _random_bets = None
+    _random_next_bets = None
+
+    def get_bg_pic_url(self):
+        if self.bg_pic:
+            return self.bg_pic._get_url()
+        else:
+            return ""
+
+    def get_header_pic_url(self):
+        if self.header_pic:
+            return self.header_pic._get_url()
+        else:
+            return ""
+
+    def get_footer_pic_url(self):
+        if self.footer_pic:
+            return self.footer_pic._get_url()
+        else:
+            return ""
+
+    def get_random_bets(self):
+        if not self._random_bets:
+            self._random_bets = list(self.bets.order_by('?'))
+        return self._random_bets
+
+    def get_random_next_bets(self):
+        if not self._random_next_bets:
+            self._random_next_bets = list(self.next_bets.order_by('?'))
+        return self._random_next_bets
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+
 class WidgetActivation(models.Model):
     LEVEL_IMPRESSION = 1
     LEVEL_INTERACTION = 2
-    LEVEL_REGISTER = 3
-    LEVEL_LOGIN = 4
-    LEVEL_SHARE = 5
-    LEVEL_BANNER_CLICK = 6
+    LEVEL_PARTICIPATE = 3
+    LEVEL_REGISTER = 4
+    LEVEL_LOGIN = 5
+    LEVEL_SHARE = 6
+    LEVEL_BANNER_CLICK = 7
 
-    widget = models.CharField(max_length=255, blank=True, null=True)
+    widget = models.ForeignKey(Widget, related_name='activations', blank=True, null=True)
     bet = models.ForeignKey(Bet, related_name='widget_activations', blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True, blank=True, null=True, editable=False)
     level = models.IntegerField(blank=True, null=True, default=1)
     from_ip = models.GenericIPAddressField(blank=True, null=True)
     from_host = models.CharField(max_length=255, blank=True, null=True)
+    participate_result = models.CharField(max_length=255, blank=True, null=True)
+    medium_shared = models.CharField(max_length=255, blank=True, null=True) #What medium was shared through (fb, tw...)?
+    banner_clicked = models.CharField(max_length=255, blank=True, null=True) #What banner was clicked (footer, header...)?
