@@ -80,12 +80,12 @@ class Widget(models.Model):
 
     def get_random_bets(self):
         if not self._random_bets:
-            self._random_bets = list(self.bets.order_by('?'))
+            self._random_bets = list(self.bets.all().bidding().order_by('?'))
         return self._random_bets
 
     def get_random_next_bets(self):
         if not self._random_next_bets:
-            self._random_next_bets = list(self.next_bets.order_by('?'))
+            self._random_next_bets = list(self.next_bets.all().bidding().order_by('?'))
         return self._random_next_bets
 
     def __unicode__(self):
