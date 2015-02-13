@@ -97,7 +97,7 @@ class Widget(models.Model):
     def interactions_formatted(self):
         n = self.interactions()
         try:
-            return "{0:n} ({0:.0f}%)".format(n, float(n)/self.impressions() * 100)
+            return "{0:n} ({1:.1f}%)".format(n, float(n)/self.impressions() * 100)
         except ZeroDivisionError:
             return "{0:n} (--)".format(n)
     interactions_formatted.short_description = 'Interactions'
@@ -108,7 +108,7 @@ class Widget(models.Model):
     def participate_clicks_formatted(self):
         n = self.participate_clicks()
         try:
-            return "{0:n} ({0:.0f}%)".format(n, float(n)/self.impressions() * 100)
+            return "{0:n} ({1:.1f}%)".format(n, float(n)/self.impressions() * 100)
         except ZeroDivisionError:
             return "{0:n} (--)".format(n)
     participate_clicks_formatted.short_description = 'Participate clicks'
@@ -119,7 +119,7 @@ class Widget(models.Model):
     def registers_formatted(self):
         n = self.registers()
         try:
-            return "{0:n} ({0:.0f}%)".format(n, float(n)/self.participate_clicks() * 100)
+            return "{0:n} ({1:.1f}%)".format(n, float(n)/self.participate_clicks() * 100)
         except ZeroDivisionError:
             return "{0:n} (--)".format(n)
     registers_formatted.short_description = 'Registers'
@@ -130,7 +130,7 @@ class Widget(models.Model):
     def logins_formatted(self):
         n = self.logins()
         try:
-            return "{0:n} ({0:.0f}%)".format(n, float(n)/self.participate_clicks() * 100)
+            return "{0:n} ({1:.1f}%)".format(n, float(n)/self.participate_clicks() * 100)
         except ZeroDivisionError:
             return "{0:n} (--)".format(n)
     logins_formatted.short_description = 'Logins'
@@ -141,7 +141,7 @@ class Widget(models.Model):
     def shares_formatted(self):
         n = self.shares()
         try:
-            return "{0:n} ({0:.0f}%)".format(n, float(n)/(self.registers() + self.logins()) * 100)
+            return "{0:n} ({1:.1f}%)".format(n, float(n)/(self.registers() + self.logins()) * 100)
         except ZeroDivisionError:
             return "{0:n} (--)".format(n)
     shares_formatted.short_description = 'Shares'
@@ -152,7 +152,7 @@ class Widget(models.Model):
     def banner_clicks_formatted(self):
         n = self.banner_clicks()
         try:
-            return "{0:n} ({0:.0f}%)".format(n, float(n)/self.impressions() * 100)
+            return "{0:n} ({1:.1f}%)".format(n, float(n)/self.impressions() * 100)
         except ZeroDivisionError:
             return "{0:n} (--)".format(n)
     banner_clicks_formatted.short_description = 'Banner clicks'
