@@ -566,7 +566,10 @@ class Bet(models.Model):
             raise BetException("Can't remove a bid from this bet because it's not on bidding sate (current state:%s)" % self.bet_state)
     
     def get_top_voted_results(self):
-        return self.bids.all().annotate(np=Count('participants')).order_by('-np')[:3]
+        if "result" in self.lottery_type:
+            return self.bids.all().annotate(np=Count('participants')).order_by('-np')[:3]
+        else:
+            return self.bids.all()
 
     def accept_bet(self, user):
         if self.is_bidding():
