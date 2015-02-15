@@ -40,7 +40,8 @@ class BidSerializer(serializers.HyperlinkedModelSerializer):
 
 class BetShortSerializer(serializers.ModelSerializer):
     author = DareyooUserShortSerializer(read_only=True)
-    bids = BidShortSerializer(many=True, read_only=True)
+    #bids = BidShortSerializer(many=True, read_only=True)
+    bids = BidShortSerializer(many=True, read_only=True, source='get_top_voted_results')
     choices = BetChoiceSerializer(many=True, read_only=True)
 
     class Meta:

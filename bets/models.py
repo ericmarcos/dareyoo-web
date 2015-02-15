@@ -8,6 +8,7 @@ from django.db import models
 from django.conf import settings
 from django.db.models.query import QuerySet
 from django.db.models import Sum, Q, F
+from django.db.models.aggregates import Count
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django_fsm.db.fields import FSMField, transition
@@ -563,6 +564,9 @@ class Bet(models.Model):
                 user_activated.send(sender=self.__class__, user=self.author, level=2)
         else:
             raise BetException("Can't remove a bid from this bet because it's not on bidding sate (current state:%s)" % self.bet_state)
+    
+    def get_top_voted_results(self):
+        return self.bids.all().annotate(np=Count('participants')).order_by('-np')[:3]
 
     def accept_bet(self, user):
         if self.is_bidding():
