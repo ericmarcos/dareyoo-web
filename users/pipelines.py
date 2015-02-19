@@ -74,7 +74,10 @@ def save_reference_user(strategy, backend, user, response, details,
     if not user.reference_user:
         request = getattr(strategy, 'request', kwargs.get('request'))
         try:
-            reference_user_id = int(request.session.get('from', '0')) or None
+            if request:
+                reference_user_id = int(request.session.get('from', '0')) or None
+            else:
+                reference_user_id = int(kwargs.get('from', '0')) or None
             ref_user = DareyooUser.objects.get(id=reference_user_id)
             user.reference_user = ref_user
             user.save()
@@ -108,13 +111,22 @@ def save_campaign(strategy, backend, user, response, details,
     if not user.reference_campaign:
         try:
             request = getattr(strategy, 'request', kwargs.get('request'))
-            if request.DATA.get('widget'):
-                user.reference_campaign = 'widget_' + request.DATA.get('widget')
+            if request:
+                if request.DATA.get('widget'):
+                    user.reference_campaign = 'widget_' + request.DATA.get('widget')
+                else:
+                    utm_source = request.session.get('utm_source')
+                    utm_medium = request.session.get('utm_medium')
+                    utm_campaign = request.session.get('utm_campaign')
+                    user.reference_campaign = "%s_%s_%s" % (utm_source, utm_medium, utm_campaign)
             else:
-                utm_source = request.session.get('utm_source')
-                utm_medium = request.session.get('utm_medium')
-                utm_campaign = request.session.get('utm_campaign')
-                user.reference_campaign = "%s_%s_%s" % (utm_source, utm_medium, utm_campaign)
+                if kwargs.get('widget'):
+                    user.reference_campaign = 'widget_' + kwargs.get('widget')
+                else:
+                    utm_source = kwargs.get('utm_source')
+                    utm_medium = kwargs.get('utm_medium')
+                    utm_campaign = kwargs.get('utm_campaign')
+                    user.reference_campaign = "%s_%s_%s" % (utm_source, utm_medium, utm_campaign)
             user.save()
         except:
             pass
@@ -123,7 +135,10 @@ def promo_code(strategy, backend, user, response, details,
                     is_new=False, *args, **kwargs):
     request = getattr(strategy, 'request', kwargs.get('request'))
     try:
-        code = request.POST.get('promo_code') or request.session.get('promo_code')
+        if request:
+            code = request.POST.get('promo_code') or request.session.get('promo_code')
+        else:
+            code = kwargs.get('promo_code')
     except:
         pass
     if code:

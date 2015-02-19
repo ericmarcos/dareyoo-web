@@ -23,6 +23,7 @@ from rest_framework.exceptions import MethodNotAllowed
 from .models import *
 from .serializers import *
 from .pipelines import *
+from .tasks import prepare_register_task
 from .signals import user_activated
 
 
@@ -169,24 +170,15 @@ def register(request, format=None):
         if len(user) > 0:
             user = user[0]
         else:
-            user = DareyooUser(email=email)
+            user = DareyooUser(email=email, username=email.split("@")[0])
             user.set_password(password)
             user.save()
-        #Social pipeline
-    pipeline_params = {'strategy': None, 'backend':None, 'user': user, 'response':None,
-                    'details': None, 'is_new': True, 'request': request}
-    save_profile_picture(**pipeline_params)
-    save_username(**pipeline_params)
-    save_reference_user(**pipeline_params)
-    save_campaign(**pipeline_params)
-    save_registered(**pipeline_params)
-    #promo_code(**pipeline_params)
+    prepare_register_task(user, request)
     access_token = AccessTokenView().get_access_token(request,
         user,
         scope.to_int('read', 'write'),
         client
     )
-    user_activated.send(sender=None, user=user)
     return Response(
         {'access_token': access_token.token,
         'expires_in': access_token.get_expire_delta(),

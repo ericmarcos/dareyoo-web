@@ -1,14 +1,15 @@
 from datetime import datetime, timedelta
 from celery import shared_task
+from celery.execute import send_task
 from users.models import *
 from django.conf import settings
 from django.utils.timezone import now
-
 from django.core.mail import EmailMultiAlternatives, EmailMessage
 from django.template import Context
 from django.template.loader import render_to_string
-
 import mailchimp
+from .signals import user_activated
+from .pipelines import *
 
 @shared_task(name='free_coins')
 def free_coins(**kwargs):
@@ -95,3 +96,30 @@ def register_email_mailchimp(**kwargs):
             dy_news_list.subscribe(user.email, {'EMAIL': user.email, 'FNAME': user.username}, double_optin=False)
         except:
             pass
+
+
+def prepare_register_task(user, request):
+    kwargs = {
+        'user_id': user.id,
+        'from': request.session.get('from'),
+        'widget': request.DATA.get('widget'),
+        'utm_source': request.session.get('utm_source'),
+        'utm_medium': request.session.get('utm_medium'),
+        'utm_campaign': request.session.get('utm_campaign'),
+        'promo_code': request.POST.get('promo_code') or request.session.get('promo_code')
+    }
+    send_task('register_user_pipeline', kwargs=kwargs)
+
+@shared_task(name='register_user_pipeline')
+def register_user_pipeline(**kwargs):
+    user_id = kwargs.get('user_id')
+    user = DareyooUser.objects.get(id=user_id)
+    pipeline_params = {'strategy': None, 'backend':None, 'user': user, 'response':None,
+                    'details': None, 'is_new': True}
+    pipeline_params.update(kwargs)
+    save_profile_picture(**pipeline_params)
+    save_username(**pipeline_params)
+    save_reference_user(**pipeline_params)
+    save_campaign(**pipeline_params)
+    save_registered(**pipeline_params)
+    user_activated.send(sender=None, user=user)
