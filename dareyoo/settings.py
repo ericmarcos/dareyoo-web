@@ -310,7 +310,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 ### REDIS ###
 import urlparse
 
-redis_url = urlparse.urlparse(os.environ.get('REDISTOGO_URL', 'redis://localhost:6379'))
+redis_url = urlparse.urlparse(os.environ.get('REDISCLOUD_URL', 'redis://localhost:6379'))
 
 CACHES = {
     'default': {
