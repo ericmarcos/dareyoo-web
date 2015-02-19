@@ -787,6 +787,8 @@ class Bet(models.Model):
             self.closed_conflict()
 
     def __unicode__(self):
+        if self.title:
+            return unicode(self.id) + " - " + unicode(self.title)
         return unicode(self.title) or unicode(self.id) or u"Bet object"
 
 
