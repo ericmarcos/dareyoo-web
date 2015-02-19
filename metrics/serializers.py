@@ -13,4 +13,4 @@ class WidgetSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Widget
-        fields = ('name', 'bets', 'next_bets', 'bg_pic', 'header_pic', 'header_link', 'footer_pic', 'footer_link',)
+        fields = ('name', 'bets', 'next_bets', 'bg_pic', 'header_pic', 'header_link', 'footer_pic', 'footer_link', 'twitter_share_text',)

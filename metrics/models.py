@@ -56,6 +56,7 @@ class Widget(models.Model):
     header_link = models.URLField(blank=True, null=True)
     footer_pic = models.ImageField(upload_to='widget_footers', null=True, blank=True)
     footer_link = models.URLField(blank=True, null=True)
+    twitter_share_text = models.CharField(max_length=255, blank=True, null=True, help_text="Per posar un hashtag, escriure %23 en comptes de #. Per posar el resultat, escriure {0}")
 
     _random_bets = None
     _random_next_bets = None
