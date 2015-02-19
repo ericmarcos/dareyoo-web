@@ -521,7 +521,7 @@ class Bet(models.Model):
         else:
             raise BetException("Author can't be None")
 
-    def add_bid(self, bid, user):
+    def add_bid(self, bid, user, auto_participate=False):
         auction_bid_limit = 3
         if self.is_bidding():
             #TODO: think if we should limit the number of bids per user per bet.
@@ -549,6 +549,8 @@ class Bet(models.Model):
             user_activated.send(sender=self.__class__, user=user, level=2)
             if self.is_simple():
                 self.accept_bid(bid.id)
+            if self.is_lottery() and auto_participate:
+                bid.add_participant(user)
         else:
             raise BetException("Can't add a bid to this bet because it's not on bidding sate (current state:%s)" % self.bet_state)
 

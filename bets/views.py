@@ -84,7 +84,8 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
             if serializer.is_valid():
                 bid = serializer.object
                 try:
-                    bet.add_bid(bid, user)
+                    auto_participate = request.QUERY_PARAMS.get('auto_participate', False)
+                    bet.add_bid(bid, user, auto_participate)
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 except (BetException, DareyooUserException) as e:
                     return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
