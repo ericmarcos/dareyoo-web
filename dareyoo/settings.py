@@ -306,3 +306,19 @@ DEFAULT_FROM_EMAIL = 'Dareyoo <no-reply@dareyoo.com>'
 ### CORS ###
 CORS_URLS_REGEX = r'^(/api/v1.*|/oauth2/.*)$'
 CORS_ORIGIN_ALLOW_ALL = True
+
+### REDIS ###
+import urlparse
+
+redis_url = urlparse.urlparse(os.environ.get('REDISTOGO_URL', 'redis://localhost:6379'))
+
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': '%s:%s' % (redis_url.hostname, redis_url.port),
+        'OPTIONS': {
+            'DB': 0,
+            'PASSWORD': redis_url.password,
+        }
+    }
+}

@@ -11,6 +11,7 @@ from django.http import *
 from django.shortcuts import render_to_response,redirect, get_object_or_404
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.cache import cache
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
@@ -30,16 +31,6 @@ def widget_activation(request, widget, level, format=None):
         return Response({'detail': "Invalid activation level"}, status=status.HTTP_400_BAD_REQUEST)
     try:
         bet_id = request.DATA.get('bet_id')
-        if level == "impression":
-            participated_bets = request.DATA.get('participated_bets')
-            #get widget from redis
-            w = Widget.objects.get(name=widget)
-            available_bets = [b.id for b in w.get_bets() if b.id not in participated_bets]
-            first_bet_id = None
-            if available_bets:
-                first_bet_id = random.choice(available_bets)
-                bet_id = first_bet_id
-
         widget_activation_params = {
             'widget_name': widget,
             'bet_id': bet_id,
@@ -51,12 +42,24 @@ def widget_activation(request, widget, level, format=None):
             'banner_clicked': request.DATA.get('banner')
         }
         send_task('save_widget_activation', kwargs=widget_activation_params)
+
+        if level == "impression":
+            participated_bets = request.DATA.get('participated_bets')
+            widget_json = cache.get("widget_" + widget)
+            if not widget_json:
+                w = Widget.objects.get(name=widget)
+                serializer = WidgetSerializer(w, context={'request': request})
+                widget_json = serializer.data
+                cache.set("widget_" + widget, widget_json, 30)
+            available_bets = [b.get('id') for b in widget_json.get('bets') if b.get('id') not in participated_bets]
+            first_bet_id = None
+            if available_bets:
+                first_bet_id = random.choice(available_bets)
+                bet_id = first_bet_id
+            widget_json.update({'first_bet_id': first_bet_id})
+            return Response(widget_json)
     except Exception, e:
         return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    if level == "impression":
-        serializer = WidgetSerializer(w, context={'request': request})
-        serializer.data.update({'first_bet_id': first_bet_id})
-        return Response(serializer.data)
     return Response({'status': 'created'})
 
 
