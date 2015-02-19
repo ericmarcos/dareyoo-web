@@ -9,7 +9,7 @@ from .models import *
 def save_widget_activation(**kwargs):
     WidgetActivation.objects.create(
         widget=Widget.objects.get(name=kwargs.get('widget_name')),
-        bet=kwargs.get('bet_id'),
+        bet_id=kwargs.get('bet_id'),
         level=kwargs.get('level'),
         from_ip=kwargs.get('from_ip'),
         from_host=kwargs.get('from_host'),
