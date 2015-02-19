@@ -13,7 +13,6 @@ class BetChoiceSerializer(serializers.ModelSerializer):
 
 
 class BidShortSerializer(serializers.ModelSerializer):
-    author = DareyooUserShortSerializer(read_only=True)
     participants = serializers.SerializerMethodField('get_participants')
     pic = serializers.Field(source='get_pic_url')
     
@@ -22,6 +21,7 @@ class BidShortSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Bid
+        fields = ('id','title','pic','participants',)
 
 class BidSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field(source='id')
@@ -40,13 +40,12 @@ class BidSerializer(serializers.HyperlinkedModelSerializer):
 
 class BetShortSerializer(serializers.ModelSerializer):
     author = DareyooUserShortSerializer(read_only=True)
-    #bids = BidShortSerializer(many=True, read_only=True)
     bids = BidShortSerializer(many=True, read_only=True, source='get_top_voted_results')
     choices = BetChoiceSerializer(many=True, read_only=True)
 
     class Meta:
         model = Bet
-        fields = ('author', 'title','amount','bet_type','bet_state','odds','created_at',
+        fields = ('title','amount','bet_type','bet_state','odds','created_at',
                     'id', 'bidding_deadline','event_deadline','public', 'bids', 
                     'open_lottery', 'choices', 'lottery_type',)
 
