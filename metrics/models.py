@@ -79,6 +79,9 @@ class Widget(models.Model):
         else:
             return ""
 
+    def get_bets(self):
+        return list(self.bets.all().bidding())
+
     def get_random_bets(self):
         if not self._random_bets:
             self._random_bets = list(self.bets.all().bidding().order_by('?'))

@@ -1,4 +1,5 @@
 import re
+import random
 from django.core.urlresolvers import reverse
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
@@ -13,6 +14,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
+from celery.execute import send_task
 from ipware.ip import get_ip
 from users.models import *
 from bets.models import Bet
@@ -27,22 +29,33 @@ def widget_activation(request, widget, level, format=None):
     if level not in levels.keys():
         return Response({'detail': "Invalid activation level"}, status=status.HTTP_400_BAD_REQUEST)
     try:
-        w = Widget.objects.get(name=widget)
-        b = w.get_random_bets()
-        WidgetActivation.objects.create(
-            widget=w,
-            bet=b[0] if b else None,
-            level=levels[level],
-            from_ip=get_ip(request),
-            from_host=request.META.get('HTTP_HOST'),
-            participate_result=request.DATA.get('result'),
-            medium_shared=request.DATA.get('medium'),
-            banner_clicked=request.DATA.get('banner')
-        )
+        bet_id = request.DATA.get('bet_id')
+        if level == "impression":
+            participated_bets = request.DATA.get('participated_bets')
+            #get widget from redis
+            w = Widget.objects.get(name=widget)
+            available_bets = [b.id for b in w.get_bets() if b.id not in participated_bets]
+            first_bet_id = None
+            if available_bets:
+                first_bet_id = random.choice(available_bets)
+                bet_id = first_bet_id
+
+        widget_activation_params = {
+            'widget_name': widget,
+            'bet_id': bet_id,
+            'level': levels[level],
+            'from_ip': get_ip(request),
+            'from_host': request.META.get('HTTP_HOST'),
+            'participate_result': request.DATA.get('result'),
+            'medium_shared': request.DATA.get('medium'),
+            'banner_clicked': request.DATA.get('banner')
+        }
+        send_task('save_widget_activation', kwargs=widget_activation_params)
     except Exception, e:
         return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     if level == "impression":
         serializer = WidgetSerializer(w, context={'request': request})
+        serializer.data.update({'first_bet_id': first_bet_id})
         return Response(serializer.data)
     return Response({'status': 'created'})
 

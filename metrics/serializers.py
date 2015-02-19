@@ -5,7 +5,7 @@ from bets.serializers import BetShortSerializer
 
 
 class WidgetSerializer(serializers.ModelSerializer):
-    bets = BetShortSerializer(many=True, read_only=True, source='get_random_bets')
+    bets = BetShortSerializer(many=True, read_only=True, source='get_bets')
     next_bets = BetShortSerializer(many=True, read_only=True, source='get_random_next_bets')
     bg_pic = serializers.Field(source='get_bg_pic_url')
     header_pic = serializers.Field(source='get_header_pic_url')
