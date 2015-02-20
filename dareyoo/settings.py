@@ -97,7 +97,24 @@ WSGI_APPLICATION = '%s.wsgi.application' % PROJECT_NAME
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-DATABASES = {'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))}
+class MasterSlaveRouter(object):
+    def db_for_read(self, model, **hints):
+        return 'read-only'
+
+    def db_for_write(self, model, **hints):
+        return 'default'
+
+    def allow_relation(self, obj1, obj2, **hints):
+        return True
+
+    def allow_syncdb(self, db, model):
+        return True
+
+DATABASES = {
+    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL')),
+    'read-only': dj_database_url.config(default=os.environ.get('HEROKU_POSTGRESQL_ONYX_URL'))
+}
+DATABASE_ROUTERS = ['dareyoo.settings.MasterSlaveRouter',]
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
