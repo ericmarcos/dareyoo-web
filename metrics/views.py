@@ -30,10 +30,9 @@ def widget_activation(request, widget, level, format=None):
     if level not in levels.keys():
         return Response({'detail': "Invalid activation level"}, status=status.HTTP_400_BAD_REQUEST)
     try:
-        bet_id = request.DATA.get('bet_id')
         widget_activation_params = {
             'widget_name': widget,
-            'bet_id': bet_id,
+            'bet_id': request.DATA.get('bet_id'),
             'level': levels[level],
             'from_ip': get_ip(request),
             'from_host': request.META.get('HTTP_HOST'),
@@ -41,10 +40,9 @@ def widget_activation(request, widget, level, format=None):
             'medium_shared': request.DATA.get('medium'),
             'banner_clicked': request.DATA.get('banner')
         }
-        send_task('save_widget_activation', kwargs=widget_activation_params)
 
         if level == "impression":
-            participated_bets = request.DATA.get('participated_bets')
+            participated_bets = request.DATA.get('participated_bets', [])
             widget_json = cache.get("widget_" + widget)
             if not widget_json:
                 w = Widget.objects.get(name=widget)
@@ -55,9 +53,11 @@ def widget_activation(request, widget, level, format=None):
             first_bet_id = None
             if available_bets:
                 first_bet_id = random.choice(available_bets)
-                bet_id = first_bet_id
+                widget_activation_params['bet_id'] = first_bet_id
             widget_json.update({'first_bet_id': first_bet_id})
+            send_task('save_widget_activation', kwargs=widget_activation_params)
             return Response(widget_json)
+        send_task('save_widget_activation', kwargs=widget_activation_params)
     except Exception, e:
         return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     return Response({'status': 'created'})
