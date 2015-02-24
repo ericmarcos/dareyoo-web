@@ -567,6 +567,16 @@ class Bet(models.Model):
         else:
             raise BetException("Can't remove a bid from this bet because it's not on bidding sate (current state:%s)" % self.bet_state)
     
+    def merge_bids(self):
+        for b1 in self.bids.all():
+            for b2 in self.bids.all():
+                try:
+                    if b1 != b2 and b1.title.replace(" ", "") == b2.title.replace(" ", ""):
+                        b1.participants.add(*list(b2.participants.all()))
+                        b2.delete()
+                except:
+                    pass
+
     def get_top_voted_results(self):
         if self.lottery_type and "result" in self.lottery_type:
             return self.bids.all().annotate(np=Count('participants')).order_by('-np')[:3]
