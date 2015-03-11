@@ -177,7 +177,7 @@ def main(request):
     burnt_coins = 0
     new_real_users_percent = int(round(float(new_real_users) / max(n_users_before, 1) * 100))
 
-    start_date = timezone.datetime(year=2014, month=6, day=1, tzinfo=pytz.UTC)
+    start_date = timezone.datetime(year=2014, month=10, day=1, tzinfo=pytz.UTC)
     cohort_weeks = rrule.rrule(rrule.WEEKLY, dtstart=start_date, until=timezone.now())
     cohorts = []
     cohort_level = ['login', 'participate', 'create'].index(request.GET.get('activation', 'login'))
