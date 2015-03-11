@@ -81,6 +81,43 @@
             <p><small>** les monedes cremades encara no es calculen</small></p>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Cohorts</h1>
+            <div class="btn-group pull-right">
+              <a type="button" href="?activation=login" class="btn btn-default{% if activation == "login" %} active{% endif %}">Login</a>
+              <a type="button" href="?activation=participate" class="btn btn-default{% if activation == "participate" %} active{% endif %}">Participar</a>
+              <a type="button" href="?activation=create" class="btn btn-default{% if activation == "create" %} active{% endif %}">Crear</a>
+            </div>
+            <br>
+            <br>
+            <table class="">
+                {% for cohort in cohorts %}
+                <tr>
+                    {% for c in cohort %}
+                        {% if c.keys %}
+                        <td><button style="min-width:46px; background-color:rgb(255, {{c.color}}, {{c.color}})" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="left" title="{{ c.total }}">{% widthratio c.percent 1 100 %}</button></td>
+                        {% else %}
+                        <td><b style="padding-right: 6px">{{ c }}</b></td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
 </div>
+
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}beta/build/js/jquery.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}beta/build/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+    })
+</script>
 
 {% endblock %}

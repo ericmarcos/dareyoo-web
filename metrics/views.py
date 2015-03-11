@@ -1,5 +1,7 @@
 import re
 import random
+import pytz
+from dateutil import rrule
 from django.core.urlresolvers import reverse
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
@@ -91,6 +93,10 @@ def main(request):
         request.session['prev'] = request.GET.get('prev')
     elif not request.session.get('prev'):
         request.session['prev'] = 0
+    if request.GET.get('activation') and request.GET.get('activation') in ['login', 'participate', 'create']:
+        request.session['activation'] = request.GET.get('activation')
+    else:
+        request.session['activation'] = 'login'
     n = DareyooUser.objects.n()
     fake = DareyooUser.objects.all().staff().count()
     leads = DareyooUser.objects.all().registered(False).count()
@@ -170,6 +176,21 @@ def main(request):
     percent_new_paying_coins = int(round(float(new_paying_coins) / new_coins * 100)) if new_coins > 0 else 0
     burnt_coins = 0
     new_real_users_percent = int(round(float(new_real_users) / max(n_users_before, 1) * 100))
+
+    start_date = timezone.datetime(year=2014, month=6, day=1, tzinfo=pytz.UTC)
+    cohort_weeks = rrule.rrule(rrule.WEEKLY, dtstart=start_date, until=timezone.now())
+    cohorts = []
+    cohort_level = ['login', 'participate', 'create'].index(request.GET.get('activation', 'login'))
+    for i in xrange(cohort_weeks.count()):
+        current_week = start_date + timezone.timedelta(weeks=cohort_weeks.count()-i)
+        wc = weekly_cohort(i, activation_level=cohort_level)
+        carray = [{
+            'percent': c/float(wc[0]) if wc[0] else 0,
+            'total': c,
+            'color': int(200 - 200*c/float(wc[0])) if wc[0] else 200
+            } for c in wc]
+        cohorts.append([current_week.strftime('%d/%m/%Y')] + carray)
+    cohorts = reversed(cohorts)
     context = {
         'total_real_users': n,
         'total_fake_users': fake,
@@ -216,5 +237,7 @@ def main(request):
         'percent_new_free_coins': percent_new_free_coins,
         'percent_new_paying_coins': percent_new_paying_coins,
         'burnt_coins': burnt_coins,
+        'activation': request.GET.get('activation', 'login'),
+        'cohorts': cohorts,
     }
     return render_to_response('metrics.html', context_instance=RequestContext(request, context))
