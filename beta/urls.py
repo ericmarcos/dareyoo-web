@@ -21,4 +21,5 @@ urlpatterns = patterns('',
     url(r'^mobile-notification/$', 'beta.views.mobile_notification', name='beta-mobile-notification'),
     url(r'^app', 'beta.views.app', name='beta-home'),
     url(r'^proposito-2015/$', 'beta.views.campaign_ny2015_view', name='beta-ny2015'),
+    url(r'^robots\.txt$', TemplateView.as_view(template_name="robots.txt"), name='beta-robots'),
 )
