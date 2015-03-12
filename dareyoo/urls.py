@@ -1,6 +1,8 @@
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.contrib.sitemaps.views import sitemap
+from django.contrib import sitemaps
 from django.contrib import admin
 from users.views import *
 from bets.views import *
@@ -32,7 +34,27 @@ extra_api_urls = patterns('',
 
 admin.autodiscover()
 
+class StaticViewSitemap(sitemaps.Sitemap):
+    priority = 0.5
+    changefreq = 'monthly'
+
+    def items(self):
+        return ['beta-register', 'beta-login', 'beta-landing', 'beta-how-to', 'beta-faq']
+
+    def location(self, item):
+        return reverse(item)
+
+sitemaps = {
+    'static': StaticViewSitemap,
+    'bets': sitemaps.GenericSitemap({
+        'queryset': Bet.objects.all().public(),
+        'date_field': 'created_at',
+    }, priority=0.6)
+}
+
 urlpatterns = patterns('',
+    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
+    name='django.contrib.sitemaps.views.sitemap'),
     url(r'^', include('beta.urls')),
     url(r'^', include('metrics.urls')),
     #url(r'^alpha/', include('alpha.urls')),

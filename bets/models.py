@@ -11,11 +11,13 @@ from django.db.models import Sum, Q, F
 from django.db.models.aggregates import Count
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 from django_fsm.db.fields import FSMField, transition
 from rest_framework.exceptions import APIException
 from celery.execute import send_task
 from users.models import *
 from users.signals import user_activated
+from users.pipelines import unique_slugify
 
 
 class BetException(APIException):
@@ -302,6 +304,7 @@ class Bet(models.Model):
 
     author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='bets', blank=True, null=True)
     title = models.CharField(max_length=255, blank=True, null=True, default="")
+    slug = models.SlugField(max_length=255, blank=True, null=True, default="")
     description = models.TextField(blank=True, null=True, default="")
     tags = models.CharField(max_length=255, blank=True, null=True)
     amount = models.FloatField(blank=True, null=True, default=0)
@@ -334,6 +337,14 @@ class Bet(models.Model):
 
     class Meta:
         pass
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            unique_slugify(self, self.title)
+        super(Bet, self).save(*args, **kwargs)
+
+    def get_absolute_url(self, *args, **kwargs):
+        return reverse('beta-app-bet-detail', kwargs={'slug': self.slug})
 
     def check_valid(self):
         if not self.event_deadline:

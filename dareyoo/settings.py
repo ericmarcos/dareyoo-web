@@ -34,6 +34,7 @@ PROJECT_NAME = os.environ.get('PROJECT_NAME', 'django_template')
 
 ALLOWED_HOSTS = ['dareyoo.herokuapp.com', 'dareyoo-pro.herokuapp.com', 'dareyoo-pre.herokuapp.com', '.dareyoo.com', '.dareyoo.net', '.dareyoo.es']
 
+SITE_ID = 1
 
 # Application definition
 
@@ -44,6 +45,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
 #    'social_auth',
     'south',
     'gunicorn',

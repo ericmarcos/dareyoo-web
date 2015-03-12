@@ -88,9 +88,14 @@ def app(request):
     handle_campaign(request)
     context = {'fb_key': settings.SOCIAL_AUTH_FACEBOOK_KEY}
     #Setting 'from' session, to measure virality
-    r = re.search(r'bet/(?P<id>\d*)', request.path)
+    r = re.search(r'bet/(?P<id>\d*)/?$', request.path)
     if r:
         b = Bet.objects.filter(id=r.group('id'))
+        if len(b) > 0:
+            return redirect('/app/main/bet/%s' % b[0].slug, permanent=True)
+    r = re.search(r'bet/(?P<slug>\w*)/?$', request.path)
+    if r:
+        b = Bet.objects.filter(slug=r.group('slug'))
         if len(b) > 0: 
             request.session['from'] = b[0].author_id
         fb_useragent = "facebookexternalhit"

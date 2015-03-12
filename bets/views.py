@@ -42,6 +42,7 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
     model = Bet
     serializer_class = BetSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly)
+    lookup_field = 'slug'
 
     def get_queryset(self):
         if self.request.user.is_authenticated():

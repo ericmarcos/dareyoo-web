@@ -47,7 +47,7 @@ class BetShortSerializer(serializers.ModelSerializer):
         model = Bet
         fields = ('title','amount','bet_type','bet_state','odds','created_at',
                     'id', 'bidding_deadline','event_deadline','public', 'bids', 
-                    'open_lottery', 'choices', 'lottery_type',)
+                    'open_lottery', 'choices', 'lottery_type', 'slug')
 
 class BetSerializer(serializers.HyperlinkedModelSerializer):
     author = DareyooUserShortSerializer(read_only=True)
@@ -65,7 +65,7 @@ class BetSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('author', 'title','description','amount','referee_escrow','bet_type','bet_state','odds','created_at',
                     'id', 'bidding_deadline','event_deadline','public','recipients','claim','claim_lottery_winner','claim_message',
                     'referee','referee_claim','referee_lottery_winner', 'referee_message','url', 'bids', 'accepted_bid', 'winners',
-                    'resolved_at','complained_at','arbitrated_at','winning_fees', 'open_lottery', 'choices', 'lottery_type',)
+                    'resolved_at','complained_at','arbitrated_at','winning_fees', 'open_lottery', 'choices', 'lottery_type', 'slug',)
 
     def restore_object(self, attrs, instance=None):
         """
