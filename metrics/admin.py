@@ -4,6 +4,7 @@ from .models import *
 
 class WidgetAdmin(admin.ModelAdmin):
     filter_horizontal = ("bets", "next_bets", )
+    '''
     list_display = ('name', 'impressions',
         'interactions_formatted',
         'participate_clicks_formatted',
@@ -11,6 +12,7 @@ class WidgetAdmin(admin.ModelAdmin):
         'logins_formatted',
         'shares_formatted',
         'banner_clicks_formatted')
+    '''
 
 
 admin.site.register(Widget, WidgetAdmin)
