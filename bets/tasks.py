@@ -45,6 +45,12 @@ def missed_deadlines():
     for b in Bet.objects.all().resolving_deadline_missed():
         b.next_state()
     for b in Bet.objects.all().complaining_deadline_missed():
-        b.next_state()
+        try:
+            b.next_state()
+        except:
+            for p in b.participants():
+                p.coins_locked = max(p.coins_locked, b.amount)
+                p.save()
+            b.next_state()
     for b in Bet.objects.all().arbitrating_deadline_missed():
         b.next_state()
