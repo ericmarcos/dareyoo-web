@@ -2,6 +2,8 @@
 
 import re
 import json
+import pytz
+from dateutil import rrule
 from django.core.urlresolvers import reverse
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
@@ -122,6 +124,24 @@ def faq(request):
 def legal(request):
     handle_campaign(request)
     return render_to_response('beta-legal.html', context_instance=RequestContext(request))
+
+def archive_index(request):
+    handle_campaign(request)
+    start_date = timezone.datetime(year=2014, month=6, day=1, tzinfo=pytz.UTC)
+    weeks = rrule.rrule(rrule.WEEKLY, dtstart=start_date, until=timezone.now())
+    context = {
+        'dates' : [start_date + timezone.timedelta(weeks=weeks.count()-i) for i in xrange(weeks.count())]
+    }
+    return render_to_response('beta-archive-index.html', context_instance=RequestContext(request, context))
+
+def archive_page(request, date):
+    handle_campaign(request)
+    d = timezone.datetime.strptime(date, '%d-%m-%Y')
+    context = {
+        'date': date,
+        'bets': Bet.objects.all().created_between(d, d + timezone.timedelta(days=7))
+    }
+    return render_to_response('beta-archive-page.html', context_instance=RequestContext(request, context))
 
 def mobile_notification(request):
     if request.is_ajax():
