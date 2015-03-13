@@ -1,9 +1,12 @@
+import pytz
+from dateutil import rrule
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib.sitemaps.views import sitemap
 from django.contrib import sitemaps
 from django.contrib import admin
+from django.utils import timezone
 from users.views import *
 from bets.views import *
 from notifications.views import *
@@ -36,20 +39,33 @@ admin.autodiscover()
 
 class StaticViewSitemap(sitemaps.Sitemap):
     priority = 0.5
-    changefreq = 'monthly'
+    changefreq = 'daily'
 
     def items(self):
-        return ['beta-register', 'beta-login', 'beta-landing', 'beta-how-to', 'beta-faq']
+        return ['beta-register', 'beta-login', 'beta-landing', 'beta-how-to', 'beta-faq', 'beta-archive-index']
 
     def location(self, item):
         return reverse(item)
 
+class BetArchiveSitemap(sitemaps.Sitemap):
+    priority = 0.6
+    changefreq = 'always'
+
+    def items(self):
+        start_date = timezone.datetime(year=2014, month=6, day=1, tzinfo=pytz.UTC)
+        weeks = rrule.rrule(rrule.WEEKLY, dtstart=start_date, until=timezone.now())
+        return [start_date + timezone.timedelta(weeks=weeks.count() - 1 - i) for i in xrange(weeks.count())]
+
+    def location(self, item):
+        return reverse('beta-archive-page', args=[item.strftime('%d-%m-%Y'),])
+
 sitemaps = {
     'static': StaticViewSitemap,
+    'archive': BetArchiveSitemap,
     'bets': sitemaps.GenericSitemap({
         'queryset': Bet.objects.all().public(),
         'date_field': 'created_at',
-    }, priority=0.6)
+    }, priority=0.7)
 }
 
 urlpatterns = patterns('',

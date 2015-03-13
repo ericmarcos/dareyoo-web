@@ -130,7 +130,7 @@ def archive_index(request):
     start_date = timezone.datetime(year=2014, month=6, day=1, tzinfo=pytz.UTC)
     weeks = rrule.rrule(rrule.WEEKLY, dtstart=start_date, until=timezone.now())
     context = {
-        'dates' : [start_date + timezone.timedelta(weeks=weeks.count()-i) for i in xrange(weeks.count())]
+        'dates' : [start_date + timezone.timedelta(weeks=weeks.count() - 1 - i) for i in xrange(weeks.count())]
     }
     return render_to_response('beta-archive-index.html', context_instance=RequestContext(request, context))
 
