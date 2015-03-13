@@ -88,7 +88,7 @@
             <a href="http://twitter.com/DareyooApp"><div class="twitter"></div></a>
         </div>
         <div class="logo-claim">
-            <img src="{{ STATIC_URL }}beta/build/img/landing/intro/dareyoo_logo_white.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/intro/dareyoo_logo_white@2x.png">
+            <img src="{{ STATIC_URL }}beta/build/img/landing/intro/dareyoo_logo_white.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/intro/dareyoo_logo_white@2x.png" alt="dareyoo logo white">
             <h2>Apuesta por diversión</h2>
             <h3></h3>
         </div>
@@ -104,7 +104,7 @@
                     <a href="/app/main/bet/{{ b.id }}"><h3>"{{ b.title }}"</h3></a>
                     <a href="/app/profile/{{ b.author.id }}/bets">
                     <div class="bet-signature">
-                        <img src="{{ b.author.get_profile_pic_url }}" width="32" class="img-circle">
+                        <img src="{{ b.author.get_profile_pic_url }}" width="32" class="img-circle" alt="{{ b.author.username }} profile pic">
                         <p>{{ b.author.username }}</p>
                     </div>
                     </a>
@@ -120,8 +120,10 @@
             <a role="button" class="btn btn-video" href="{% url 'beta-register' %}">Empieza a jugar, ¡es gratis!</a>
         </div>
         <div class="app-btns">
-            <a href="" data-toggle="modal" data-target="#android-notification"><img src="{{ STATIC_URL }}beta/build/img/landing/google_play.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/google_play@2x.png"></a>
-            <a href="" data-toggle="modal" data-target="#ios-notification"><img src="{{ STATIC_URL }}beta/build/img/landing/app_store.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/app_store@2x.png"></a>
+            <a href="" data-toggle="modal" data-target="#android-notification"><img src="{{ STATIC_URL }}beta/build/img/landing/google_play.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/google_play@2x.png" alt="google play logo"></a>
+            <a href="" data-toggle="modal" data-target="#ios-notification">
+                <img src="{{ STATIC_URL }}beta/build/img/landing/app_store.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/app_store@2x.png" alt="app store logo">
+            </a>
             <div class="clearfix"></div>
         </div>
     </div>
@@ -135,21 +137,21 @@
         <div class="row text-center">
             <a href="{% url 'beta-how-to' %}#basica">
             <div class="col-sm-4">
-                <img id="apuesta-basica-img" src="{{ STATIC_URL }}beta/build/img/landing/free/apuesta_basica.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/free/apuesta_basica@2x.png" width="260">
+                <img id="apuesta-basica-img" src="{{ STATIC_URL }}beta/build/img/landing/free/apuesta_basica.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/free/apuesta_basica@2x.png" width="260" alt="apuesta basica">
                 <h4>Apuesta básica</h4>
                 <p class="nolink">El primero en aceptar será tu rival</p>
             </div>
             </a>
             <a href="{% url 'beta-how-to' %}#subhasta">
             <div class="col-sm-4">
-                <img id="subasta-img" src="{{ STATIC_URL }}beta/build/img/landing/free/subasta.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/free/subasta@2x.png" width="220">
+                <img id="subasta-img" src="{{ STATIC_URL }}beta/build/img/landing/free/subasta.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/free/subasta@2x.png" width="220" alt="apuesta subasta">
                 <h4>Subasta</h4>
                 <p class="nolink">Tú eliges la mejor oferta</p>
             </div>
             </a>
             <a href="{% url 'beta-how-to' %}#porra">
             <div class="col-sm-4">
-                <img id="porra-img" src="{{ STATIC_URL }}beta/build/img/landing/free/porra.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/free/porra@2x.png" width="180">
+                <img id="porra-img" src="{{ STATIC_URL }}beta/build/img/landing/free/porra.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/free/porra@2x.png" width="180" alt="apuesta porra">
                 <h4>Porra</h4>
                 <p class="nolink">La de toda la vida</p>
             </div>
@@ -169,7 +171,7 @@
                 <p>Sigue a tus amigos para enterarte de a qué estan jugando o envíales <a href="{% url 'beta-how-to' %}#publicavsprivada">apuestas privadas</a>. Busca los eventos del momento para encontrar apuestas más allá de tu círculo y juega contra usuarios de todo el mundo!</p> 
             </div>
             <div class="col-sm-4 text-right">
-                <img src="{{ STATIC_URL }}beta/build/img/landing/social/social.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/social/social@2x.png" height="380">
+                <img src="{{ STATIC_URL }}beta/build/img/landing/social/social.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/social/social@2x.png" height="380" alt="apuesta politica deportes concursos">
             </div>
         </div>
     </div>
@@ -180,7 +182,7 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-6 text-center">
-                <img src="{{ STATIC_URL }}beta/build/img/landing/democratic/juez.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/democratic/juez@2x.png" height="380">
+                <img src="{{ STATIC_URL }}beta/build/img/landing/democratic/juez.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/democratic/juez@2x.png" height="380" alt="juez arbitraje dareyoo">
             </div>
             <div id="democratic-text" class="col-sm-6">
                 <h1>Toma el control del juego,<br><strong>tu eres el protagonista</strong></h1>
@@ -211,11 +213,11 @@
         </div>
         <div id="closing-right" class="col-sm-6">
             <div class="closing-right-content">
-                <img src="{{ STATIC_URL }}beta/build/img/landing/closing/dareyoo_imago_white.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/closing/dareyoo_imago_white@2x.png" height="52">
+                <img src="{{ STATIC_URL }}beta/build/img/landing/closing/dareyoo_imago_white.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/closing/dareyoo_imago_white@2x.png" height="52" alt="dareyoo logo white">
                 <h1>¿A qué estás esperando?</h1>
                 <p>Ha nacido una nueva forma de apostar online.<br><a class="white-link" href="{% url 'beta-register' %}">Regístrate ahora</a> y descúbrela.<br><br>Con nuestra aplicación móvil podrás apostar<br>donde y cuando quieras.</p>
-                <a href="#" data-toggle="modal" data-target="#android-notification"><img src="{{ STATIC_URL }}beta/build/img/landing/google_play.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/google_play@2x.png"></a>
-                <a href="#" data-toggle="modal" data-target="#ios-notification"><img src="{{ STATIC_URL }}beta/build/img/landing/app_store.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/app_store@2x.png"></a>
+                <a href="#" data-toggle="modal" data-target="#android-notification"><img src="{{ STATIC_URL }}beta/build/img/landing/google_play.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/google_play@2x.png" alt="goole play logo"></a>
+                <a href="#" data-toggle="modal" data-target="#ios-notification"><img src="{{ STATIC_URL }}beta/build/img/landing/app_store.png" data-at2x="{{ STATIC_URL }}beta/build/img/landing/app_store@2x.png" alt="app store logo"></a>
             </div>
         </div>
     </div>
