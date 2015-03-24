@@ -487,14 +487,14 @@ class Tournament(models.Model):
     def check_bet(self, bet):
         '''Checks if a bet matches the conditions of
         the tournament and adds it if true'''
-        if bet in self.bets.all():
+        if self.bets.filter(id=bet.id).exists():
             return False
         if bet.author != self.author and self.only_author:
             #raise GamificationException("Can't add a bet by another author")
             return False
         if self.tag and not self.tag.lower() in bet.title.lower():
             return False
-        if not self.public and not bet.author in self.participants.all():
+        if not self.public and not self.participants.filter(id=bet.author.id).exists():
             return False
         self.add_bet(bet)
         if self.public and not bet.is_lottery():
