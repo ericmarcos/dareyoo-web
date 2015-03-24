@@ -359,6 +359,12 @@ class Bet(models.Model):
             raise BetException("The amount must be an integer value")
         if (self.is_simple() or self.is_auction()) and not (1.2 < self.odds < 51):
             raise BetException("Invalid bet ratio")
+        try:
+            b = Bet.objects.get(title=self.title)
+        except:
+            return
+        if b.created_at > timezone.now() - timedelta(minutes=5):
+            raise BetException("You've just created a bet with the same title")
 
     def is_simple(self):
         return self.bet_type == Bet.TYPE_SIMPLE
