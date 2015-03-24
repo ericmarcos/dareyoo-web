@@ -90,8 +90,8 @@ def register_email_mailchimp(**kwargs):
     if user and user.email:
         try:
             conn = mailchimp.utils.get_connection()
-            dy_main_list = conn.get_list_by_id(settings.MAILCHIMP_LISTS.get('Dareyoo'))
-            dy_main_list.subscribe(user.email, {'EMAIL': user.email, 'FNAME': user.username}, double_optin=False)
+            #dy_main_list = conn.get_list_by_id(settings.MAILCHIMP_LISTS.get('Dareyoo'))
+            #dy_main_list.subscribe(user.email, {'EMAIL': user.email, 'FNAME': user.username}, double_optin=False)
             dy_news_list = conn.get_list_by_id(settings.MAILCHIMP_LISTS.get('Dareyoo News'))
             dy_news_list.subscribe(user.email, {'EMAIL': user.email, 'FNAME': user.username}, double_optin=False)
         except:
