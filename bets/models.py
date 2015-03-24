@@ -723,6 +723,9 @@ class Bet(models.Model):
     def close_lottery(self, arbitrating=False):
         claim = self.claim
         winner = self.claim_lottery_winner
+        for p in self.participants():
+            p.coins_locked = max(p.coins_locked, self.amount)
+            p.save()
         if arbitrating:
             claim = self.referee_claim
             winner = self.referee_lottery_winner
