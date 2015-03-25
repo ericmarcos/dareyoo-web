@@ -16,6 +16,9 @@ class UserActivation(models.Model):
     timestamp = models.DateTimeField()
     level = models.IntegerField(blank=True, null=True, default=1)
 
+    #def active_month(self):
+    #    UserActivation.objects.filter(timestamp__gt=n).values('user').distinct().count()
+
 def new_user_activation(sender, user, **kwargs):
     now = kwargs.get('timestamp', timezone.now())
     level = kwargs.get('level', 1)
