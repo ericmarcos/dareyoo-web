@@ -4,7 +4,8 @@
 {% block title %}<title ng-bind="getTitle()">Dareyoo (beta)</title>{% endblock %}
 {% block css %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/dareyoo_app.all.min.css">
+<!-- <link rel="stylesheet" href="{{ STATIC_URL }}beta/build/css/dareyoo_app.all.min.css"> -->
+<link rel="stylesheet" href="{{ STATIC_URL }}beta/less/dareyoo_app.all.min-5bc18f05.css">
 
     <style type="text/css">
     body { margin-top: 0px; }
@@ -69,7 +70,8 @@
 {% endblock %}
 
 {% block js %}
-<script src="{{ STATIC_URL }}beta/build/js/dareyoo_app.all.min.js"></script>
+<!-- <script src="{{ STATIC_URL }}beta/build/js/dareyoo_app.all.min.js"></script> -->
+<script src="{{ STATIC_URL }}beta/lib/jquery/dareyoo_app.all.min-1dfb698c.js"></script>
 <script type="text/javascript">
   angular.module('dareyoo').
   constant('config', {static_url: "{{ STATIC_URL }}", fb_key: "{{ fb_key }}" });

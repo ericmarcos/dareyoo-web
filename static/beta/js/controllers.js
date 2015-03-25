@@ -505,10 +505,11 @@ angular.module('dareyoo.controllers', []).
     };
     $scope.getBets($stateParams.userId, {'all':true});
   }])
-  .controller('BetCtrl', ['$scope', '$http', '$stateParams', function($scope, $http, $stateParams) {
+  .controller('BetCtrl', ['$scope', '$rootScope', '$http', '$stateParams', function($scope, $rootScope, $http, $stateParams) {
     $scope.bet = false;
     $scope.public_bet = true;
     $scope.loaded = false;
+    $scope.bid = null;
     $scope.bidTitle = "";
     $scope.bidAmount = 10;
     $scope.dialogs = {'bid': false, 'arbitrating':false};
@@ -529,16 +530,16 @@ angular.module('dareyoo.controllers', []).
       }
     };
 
+    $scope.showEmbed = function(id) {
+      $('#bet-share-embed-modal').modal('show');
+    };
+
     $scope.getBet = function(id) {
       $http.get(document.location.origin + "/api/v1/bets/" + id).success(function(response) {
         $scope.bet = response;
         $scope.loaded = true;
         $scope.$root.title = $scope.bet.title;
-        //$scope.bet.bet_state = "resolving";
-        //$scope.bet.bet_type = 2;
-        //$scope.bet.accepted_bid.author.id=2;
-        //$scope.bet.points = 235;
-        //$scope.bet.claim_lottery_winner = {'title': '0 - 2'};
+        $rootScope.$broadcast('rebuildTwitter');
       }).error($scope.betAPIError);
     };
     $scope.acceptBet = function() {
@@ -564,6 +565,9 @@ angular.module('dareyoo.controllers', []).
     $scope.participateBid = function(bidId) {
       $http.post(document.location.origin + "/api/v1/bids/" + bidId + "/add_participant/").success(function(response) {
         $scope.getBet($stateParams.betId);
+        $scope.bid = $.grep($scope.bet.bids, function(e){ return e.id == bidId; })[0];
+        $rootScope.$broadcast('rebuildTwitter');
+        $('#bet-share-modal').modal('show');
       }).error($scope.betAPIError);
     };
     $scope.showParticipants = function(bid) {

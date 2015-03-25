@@ -15,6 +15,60 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<div id="bet-share-embed-modal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
+        <h4 class="modal-title">Incrustar porra</h4>
+      </div>
+      <div class="modal-body">
+        <p id="bet-fail-message">Incrusta la porra en tu web para que tu comunidad participe.<br>Simplemente copia y pega este código:</p>
+        <pre class="embed-code">
+&lt;script src=&quot;https://s3-eu-west-1.amazonaws.com/dareyoo-pro/widgets/js/sqwidget.js&quot;&gt;&lt;/script&gt;
+&lt;div style=&quot;width:300px; height:400px;&quot; data-sqwidget=&quot;https://s3-eu-west-1.amazonaws.com/dareyoo-pro/widgets/js/dy&quot; data-sqwidget-name=&quot;generic-[[bet.slug]]&quot;&gt;&lt;/div&gt;
+        </pre>
+        <h4>¿Te gustaría personalizarla?<br><br>¡Contáctanos en hi@dareyoo.com y te diremos cómo hacerlo!</h4>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id="bet-share-modal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
+        <h4 class="modal-title">La suerte está echada...</h4>
+      </div>
+      <div class="modal-body">
+        <h4 class="text-center">Has apostado por [[bid.title]], ¡díselo a todo el mundo!</h4>
+        <table class="share-bet-btns"><tr>
+            <td>
+            <div relink-event="rebuildTwitter">
+            <a twitter
+                data-lang="es"
+                data-count='none'
+                data-url="http://www.dareyoo.com/app/main/bet/[[bet.slug]]?utm_source=twitter&utm_medium=viral&utm_campaign=bet-share"
+                data-via='dareyooApp'
+                data-size="large"
+                data-text='He apostado por [[bid.title]] en la [[bet.bet_type == 3? "porra" : "apuesta"]] [[bet.title | limitTo : 80]]' >
+            </a></div>
+            </td><td>
+            <a facebook class="zocial facebook facebook-bet-share" data-url='http://www.dareyoo.com/app/main/bet/[[bet.slug]]?utm_source=facebook&utm_medium=viral&utm_campaign=bet-share'>Compartir</a>
+            </td></tr>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <div id="register-modal" class="modal fade">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -117,9 +171,33 @@
 <div ng-hide="loaded" class="container-fluid container-loading"><h4>Cargando...</h4><br><dy-loader></dy-loader></div>
 <div ng-show="bet" class="bet-detail">
     <div class="bet-header" ng-class="{'basic-bg': isBasic(), 'auction-bg': isAuction(), 'lottery-bg': isLottery()}">
-        <p ng-if="isBasic()">Apuesta básica</p>
-        <p ng-if="isAuction()">Subasta</p>
-        <p ng-if="isLottery()">Porra</p>
+        <div class="row">
+            <div class="col-sm-5">
+                <p ng-if="isBasic()">Apuesta básica</p>
+                <p ng-if="isAuction()">Subasta</p>
+                <p ng-if="isLottery()">Porra</p>
+            </div>
+
+            <div class="col-sm-7">
+                <div class="pull-right" ng-show="bet.bet_type == 3">
+                    <button class="btn btn-default btn-incrustar" type="submit" ng-click="showEmbed()">
+                        <span class="glyphicon glyphicon-th-large" aria-hidden="true"></span> Incrustar
+                    </button>
+                </div>
+                <div relink-event="rebuildTwitter" class="pull-right">
+                <a twitter
+                    data-lang="es"
+                    data-count='none'
+                    data-url="http://www.dareyoo.com/app/main/bet/[[bet.slug]]?utm_source=twitter&utm_medium=viral&utm_campaign=bet-share"
+                    data-via='dareyooApp'
+                    data-size="large"
+                    data-text='[[bet.title | limitTo : 100]]' ></a>
+                </div>
+                <div class="pull-right">
+                    <a id="facebook-bet-share2" facebook class="zocial facebook" data-url='http://www.dareyoo.com/app/main/bet/[[bet.slug]]?utm_source=facebook&utm_medium=viral&utm_campaign=bet-share'>Compartir</a>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="container-fluid-small">
         <div class="bet-row">
@@ -141,7 +219,7 @@
                 <p ng-if="isBasic() && bet.accepted_bid" class="bet-title-basic">Por [[bet.amount]]Y</p>
                 <p ng-if="isAuction()" class="bet-title-auction">Por [[bet.amount]]Y</p>
                 <p ng-if="isLottery()" class="bet-title-lottery">[[bet.amount]]Y por barba</p>
-                <p ng-if="isLottery()" class="bet-title-lottery">[[getPot()]]Y de bote</p>
+                <p ng-if="isLottery()" class="bet-title-lottery"><b>[[getPot()]]Y de bote</b></p>
             </div>
             <div class="clearfix"></div>
         </div>

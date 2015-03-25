@@ -194,7 +194,7 @@ angular.module('dareyoo.directives', [])
       templateUrl: config.static_url + 'beta/build/partials/directives/dy-loader.html'
     };
   }])
-  .directive('relinkEvent', function($rootScope) {
+  .directive('relinkEvent', ['$rootScope', function($rootScope) {
     return {
         transclude: 'element',
         restrict: 'A',
@@ -220,4 +220,4 @@ angular.module('dareyoo.directives', [])
         }
     };
 
-});
+}]);

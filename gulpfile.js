@@ -16,6 +16,7 @@ var print = require("gulp-print");
 var gulpif = require("gulp-if");
 var connect = require("gulp-connect");
 var shell = require("gulp-shell");
+var rev = require('gulp-rev');
 
 var isPro = args.pro || args.server == "pro";
 var isPre = args.pre;
@@ -88,9 +89,17 @@ gulp.task('copy_scripts', function() {
 gulp.task('app_all_min_scripts', function() {
   // Unify, minify and copy all JavaScript
   return gulp.src(paths.app_scripts_libs.concat(paths.app_scripts))
-    //.pipe(uglify())
-    //.pipe(print())
+    .pipe(uglify())
     .pipe(concat('dareyoo_app.all.min.js'))
+    .pipe(gulp.dest('./static/beta/build/js'));
+});
+
+gulp.task('app_all_min_scripts_rev', function() {
+  return gulp.src(paths.app_scripts_libs.concat(paths.app_scripts))
+    .pipe(uglify())
+    .pipe(concat('dareyoo_app.all.min.js'))
+    .pipe(rev())
+    .pipe(print())
     .pipe(size())
     .pipe(gulp.dest('./static/beta/build/js'));
 });
@@ -98,15 +107,25 @@ gulp.task('app_all_min_scripts', function() {
 gulp.task('landing_all_min_scripts', function() {
   // Unify, minify and copy all JavaScript
   return gulp.src(paths.landing_scripts_libs.concat(paths.landing_scripts))
-    //.pipe(uglify())
-    //.pipe(print())
+    .pipe(uglify())
     .pipe(concat('dareyoo_landing.all.min.js'))
+    .pipe(gulp.dest('./static/beta/build/js'));
+});
+
+gulp.task('landing_all_min_scripts_rev', function() {
+  // Unify, minify and copy all JavaScript
+  return gulp.src(paths.landing_scripts_libs.concat(paths.landing_scripts))
+    .pipe(uglify())
+    .pipe(concat('dareyoo_landing.all.min.js'))
+    .pipe(rev())
+    .pipe(print())
     .pipe(size())
     .pipe(gulp.dest('./static/beta/build/js'));
 });
 
 // All scripts
 gulp.task('scripts', ['copy_scripts', 'app_all_min_scripts', 'landing_all_min_scripts']);
+gulp.task('scripts_rev', ['copy_scripts', 'app_all_min_scripts_rev', 'landing_all_min_scripts_rev']);
 
 gulp.task('app_less', function () {
   var less_base_url = dev_url;
@@ -119,6 +138,21 @@ gulp.task('app_less', function () {
             paths: paths.less_libs
         }))
         .pipe(rename('dareyoo_app.all.min.css'))
+        .pipe(gulp.dest('./static/beta/build/css'));
+});
+gulp.task('app_less_rev', function () {
+  var less_base_url = dev_url;
+  if(isPre) less_base_url = pre_url;
+  if(isPro) less_base_url = pro_url;
+  return gulp.src(paths.app_less)
+        .pipe(replace("[[LESS_BASE_URL]]", less_base_url))
+        .pipe(less({
+            compress: true,
+            paths: paths.less_libs
+        }))
+        .pipe(rename('dareyoo_app.all.min.css'))
+        .pipe(rev())
+        .pipe(print())
         .pipe(size())
         .pipe(gulp.dest('./static/beta/build/css'));
 });
@@ -134,6 +168,22 @@ gulp.task('landing_less', function () {
             paths: paths.less_libs
         }))
         .pipe(rename('landing.all.min.css'))
+        .pipe(gulp.dest('./static/beta/build/css'));
+});
+
+gulp.task('landing_less_rev', function () {
+  var less_base_url = dev_url;
+  if(isPre) less_base_url = pre_url;
+  if(isPro) less_base_url = pro_url;
+  return gulp.src(paths.landing_less)
+        .pipe(replace("[[LESS_BASE_URL]]", less_base_url))
+        .pipe(less({
+            compress: true,
+            paths: paths.less_libs
+        }))
+        .pipe(rename('landing.all.min.css'))
+        .pipe(rev())
+        .pipe(print())
         .pipe(size())
         .pipe(gulp.dest('./static/beta/build/css'));
 });
@@ -146,6 +196,7 @@ gulp.task('vendor_css', function () {
 
 // All css
 gulp.task('css', ['app_less', 'landing_less']);
+gulp.task('css_rev', ['app_less_rev', 'landing_less_rev']);
 
 gulp.task('fonts', function () {
   return gulp.src(paths.fonts_libs)
@@ -165,7 +216,7 @@ gulp.task('images', function () {
 });
 
 // Rerun the task when a file changes
-gulp.task('watch', function() {
+gulp.task('watch', ['build_dev'], function() {
   gulp.watch(paths.html, ['html']);
   gulp.watch(paths.app_scripts, ['scripts']);
   gulp.watch(paths.landing_scripts, ['scripts']);
@@ -204,9 +255,10 @@ gulp.task('env', function () {
 });
 
 // Build
-gulp.task('build', ['html', 'css', 'scripts', 'fonts']);
+gulp.task('build', ['html', 'css_rev', 'scripts_rev', 'fonts']);
+gulp.task('build_dev', ['html', 'css', 'scripts', 'fonts']);
 
 // Default task (called when you run `gulp` from cli)
-gulp.task('default', ['clean'], function () {
-    gulp.start('build');
+gulp.task('default', function () {
+    gulp.start('watch');
 });

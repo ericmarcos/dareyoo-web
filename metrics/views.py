@@ -47,7 +47,17 @@ def widget_activation(request, widget, level, format=None):
             participated_bets = request.DATA.get('participated_bets', [])
             widget_json = cache.get("widget_" + widget)
             if not widget_json:
-                w = Widget.objects.get(name=widget)
+                try:
+                    w = Widget.objects.get(name=widget)
+                except:
+                    if widget.startswith('generic-bet-'):
+                        slug = widget[len('generic-bet-'):]
+                        bet = Bet.objects.get(slug=slug)
+                        w = Widget(name=widget)
+                        w.save()
+                        w.bets.add(bet)
+                    else:
+                        return Response({'detail': "Widget does not exist"}, status=status.HTTP_400_BAD_REQUEST)
                 serializer = WidgetSerializer(w, context={'request': request})
                 widget_json = serializer.data
                 cache.set("widget_" + widget, widget_json, 30)
