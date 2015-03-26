@@ -438,7 +438,7 @@ class Bet(models.Model):
 
     def invite(self, invites):
         if invites and len(invites) > 0:
-            recipients = []
+            recipients = self.recipients or []
             for invite in invites:
                 u = DareyooUser.objects.filter(username=invite)
                 if len(u) == 0:
@@ -454,9 +454,10 @@ class Bet(models.Model):
                         pass
                 if len(u) > 0:
                     recipients.append(u[0])
+                    send_task('send_invite_notification', [u[0].id, self.id])
             self.recipients = recipients
             #TODO: remove dependency of notifications app using a signal
-            send_task('send_invite_notifications', [self.id])
+            #send_task('send_invite_notifications', [self.id])
 
     def participants(self):
         if self.is_simple() or self.is_auction():

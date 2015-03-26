@@ -175,6 +175,15 @@ class BetViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retrieve
         except (BetException, DareyooUserException) as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+    @action(renderer_classes=[renderers.JSONRenderer, renderers.BrowsableAPIRenderer])
+    def invite(self, request, *args, **kwargs):
+        bet = self.get_object()
+        user = self.request.user
+        invites = request.DATA.get('invites')
+        bet.invite(invites)
+        serializer = BetSerializer(bet, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class BidViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     API endpoint that allows bids to be viewed or created, not modified or destroyed.
