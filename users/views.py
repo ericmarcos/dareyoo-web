@@ -151,6 +151,7 @@ class SearchDareyooSuggestedList(generics.ListAPIView):
 @permission_classes([])
 def register(request, format=None):
     email = request.DATA.get('email', '')
+    username = request.DATA.get('username', '')
     password = request.DATA.get('password', '')
     password2 = request.DATA.get('password2', '')
     user = DareyooUser.objects.filter(email=email)
@@ -170,7 +171,7 @@ def register(request, format=None):
         if len(user) > 0:
             user = user[0]
         else:
-            user = DareyooUser(email=email, username=email.split("@")[0])
+            user = DareyooUser(email=email, username=username if username else email.split("@")[0])
             user.set_password(password)
             user.save()
     prepare_register_task(user, request)
